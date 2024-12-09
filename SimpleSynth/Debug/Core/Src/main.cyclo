@@ -1,0 +1,13 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/_Current Projects/BreakOut_0.1/Firmware/CasualNoises/Core/Text/../../Utilities/ReportFault.h:28:13:void CasualNoises::CN_ReportFault(uint32_t)	1
+../Core/Src/main.cpp:111:5:int main()	1
+../Core/Src/main.cpp:197:6:void SystemClock_Config()	4
+../Core/Src/main.cpp:257:13:void MX_ETH_Init()	2
+../Core/Src/main.cpp:306:13:void MX_I2C1_Init()	4
+../Core/Src/main.cpp:354:13:void MX_I2S2_Init()	2
+../Core/Src/main.cpp:390:13:void MX_SPI1_Init()	2
+../Core/Src/main.cpp:438:13:void MX_USART3_UART_Init()	5
+../Core/Src/main.cpp:486:13:void MX_USB_OTG_HS_USB_Init()	1
+../Core/Src/main.cpp:507:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:604:6:void StartDefaultTask(void*)	2
+../Core/Src/main.cpp:672:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	2
+../Core/Src/main.cpp:689:6:void Error_Handler()	1

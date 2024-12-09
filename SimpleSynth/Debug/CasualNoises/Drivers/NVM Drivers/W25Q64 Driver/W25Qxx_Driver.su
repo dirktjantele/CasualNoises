@@ -1,0 +1,13 @@
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h:71:10:virtual bool CasualNoises::W25Qxx_Driver::isDriverReady()	16	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h:72:13:virtual uint32_t CasualNoises::W25Qxx_Driver::getTotalCapacity()	16	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h:74:10:virtual bool CasualNoises::W25Qxx_Driver::outOfRangeDetected()	16	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/../NVM Driver/NVM_Driver.h:39:7:constexpr CasualNoises::NVM_Driver::NVM_Driver()	16	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:25:1:CasualNoises::W25Qxx_Driver::W25Qxx_Driver(const CasualNoises::sNVM_DriverInitData*)	64	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:88:6:bool CasualNoises::W25Qxx_Driver::checkForCacheChange()	24	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:124:11:virtual uint32_t& CasualNoises::W25Qxx_Driver::operator[](uint32_t)	32	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:170:19:virtual HAL_StatusTypeDef CasualNoises::W25Qxx_Driver::eraseAllDevices()	56	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:206:19:HAL_StatusTypeDef CasualNoises::W25Qxx_Driver::sendDeviceCommand(uint16_t, CasualNoises::eFlashCommandCodes, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)	56	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:245:19:HAL_StatusTypeDef CasualNoises::W25Qxx_Driver::readStatusRegisters(uint16_t)	56	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:264:19:HAL_StatusTypeDef CasualNoises::W25Qxx_Driver::waitUntilDeviceReady(uint16_t)	24	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:286:19:HAL_StatusTypeDef CasualNoises::W25Qxx_Driver::fastSectorRead(uint32_t)	48	static
+../CasualNoises/Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.cpp:345:19:virtual HAL_StatusTypeDef CasualNoises::W25Qxx_Driver::flushSectorCache()	104	static
