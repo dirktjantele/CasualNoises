@@ -1,0 +1,3 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/_Current Projects/BreakOut_0.1/Firmware/CasualNoises/Core/Text/../../Utilities/ReportFault.h:28:13:void CasualNoises::CN_ReportFault(uint32_t)	1
+../CasualNoises/AudioBasics/Wavetable/WaveTable.cpp:24:2:CasualNoises::WaveTable::WaveTable(uint16_t, CasualNoises::eWaveTableType, float*)	1
+../CasualNoises/AudioBasics/Wavetable/WaveTable.cpp:31:2:CasualNoises::WaveTable::~WaveTable()	1
