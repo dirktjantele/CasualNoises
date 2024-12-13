@@ -2,7 +2,7 @@
   ==============================================================================
 
     CasualNoises.h
-    Created: 31 jul 2023 
+    Created: 31 jul 2023
     Author:  Dirk Tjantele
 
   ==============================================================================
@@ -22,10 +22,6 @@
 #include "Drivers/IO_Drivers/PCF8574_Driver.h"
 #include "Drivers/ILI9341/ILI9341_Driver.h"
 #include "Drivers/Codec/CS4270_Driver.h"
-#include "Drivers/Codec/CS4272_Driver.h"
-#include "Drivers/NVM Drivers/NVM Driver/NVM_Driver.h"
-#include "Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h"
-#include "Drivers/TLV Driver/TLV_Driver.h"
 
 #include "Graphics/Contexts/GraphicsContext.h"
 
@@ -40,12 +36,9 @@
 
 #include "Synthesizer/Basics/ADSR.h"
 #include "Synthesizer/Basics/LFO.h"
-#include "Synthesizer/Basics/Wavetable_LFO.h"
 
-#include "Threads/AudioThread.h"
 #include "Threads/EncoderThread.h"
 #include "Threads/PotentiometerThread.h"
-#include "Threads/TriggerThread.h"
 
 #include "Utilities/ReportFault.h"
 #include "Utilities/CallbackHandlers.h"

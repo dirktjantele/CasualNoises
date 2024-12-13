@@ -11,8 +11,6 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISES_POTENTIOMETER_THREAD
-
 #include "PotentiometerThread.h"
 
 #include "SystemConfig.h"
@@ -151,4 +149,3 @@ BaseType_t startPotentiometerThread(void *argument)
 
 } // namespace CasualNoises
 
-#endif

@@ -11,8 +11,6 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISE_ADC_CALLBACKS
-
 #include <vector>
 
 #include "CallbackHandlers.h"
@@ -40,4 +38,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	}
 }
 
-#endif
+
+
+

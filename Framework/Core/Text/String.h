@@ -13,7 +13,6 @@
 #include <string>
 
 #include "CasualNoises.h"
-#include "../../Utilities/ReportFault.h"
 
 namespace CasualNoises
 {

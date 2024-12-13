@@ -12,8 +12,6 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISES_ENCODER_THREAD
-
 #pragma once
 
 #include "main.h"
@@ -75,5 +73,3 @@ typedef union
 BaseType_t startEncoderThread(void *argument);				// Pointer to a EncoderThreadData struct
 
 } // namespace CasualNoises
-
-#endif

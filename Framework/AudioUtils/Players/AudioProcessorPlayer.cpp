@@ -2,15 +2,11 @@
   ==============================================================================
 
     AudioProcessorPlayer.cpp
-    Created: 24 July 2023
+    Created: 24 jul 2023
     Author:  Dirk Tjantele
 
   ==============================================================================
 */
-
-#ifdef USE_AUDIO_PROCESSOR
-
-//#include <arm_math.h>
 
 #include "AudioProcessorPlayer.h"
 #include "AudioBasics/Buffers/AudioBuffer.h"
@@ -20,55 +16,59 @@
 #include "Utilities/ReportFault.h"
 #include "main.h"
 
+namespace CasualNoises
+{
+
 // Space for statics
-CasualNoises::AudioProcessorPlayer	CasualNoises::AudioProcessorPlayer::mAudioProcessorPlayer;
-bool								CasualNoises::AudioProcessorPlayer::mIsAllocated 		= false;
-CasualNoises::AudioProcessor* 		CasualNoises::AudioProcessorPlayer::mAudioProcessorPtr 	= nullptr;
-I2S_HandleTypeDef*  				CasualNoises::AudioProcessorPlayer::m_hi2sHandlePtr 	= nullptr;
+AudioProcessorPlayer	AudioProcessorPlayer::mAudioProcessorPlayer;
+bool					AudioProcessorPlayer::mIsAllocated = false;
+AudioProcessor* 		AudioProcessorPlayer::mAudioProcessorPtr = nullptr;
+//I2S_HandleTypeDef*  	AudioProcessorPlayer::m_hi2sHandlePtr = nullptr;						// ToDo
 
 // Binary semaphore used for interrupt/task synchronisation
 static SemaphoreHandle_t xAudioProcessorPlayerSemaphore = nullptr;
 
 // Codec input and output buffers
-static int32_t rx_rawAudioBuffer[FULL_AUDIO_BUFFER_SIZE];
-static int32_t* rx_audioDataPtr  = rx_rawAudioBuffer;
-static int32_t tx_rawAudioBuffer[FULL_AUDIO_BUFFER_SIZE];
-static int32_t* tx_audioDataPtr  = tx_rawAudioBuffer;
+static int16_t _rawAudioBuffer[AUDIO_BUFFER_SIZE];
+//static int16_t _rawmAudioBuffer[AUDIO_BUFFER_SIZE];
+//static int16_t* audioBufferPtr  = _rawAudioBuffer;
+//static int16_t* audioOutBufferPtr = _rawAudioOutputBuffer;
 
 // This flag is set if an interrupt is received an cleared when processing the audio data is completed
 //  so it should always be false at interrupt otherwise audio processing has taken to much time
 static bool doGenerateAudio = false;
 static bool checkForOverRun = false;
 
-// Count how many times audio is processed for info only...
+// Count how many times audio is processed for info only
 static int64_t loopCounter = 0;
 
-// Interrupt callback for buffer half transfer completed
-void HAL_I2SEx_TxRxHalfCpltCallback (I2S_HandleTypeDef * hi2s)
+// interrupt callback for buffer half transfer completed
+/*void HAL_I2SEx_TxRxHalfCpltCallback (I2S_HandleTypeDef * hi2s)								// ToDo
 {
-	if (doGenerateAudio && checkForOverRun) CasualNoises::CN_ReportFault(1);
+	if (doGenerateAudio && checkForOverRun) CN_ReportFault(1);
 	doGenerateAudio = true;
-	checkForOverRun = false;
-	tx_audioDataPtr = &tx_rawAudioBuffer[0];
-	rx_audioDataPtr = &rx_rawAudioBuffer[0];
+	toggleBenchmarkPin(BENCHMARK_OUT_1_Pin);
+	toggleBenchmarkPin(BENCHMARK_OUT_2_Pin);
+	audioBufferPtr = &_rawAudioBuffer[0];
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	xSemaphoreGiveFromISR( xAudioProcessorPlayerSemaphore, &xHigherPriorityTaskWoken );
-}
+	toggleBenchmarkPin(BENCHMARK_OUT_1_Pin);
+	toggleBenchmarkPin(BENCHMARK_OUT_2_Pin);
+}*/
 
-// Interrupt callback for buffer full transfer completed
-void HAL_I2SEx_TxRxCpltCallback (I2S_HandleTypeDef * hi2s)
+// interrupt callback for buffer full transfer completed
+/*void HAL_I2SEx_TxRxCpltCallback (I2S_HandleTypeDef * hi2s)									// ToDo
 {
-	if (doGenerateAudio && checkForOverRun) CasualNoises::CN_ReportFault(1);
+	if (doGenerateAudio && checkForOverRun) CN_ReportFault(1);
 	doGenerateAudio = true;
-	checkForOverRun = false;
-	tx_audioDataPtr = &tx_rawAudioBuffer[FULL_AUDIO_BUFFER_SIZE / 2];
-	rx_audioDataPtr = &rx_rawAudioBuffer[FULL_AUDIO_BUFFER_SIZE / 2];
+	toggleBenchmarkPin(BENCHMARK_OUT_1_Pin);
+	toggleBenchmarkPin(BENCHMARK_OUT_2_Pin);
+	audioBufferPtr = &_rawAudioBuffer[AUDIO_BUFFER_SIZE / 2];
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	xSemaphoreGiveFromISR( xAudioProcessorPlayerSemaphore, &xHigherPriorityTaskWoken );
-}
-
-namespace CasualNoises
-{
+	toggleBenchmarkPin(BENCHMARK_OUT_1_Pin);
+	toggleBenchmarkPin(BENCHMARK_OUT_2_Pin);
+}*/
 
 //==============================================================================
 //          runAudioProcessor
@@ -76,10 +76,8 @@ namespace CasualNoises
 // This is the main audio processor loop, this method never return
 //
 //  CasualNoises    24/07/2023  First implementation
-// 	CasualNoises    10/11/2024  Resuscitated
 //==============================================================================
-void AudioProcessorPlayer::runAudioProcessor(
-		/*AudioProcessor* audioProcessor,*/
+void AudioProcessorPlayer::runAudioProcessor(AudioProcessor* audioProcessor,
 		AudioBuffer* audioBufferPtr)
 {
 
@@ -88,46 +86,15 @@ void AudioProcessorPlayer::runAudioProcessor(
 	if (xAudioProcessorPlayerSemaphore == nullptr)
 		CN_ReportFault(1);
 
-	// Clear buffers
-	for (uint32_t i = 0; i < FULL_AUDIO_BUFFER_SIZE; ++i)
-	{
-		tx_rawAudioBuffer[i] = 0; 	//i << 16;
-		rx_rawAudioBuffer[i] = 0;		//i << 16;
-	}
-/*
-	// Test pattern
-	tx_rawAudioBuffer[0]   = 0xffffff00;
-	tx_rawAudioBuffer[64]  = 0x3fffff00;
-	tx_rawAudioBuffer[256] = 0x7fffff00;
-	tx_rawAudioBuffer[1]   = 0xffffff00;
-//	tx_rawAudioBuffer[128 + 32] = 0x7fffff00;
-//	tx_rawAudioBuffer[128 + 96] = 0xffffff00;
-
-	// Fill the audio buffer with a sine wave	float angle = 2.0f * pi * static_cast<float>(i) / static_cast<float>(arraySize);
-	//constexpr float pi = 3.14159265358979323846f;
-	uint32_t bufferSize = NUM_SAMPLES * 2;		// Stereo double buffering
-	float angle = 0.0f;
-	float step  = (2 * pi) / static_cast<float>(bufferSize);
-	float scale = static_cast<float>(0x7fffffff);
-	for (uint32_t i = 0; i < FULL_AUDIO_BUFFER_SIZE; i += 2)
-	{
-		float sine = sin(angle) + 1.0f;
-		angle += step;
-		uint32_t i_sine =  static_cast<uint32_t>(sine * scale);
-		tx_rawAudioBuffer[i]   = i_sine;
-		tx_rawAudioBuffer[i+1] = i_sine;
-	}
-*/
-	// Start DMA on I2Sx (note: size is the no of 16 bit words, so double the no of 32 bit words!!!)
-	HAL_StatusTypeDef res =  HAL_I2SEx_TransmitReceive_DMA (m_hi2sHandlePtr, (uint16_t *)tx_rawAudioBuffer, (uint16_t *)rx_rawAudioBuffer, FULL_AUDIO_BUFFER_SIZE * 1);
-	if (res != HAL_OK )	CN_ReportFault(1);
-
 	// Info used to fill the AudioBuffer
-	uint32_t 			numSamples 	= audioBufferPtr->getNumSamples();
-	sAudioBufferPtrs* 	pointers 	= audioBufferPtr->getAudioBufferPtrs();
+	static uint32_t numSamples = audioBufferPtr->getNumSamples();
+	static sAudioBufferPtrs* pointers = audioBufferPtr->getAudioBufferPtrs();
 
-	// Prepare the audio processor
-	mAudioProcessorPtr->prepareToPlay(SAMPLE_FREQUENCY, numSamples);
+	// Start DMA on I2S3
+//	if ( HAL_I2SEx_TransmitReceive_DMA (m_hi2sHandlePtr, (uint16_t *)_rawAudioBuffer, (uint16_t *)_rawAudioBuffer, AUDIO_BUFFER_SIZE) != HAL_OK ) CN_ReportFault(1);	// ToDo
+
+	// Prepare the audioprocessor
+	audioProcessor->prepareToPlay(SAMPLE_FREQUENCY, numSamples);
 
 	// Process incoming audio data block when a DMA interrupt is received
 	for (;;)
@@ -137,42 +104,36 @@ void AudioProcessorPlayer::runAudioProcessor(
 		BaseType_t res = xSemaphoreTake( xAudioProcessorPlayerSemaphore, portMAX_DELAY );
 		if (res != pdPASS) CN_ReportFault(1);
 
-		setTrigger_2();
+//		toggleBenchmarkPin(BENCHMARK_OUT_2_Pin);							// ToDo
 
 		// Counting is done for testing info only...
 		++loopCounter;
 
 		// Convert incoming audio data to float format and fill the AudioBuffer
-		float scale = static_cast<float>(0x7fffffff); // / 2.0f;
-/*
-		const float factor = (float)0x7fffffff;
-		for (uint32_t i = 0, j = 0; i < numSamples; i += 2, ++j)
+		const float factor = 0x7fff;
+		for (uint16_t i = 0, j = 0; i < numSamples; i += 2, ++j)
 		{
-			pointers->audioBuffer1[j] = (float)rx_audioDataPtr[i] / factor;
-			pointers->audioBuffer2[j] = (float)rx_audioDataPtr[i + 1] / factor;
+			pointers->audioBuffer1[j] = (float)_rawAudioBuffer[i] / factor;
+			pointers->audioBuffer2[j] = (float)_rawAudioBuffer[i + 1] / factor;
 		}
-*/
-		// Process the incoming audio data and generate new audio to send to the codec
-		mAudioProcessorPtr->processBlock(*audioBufferPtr);
 
-		// Convert generated audio data back to int32_t format
-		float* lptr = pointers->audioBuffer1;
-		float* rptr = pointers->audioBuffer2;
-		for (uint32_t i = 0; i < (numSamples * 2); i += 2)
+		// Process the incoming audio data and generate new audio to send to the codec
+		audioProcessor->processBlock(*audioBufferPtr);
+
+		// Convert generated audio data back to int16_t format
+		for (uint16_t i = 0, j = 0; i < numSamples; i += 2, ++j)
 		{
-			tx_audioDataPtr[i]     = static_cast<uint32_t>((*lptr++ + 1.0f) * scale);
-			tx_audioDataPtr[i + 1] = static_cast<uint32_t>((*rptr++ + 1.0f) * scale);
+			_rawAudioBuffer[i]     = (int16_t)(pointers->audioBuffer1[j] * factor);
+			_rawAudioBuffer[i + 1] = (int16_t)(pointers->audioBuffer2[j] * factor);
 		}
 
 		// Processing is done, start checking for overruns
 		doGenerateAudio = false;
 		checkForOverRun = true;
 
-		resetTrigger_2();
+//		toggleBenchmarkPin(BENCHMARK_OUT_2_Pin);							// ToDo
 
 	}
 }
 
 } // namespace CasualNoises
-
-#endif

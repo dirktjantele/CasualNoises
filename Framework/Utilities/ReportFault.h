@@ -14,37 +14,10 @@
 
 #include "main.h"
 #include "SystemConfig.h"
-
 #include "FreeRTOS.h"
 
-// ------------------------------ SIMPLE_SYNTH_0_1 ------------------------------
-#ifdef SIMPLE_SYNTH_0_1
+//#define CS4270_NUCLEO-H723ZG
 
-namespace CasualNoises
-{
-
-#include "../../CasualNoises/Drivers/IO_Drivers/PCF8574_Driver.h"
-
-static void CN_ReportFault(uint32_t faultCode)
-{
-	uint8_t buf = ~faultCode << 4;
-	uint8_t blank = 0xff;
-	vTaskSuspendAll();
-	for(;;)
-	{
-		/*HAL_StatusTypeDef res = */
-		HAL_I2C_Master_Transmit(&hi2c1, CasualNoises::cPCF8574_Addres_1, &buf  , 1, 1000);
-		HAL_Delay(500);
-		HAL_I2C_Master_Transmit(&hi2c1, CasualNoises::cPCF8574_Addres_2, &blank, 1, 1000);
-		HAL_Delay(200);
-	}
-}
-
-} // namespace CasualNoises
-
-#endif
-
-// ------------------------------ CS4270_NUCLEO-H723ZG ------------------------------
 #ifdef CS4270_NUCLEO-H723ZG
 
 namespace CasualNoises
@@ -54,11 +27,9 @@ static void CN_ReportFault(uint32_t faultCode)
 {
 	// ToDo: implement this
 	vTaskSuspendAll();
-	HAL_GPIO_WritePin(GPIOB, LED_RED_Pin, GPIO_PIN_SET);
 	for (;;)
 	{
-		HAL_Delay(500);
-		HAL_GPIO_TogglePin(GPIOB, LED_RED_Pin);
+
 	}
 }
 
@@ -110,4 +81,4 @@ static void CN_ReportFault(uint32_t faultCode)
 
 #endif
 
-//} // namespace CasualNoises
+} // namespace CasualNoises

@@ -9,7 +9,3 @@ project properties
 sprintf() is used in String.h:
 	C/C++ Build -> Settings -> MCU Settings -> mark checkbox "Use float with printf from newly-nano …"
  
- cmsis_gcc.h
- -----------
- 
- Comment out the extern "__STATIC_FORCEINLINE __NO_RETURN void __cmsis_start(void)" function ... why ??? ...

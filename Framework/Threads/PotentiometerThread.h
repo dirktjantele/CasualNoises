@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISES_POTENTIOMETER_THREAD
-
 #pragma once
 
 #include "main.h"
@@ -39,5 +37,3 @@ typedef struct
 BaseType_t startPotentiometerThread(void *argument);
 
 } // namespace CasualNoises
-
-#endif

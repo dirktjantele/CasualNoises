@@ -12,8 +12,6 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISES_ENCODER_THREAD
-
 #include "EncoderThread.h"
 
 #include "SystemConfig.h"
@@ -187,6 +185,4 @@ BaseType_t startEncoderThread(void *argument)
 }
 
 } // namespace CasualNoises
-
-#endif
 

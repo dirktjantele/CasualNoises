@@ -18,9 +18,6 @@
 namespace CasualNoises
 {
 
-constexpr uint8_t cPCF8574_Addres_1		= 0x20 << 1;
-constexpr uint8_t cPCF8574_Addres_2		= 0x21 << 1;
-
 // Struct used to hold the I2C device address of the PCF8574 and the pin no
 typedef struct
 {
