@@ -17,8 +17,15 @@ class ADSR
 {
 public:
 	 ADSR() = delete;
+	 ADSR ( const ADSR& ) = default;
+	 ADSR ( ADSR&& ) = default;
 	~ADSR() = default;
 
+	//==============================================================================
+	//          ADSR()
+	//
+	//  CasualNoises    14/12/2024  First implementation
+	//==============================================================================
 	ADSR(float sampleRate)
 	: mSampleRate (sampleRate)
 	{};
