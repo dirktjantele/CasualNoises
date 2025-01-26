@@ -20,8 +20,8 @@ namespace CasualNoises
 //
 // bufferSize: since double buffering is used, this should be large enough to hold
 //				two half buffers
-//			   each sample in the buffer is a stereo sample and requires two words
-//			   bufferSize of 1024 will result in a 256 sample mono float buffer for
+//			   each sample in the buffer is a stereo sample and requires two 32 bit words,
+//			   so a bufferSize of 1024 will result in a 256 samples/channel float buffer for
 //				processing by the AudioProcessor during AudioProcessor::processBlock
 //
 //  CasualNoises    26/07/2023  First implementation
@@ -65,31 +65,6 @@ namespace CasualNoises
 		 }
 	 }
  }
-
- //==============================================================================
- //          getReadPointer()
- //
- // Returns a pointer to an array of read-only samples in one of the buffer's channels.
- //
- //  CasualNoises    31/07/2023  First implementation
- //==============================================================================
- const float* AudioBuffer::getReadPointer(int channelNumber) const
- {
-	 return mAudioBuffer[channelNumber];
- }
-
- //==============================================================================
- //          getWritePointer()
- //
- // Returns a write-able pointer to one of the buffer's channels.
- //
- //  CasualNoises    31/07/2023  First implementation
- //==============================================================================
- float* AudioBuffer::getWritePointer(int channelNumber) const
- {
-	 return mAudioBuffer[channelNumber];
- }
-
 
 } // namespace CasualNoises
 

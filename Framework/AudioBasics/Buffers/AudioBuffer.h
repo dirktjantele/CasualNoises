@@ -30,17 +30,17 @@ public:
 	  AudioBuffer();
 	 ~AudioBuffer();
 
-	  uint32_t		getNumChannels()	const noexcept		{ return NUM_CHANNELS; }
-	  uint32_t		getNumSamples()		const noexcept  	{ return AUDIO_BUFFER_SIZE / (NUM_CHANNELS * 2); }
-	  uint32_t		getFullBufferSize() const noexcept		{ return AUDIO_BUFFER_SIZE; }
+	  inline uint32_t		getNumChannels()	const noexcept		{ return NUM_CHANNELS; }
+	  inline uint32_t		getNumSamples()		const noexcept  	{ return NUM_SAMPLES; }
+	  inline uint32_t		getFullBufferSize() const noexcept		{ return FULL_AUDIO_BUFFER_SIZE; }
 
-	  void			clearAudioBuffer();
+	  inline void			clearAudioBuffer() noexcept;
 
-	  const float*	getReadPointer  (int channelNumber) const noexcept;
-	  float* 	    getWritePointer (int channelNumber) const noexcept;
+	  inline const float*	getReadPointer  (int channelNumber) const noexcept  { return mAudioBuffer[channelNumber]; }
+	  inline float* 	    getWritePointer (int channelNumber) const noexcept  { return mAudioBuffer[channelNumber]; }
 
 	  // Method to be used by the AudioProcessorPlayer
-	  sAudioBufferPtrs* getAudioBufferPtrs()
+	  inline sAudioBufferPtrs* getAudioBufferPtrs()
 	  {
 		  static sAudioBufferPtrs pointers;
 		  pointers.audioBuffer1 = mAudioBuffer[0];
@@ -51,8 +51,6 @@ public:
 	  // Methods to be used by the AudioProcessor
 
 private:
-	  uint16_t			mFullBufferSize 	{ AUDIO_BUFFER_SIZE };
-	  const uint16_t	mNoOfChannels 		{ NUM_CHANNELS };
 
 	  // Buffers used to hold the audio data in floating point format for processing by the AudioProcessor
 	  float*			mAudioBuffer[2]   	{ nullptr };		// 2 channels
@@ -60,4 +58,3 @@ private:
 };
 
 } // namespace CasualNoises
-

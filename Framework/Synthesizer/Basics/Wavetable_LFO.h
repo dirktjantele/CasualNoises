@@ -16,10 +16,18 @@
 namespace CasualNoises
 {
 
+//==============================================================================
+//          Wavetable_LFO
+//
+//  CasualNoises    06/12/2024  First implementation
+//==============================================================================
 class Wavetable_LFO
 {
+protected:
+
+	 Wavetable_LFO() = default;
+
 public:
-	 Wavetable_LFO() = delete;
 	 Wavetable_LFO ( const Wavetable_LFO& ) = default;
 	 Wavetable_LFO ( Wavetable_LFO&& ) = default;
 
@@ -40,9 +48,145 @@ public:
 	//  CasualNoises    06/12/2024  First implementation
 	//==============================================================================
 	Wavetable_LFO(float sampleRate, float frequency = 440.0f)
-	: mSampleRate (sampleRate)
+	: mSampleRate (sampleRate),
+	  mFrequency (frequency)
 	{
-		setFrequency(frequency);
+		setFrequency(mFrequency);
+		createWaveTable();
+	};
+
+	//==============================================================================
+	//          ~Wavetable_LFO
+	//
+	//  CasualNoises    06/12/2024  First implementation
+	//==============================================================================
+	~Wavetable_LFO()
+	{
+		deleteWaveTable();
+	}
+
+	//==============================================================================
+	//          setFrequency
+	//
+	//  CasualNoises    06/12/2024  First implementation
+	//==============================================================================
+	inline void setFrequency(float frequency) noexcept
+	{
+		mFrequency	= frequency;
+		mStep 		= (mFrequency / mSampleRate) * mWaveLength;
+	}
+
+	//==============================================================================
+	//          getFrequency
+	//
+	//  CasualNoises    06/12/2024  First implementation
+	//==============================================================================
+	inline const float getFrequency() const noexcept
+	{
+		return mFrequency;
+	}
+
+	//==============================================================================
+	//          setMorphFactor
+	//
+	// factor:	0.0f -> 1.0f
+	//
+	//  CasualNoises    14/12/2024  First implementation
+	//==============================================================================
+	virtual void setMorphFactor(float morph) noexcept
+	{
+
+		if (morph != mMorphAmount)
+		{
+
+			// Limit morph amount
+			mMorphAmount = morph;
+			mMorphAmount = cn_limit(mMorphAmount, 0.0f, 1.0f);
+
+			// Get wave index into the wave table
+			float indx = mMorphAmount * (mWavetableCount - 1);
+			mIndexTable1 = static_cast<uint32_t>(std::floor(indx));
+			mIndexTable2 = mIndexTable1 + 1;
+			if (mIndexTable2 >= mWavetableCount)
+			{
+				mIndexTable2 = 0;
+			}
+
+			// Calculate scaling for both waves
+			float fac = fmod(indx, 1.0f);
+			mScale1 = 1.0f - fac;
+			mScale2 = fac;
+
+		}
+
+	}
+
+	//==============================================================================
+	//          getMorphFactor
+	//
+	//  CasualNoises    14/12/2024  First implementation
+	//==============================================================================
+	inline float getMorphFactor() const noexcept
+	{
+		return mMorphAmount;
+	}
+
+	//==============================================================================
+	//          nextSample
+	//
+	//  CasualNoises    06/12/2024  First implementation
+	//==============================================================================
+	virtual const float nextSample() noexcept
+	{
+		float nextWaveIndex = mWaveIndex + mStep;
+		if (nextWaveIndex > mWaveLength)
+			nextWaveIndex -= mWaveLength;
+
+		uint32_t integerPart1 = static_cast<uint32_t>(mWaveIndex);
+		int integerPart2 = static_cast<int>(nextWaveIndex);
+		float fraction = mWaveIndex - static_cast<float>(integerPart1);
+
+		float sample1 = (mWavetable[mIndexTable1][integerPart1] * (1.0f - fraction)) + (mWavetable[mIndexTable1][integerPart2] * fraction);
+		float p1 = sample1 * mScale1;
+		float sample2 = (mWavetable[mIndexTable2][integerPart1] * (1.0f - fraction)) + (mWavetable[mIndexTable2][integerPart2] * fraction);
+		float p2 = sample2 * mScale2;
+		float sample = p1 + p2;
+
+		mWaveIndex = nextWaveIndex;
+
+		return sample;
+	}
+
+	//==============================================================================
+	//          reset
+	//
+	//  CasualNoises    14/12/2024  First implementation
+	//==============================================================================
+	void reset() noexcept
+	{
+		mWaveIndex = 0.0f;
+	}
+
+protected:
+
+	//==============================================================================
+	//          createWaveTable()
+	//
+	// 	Calculate basic waves that fill up the table
+	//					mWavetable[0] = sine wave
+	//					mWavetable[1] = triangle wave
+	//					mWavetable[2] = sawtooth wave
+	//					mWavetable[3] = square wave
+	//					mWavetable[4] = sine wave
+	//					mWavetable[5] = sawtooth wave
+	//					mWavetable[6] = triangle wave
+	//					mWavetable[7] = square wave
+	//					mWavetable[8] = sine wave
+	//
+	//  CasualNoises    06/12/2024  First implementation
+	//==============================================================================
+	void createWaveTable()
+	{
 
 		// Allocate memory for the wave table and it's waves
 		mWavetable = new float*[mWavetableCount];
@@ -104,127 +248,32 @@ public:
 			mWavetable[3][i] = -1.0f;
 		}
 
-	};
+	}
 
 	//==============================================================================
-	//          ~Wavetable_LFO
+	//          deleteWaveTable()
 	//
 	//  CasualNoises    06/12/2024  First implementation
 	//==============================================================================
-	~Wavetable_LFO()
+	void deleteWaveTable()
 	{
 		for (uint32_t i = 0; i < mWavetableCount - 1; ++i)
 		{
 			delete mWavetable[i];
 		}
 		delete[] mWavetable;
+		mWavetable = nullptr;
 	}
-
-	//==============================================================================
-	//          setFrequency
-	//
-	//  CasualNoises    06/12/2024  First implementation
-	//==============================================================================
-	inline void setFrequency(float frequency) noexcept
-	{
-		mFrequency	= frequency;
-		mStep = (mFrequency / mSampleRate) * mWaveLength;
-	}
-
-	//==============================================================================
-	//          getFrequency
-	//
-	//  CasualNoises    06/12/2024  First implementation
-	//==============================================================================
-	inline const float getFrequency() const noexcept
-	{
-		return mFrequency;
-	}
-
-	//==============================================================================
-	//          setMorphFactor
-	//
-	// factor:	0.0f -> 1.0f
-	//
-	//  CasualNoises    14/12/2024  First implementation
-	//==============================================================================
-	void setMorphFactor(float morph) noexcept
-	{
-
-		// Limit morph amount
-		mMorphAmount = morph;
-		mMorphAmount = cn_limit(mMorphAmount, 0.0f, 1.0f);
-
-		// Get wave index into the wave table
-		float indx = mMorphAmount * (mWavetableCount - 1);
-		mIndexTable1 = static_cast<uint32_t>(std::floor(indx));
-		mIndexTable2 = mIndexTable1 + 1;
-		if (mIndexTable2 >= mWavetableCount)
-		{
-			mIndexTable2 = 0;
-		}
-
-		// Calculate scaling for both waves
-		float fac = fmod(indx, 1.0f);
-		mScale1 = 1.0f - fac;
-		mScale2 = fac;
-
-	}
-
-	//==============================================================================
-	//          getMorphFactor
-	//
-	//  CasualNoises    14/12/2024  First implementation
-	//==============================================================================
-	inline float getMorphFactor() const noexcept
-	{
-		return mMorphAmount;
-	}
-
-	//==============================================================================
-	//          nextSample
-	//
-	//  CasualNoises    06/12/2024  First implementation
-	//==============================================================================
-	const float nextSample() noexcept
-	{
-		float nextWaveIndex = mWaveIndex + mStep;
-		if (nextWaveIndex > mWaveLength)
-			nextWaveIndex -= mWaveLength;
-
-		uint32_t integerPart1 = static_cast<uint32_t>(mWaveIndex);
-		int integerPart2 = static_cast<int>(nextWaveIndex);
-		float fraction = mWaveIndex - static_cast<float>(integerPart1);
-
-		float sample1 = (mWavetable[mIndexTable1][integerPart1] * (1.0f - fraction)) + (mWavetable[mIndexTable1][integerPart2] * fraction);
-		float p1 = sample1 * mScale1;
-		float sample2 = (mWavetable[mIndexTable2][integerPart1] * (1.0f - fraction)) + (mWavetable[mIndexTable2][integerPart2] * fraction);
-		float p2 = sample2 * mScale2;
-		float sample = p1 + p2;
-
-		mWaveIndex = nextWaveIndex;
-
-		return sample;
-	}
-
-	//==============================================================================
-	//          reset
-	//
-	//  CasualNoises    14/12/2024  First implementation
-	//==============================================================================
-	void reset() noexcept
-	{
-		mWaveIndex = 0.0f;
-	}
-
-private:
-	const uint32_t		mNoOfWavesToCalculate	{ 4 };
-	const uint32_t		mWavetableCount			{ 9 };
-	const uint32_t		mWaveLength				{ 1024 };
 
 	float				mSampleRate				{ 0.0f };
 	float				mFrequency				{ 0.0f };
 	float				mMorphAmount			{ 0.0f };			// 0.0f <= mMorphAmount <= 1.0f
+
+	const uint32_t		mWaveLength				{ 1024 };
+
+private:
+	const uint32_t		mNoOfWavesToCalculate	{ 4 };
+	const uint32_t		mWavetableCount			{ 9 };
 
 	float** 			mWavetable	 			{ nullptr };
 	float*				mActualWavePtr			{ nullptr };
@@ -238,6 +287,76 @@ private:
 	uint32_t			mIndexTable2			{ 0 };
 	float 				mScale1					{ 0.0f };
 	float 				mScale2					{ 0.0f };
+
+};
+
+//==============================================================================
+//          CachedWavetable_LFO
+//
+//  CasualNoises    06/12/2024  First implementation
+//==============================================================================
+class CachedWavetable_LFO : public Wavetable_LFO
+{
+public:
+	CachedWavetable_LFO() = delete;
+	CachedWavetable_LFO ( const Wavetable_LFO& ) = delete;
+	CachedWavetable_LFO ( Wavetable_LFO&& ) = delete;
+
+	//==============================================================================
+	//          CachedWavetable_LFO
+	//
+	//  CasualNoises    15/12/2024  First implementation
+	//==============================================================================
+	CachedWavetable_LFO(float sampleRate, float frequency = 440.0f)
+	{
+		mSampleRate = sampleRate;
+		mFrequency  = frequency;
+		setFrequency(mFrequency);
+		createWaveTable();
+		mCacheFlags   = new bool[mWaveLength];
+		mCachedValues = new float[mWaveLength];
+	}
+
+	//==============================================================================
+	//          ~CachedWavetable_LFO
+	//
+	//  CasualNoises    15/12/2024  First implementation
+	//==============================================================================
+	~CachedWavetable_LFO()
+	{
+		deleteWaveTable();
+		delete mCacheFlags;
+		delete mCachedValues;
+	}
+
+	//==============================================================================
+	//          setMorphFactor
+	//
+	// factor:	0.0f -> 1.0f
+	//
+	//  CasualNoises    14/12/2024  First implementation
+	//==============================================================================
+	void setMorphFactor(float morph) noexcept override
+	{
+		if (morph != mMorphAmount)
+		{
+
+			// Update morph factor
+			Wavetable_LFO::setMorphFactor(morph);
+
+			// Mark cache changed
+			for (uint32_t i = 0; i < mWaveLength; ++i)
+			{
+				mCacheFlags[i] = false;
+			}
+
+		}
+	}
+
+private:
+
+	bool*		mCacheFlags		{ nullptr };
+	float*		mCachedValues	{ nullptr };
 
 };
 

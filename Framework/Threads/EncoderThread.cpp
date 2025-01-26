@@ -12,6 +12,8 @@
   ==============================================================================
 */
 
+#ifdef CASUALNOISES_ENCODER_THREAD
+
 #include "EncoderThread.h"
 
 #include "SystemConfig.h"
@@ -25,7 +27,7 @@ namespace CasualNoises
 // Handle all UI events
 //
 //  CasualNoises    28/10/2024  First implementation
-//					28/10/2024	Send encoder switch event when switch is released
+//					13/12/2024	Send encoder switch event when switch state changed
 //==============================================================================
 void encoderThread(void* pvParameters)
 {
@@ -94,7 +96,7 @@ void encoderThread(void* pvParameters)
 			newState <<= 8;
 			newState |= buf;
 		}
-		uint16_t flags = ~oldState & newState;
+		uint16_t flags = oldState ^ newState;
 
 		// High to low transition found for an encoder A pin?
 		if ((flags & encoder_B_Mask) != 0x0000)
@@ -118,23 +120,21 @@ void encoderThread(void* pvParameters)
 
 		}
 
-		// Low to high transition found for an encoder switch pin?
-		if (flags)
+		// State transition found for an encoder switch pin?
+		if ((flags & encoder_Switch_Mask) != 0x0000)
 		{
-			uint16_t mask = ~(flags ^ newState) & encoder_Switch_Mask;
-			if (mask)
+			// Send encoder switch events to the client queue
+			for (uint16_t encoder = 0; encoder < ENCODER_COUNT; ++encoder)
 			{
-				// Send encoder switch events to the client queue
-				for (uint16_t encoder = 0; encoder < ENCODER_COUNT; ++encoder)
+				if ((encoder_PinMap[encoder].encoderSwitch.pinNo & flags) != 0x0000)
 				{
-					if ((encoder_PinMap[encoder].encoderSwitch.pinNo & mask) != 0x0000)
-					{
-						uEncoderEventStruct encoderInfo;
-						encoderInfo.switchEvent.eventType = eEncoderEventType::encoderSwitchEvent;
-						encoderInfo.switchEvent.encoderNo = encoder;
-						BaseType_t res = xQueueSendToBack(clientQueueHandle, (void*)&encoderInfo, 10);
-						if (res != pdPASS) CN_ReportFault(4);
-					}
+					uint16_t state = newState & flags & encoder_Switch_Mask;
+					uEncoderEventStruct encoderInfo;
+					encoderInfo.switchEvent.eventType = eEncoderEventType::encoderSwitchEvent;
+					encoderInfo.switchEvent.encoderNo = encoder;
+					encoderInfo.switchEvent.state	  = state != 0x0000;
+					BaseType_t res = xQueueSendToBack(clientQueueHandle, (void*)&encoderInfo, 10);
+					if (res != pdPASS) CN_ReportFault(4);
 				}
 			}
 		}
@@ -185,4 +185,6 @@ BaseType_t startEncoderThread(void *argument)
 }
 
 } // namespace CasualNoises
+
+#endif
 

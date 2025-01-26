@@ -22,7 +22,7 @@ class AudioProcessor
 {
 public:
 
-		  virtual void prepareToPlay(float sampleRate, uint32_t maximumExpectedSamplesPerBlock) = 0;
+		  virtual void prepareToPlay(float sampleRate, uint32_t maximumExpectedSamplesPerBlock, void* synthParams) = 0;
 		  virtual void releaseResources() = 0;
 		  virtual void processBlock (AudioBuffer &buffer/*, MidiBuffer &midiMessages*/) = 0;
 

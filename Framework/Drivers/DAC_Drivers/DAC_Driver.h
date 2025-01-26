@@ -32,7 +32,7 @@ public:
 	//
 	//  CasualNoises    19/10/2023  First implementation
 	//==============================================================================
-	virtual void startDriver(uint32_t size) = 0;
+	virtual void startDriver(uint32_t noOfChannels, uint32_t noOfSamples) = 0;
 
 	//==============================================================================
 	//          sendAudio
@@ -43,7 +43,7 @@ public:
 	//
 	//  CasualNoises    19/10/2023  First implementation
 	//==============================================================================
-	virtual void sendAudio(const float* sourcePointer, bool transmitCompleted) = 0;
+	virtual void sendAudio(float** sourcePointer, bool transmitCompleted) = 0;
 
 private:
 

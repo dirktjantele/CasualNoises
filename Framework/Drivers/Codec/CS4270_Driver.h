@@ -76,6 +76,7 @@ public:
 				0x00,					// DAC A Vol (0 db)
 				0x00,					// DAC A Vol (0 db)
 		};
+		//confgSettings[3] |= 0x20;		// Enable digital loop back
 
 		// Update control registers (read-back and verify)
 		for (int8_t regIndex = CS4270_REG_DACBVOLCONTROL; regIndex >= CS4270_REG_POWERCONTROL; --regIndex)
@@ -107,11 +108,11 @@ private:
 	 void resetCodec()
 	 {
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_SET);
-			HAL_Delay(10);
+			HAL_Delay(5);
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_RESET);
 			HAL_Delay(25);
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_SET);
-			HAL_Delay(25);
+			HAL_Delay(1);
 	 }
 
 	 HAL_StatusTypeDef CS4270_RegWrite (uint8_t regAddr, uint8_t regData)

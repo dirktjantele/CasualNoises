@@ -12,6 +12,8 @@
   ==============================================================================
 */
 
+#ifdef CASUALNOISES_ENCODER_THREAD
+
 #pragma once
 
 #include "main.h"
@@ -60,6 +62,7 @@ typedef struct
 {
 	eEncoderEventType		eventType;
 	uint16_t				encoderNo;
+	bool					state;
 } sSwitchEventStruct;
 
 // Structure of an encoder queue event
@@ -73,3 +76,5 @@ typedef union
 BaseType_t startEncoderThread(void *argument);				// Pointer to a EncoderThreadData struct
 
 } // namespace CasualNoises
+
+#endif
