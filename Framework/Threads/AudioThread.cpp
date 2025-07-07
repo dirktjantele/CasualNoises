@@ -43,17 +43,18 @@ void AudioThread(void* pvParameters)
 	void* ptr = OpFourAudioProcessor::getOpFourAudioProcessor();
 	audioProcessorPtr = dynamic_cast<AudioProcessor*>((AudioProcessor*)ptr);
 #endif
-	if (audioProcessorPtr == nullptr) CN_ReportFault(1);
+//	if (audioProcessorPtr == nullptr)
+//		CN_ReportFault(eErrorCodes::AudioThreadError);
 
 	// Create an audio player and start it, this call should never return
-	AudioProcessorPlayer* player = AudioProcessorPlayer::getAudioProcessorPlayer(audioProcessorPtr/*, audioBufferPtr*/);
 	sAudioThreadInitData* params = (sAudioThreadInitData*) pvParameters;
+	AudioProcessorPlayer* player = AudioProcessorPlayer::getAudioProcessorPlayer(params->audioProcessorPtr/*, audioBufferPtr*/);
 	player->sethi2sHandlePtr(params->hi2sHandlePtr);
 	player->setSynthesiserParamsPtr(params->synthesizerParamsPtr);
 	player->runAudioProcessor(/*audioProcessorPtr,*/ audioBufferPtr);
 
 	// We should never come here
-	CN_ReportFault(1);
+	CN_ReportFault(eErrorCodes::AudioThreadError);
 
 }
 

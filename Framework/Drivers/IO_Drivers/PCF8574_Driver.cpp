@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#ifdef USE_PCF8574_Driver
+
 #include "PCF8574_Driver.h"
 
 #include "CasualNoises.h"
@@ -132,4 +134,6 @@ uint8_t	PCF8574_Driver::readAllPins(uint8_t address)
 }
 
 } // namespace CasualNoises
+
+#endif
 

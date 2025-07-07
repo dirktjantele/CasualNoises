@@ -5,6 +5,8 @@
  *      Author: dirk tjantele
  */
 
+#ifdef USE_CS4270_Driver
+
 #pragma once
 
 #include "Codec_Driver.h"
@@ -28,12 +30,12 @@ const uint8_t CS4270_I2C_ADDRESS			= 0x48 << 1;
 // Device ID
 const uint8_t CS4270_DEVICEID				= 0xC0;
 
-typedef struct CS4270_DriverParams
+typedef struct
 {
 	GPIO_TypeDef*		codecResetPort;
 	uint16_t	  		codecResetPin;
 	I2C_HandleTypeDef 	*hi2cHandle;
-};
+} CS4270_DriverParams;
 
 class CS4270_Driver : private Codec_Driver
 {
@@ -56,25 +58,29 @@ public:
 		// Put codec in power down mode before adjusting configuration params
 		res = CS4270_RegWrite(CS4270_REG_POWERCONTROL, 0xA3);
 		if (res != HAL_OK)
-			CN_ReportFault(2);
+			CN_ReportFault(eErrorCodes::runtimeError);
+		uint8_t regData;
+		res = CS4270_RegRead(CS4270_REG_POWERCONTROL, &regData);
+		if (res != HAL_OK || (regData != 0xA3))
+			CN_ReportFault(eErrorCodes::runtimeError);
 
 		// Verify the device id
 		uint8_t deviceId = 0x00;
 		res = CS4270_RegRead(CS4270_REG_DEVICEID, &deviceId);
 		if ((res  != HAL_OK) || ((deviceId & 0xF0) != CS4270_DEVICEID))
-			CN_ReportFault(2);
+			CN_ReportFault(eErrorCodes::runtimeError);
 
 		// Default configuration register settings in reversed order
 		uint8_t confgSettings[8] =
 		{
-				CS4270_REG_DEVICEID,
-				0x00,					// Power up
-				0x31,					// Mode (slave, normal speed, pop guard enabled)
-				0x09,					// ADC/DAC (disable HPF, enable I2S format
-				0x00,					// Transition (independent volume controls)
-				0x00,					// No mute on channels A & b
-				0x00,					// DAC A Vol (0 db)
-				0x00,					// DAC A Vol (0 db)
+/* 1 */			CS4270_REG_DEVICEID,
+/* 2 */			0x00,					// Power up
+/* 3 */			0x30,					// Mode (slave, normal speed, pop guard disabled)
+/* 4 */			0x09,					// ADC/DAC (disable HPF, enable I2S format
+/* 5 */			0x00,					// Transition (independent volume controls)
+/* 6 */			0x00,					// No mute on channels A & b
+/* 7 */			0x00,					// DAC A Vol (0 db)
+/* 8 */			0x00,					// DAC A Vol (0 db)
 		};
 		//confgSettings[3] |= 0x20;		// Enable digital loop back
 
@@ -84,13 +90,14 @@ public:
 
 			// Write 'default' value to register
 			res = CS4270_RegWrite(regIndex, confgSettings[regIndex - 1]);
-			if (res != HAL_OK) CN_ReportFault(2);
+			if (res != HAL_OK)
+				CN_ReportFault(eErrorCodes::runtimeError);
 
 			// Read-back register value
 			uint8_t regData;
 			res = CS4270_RegRead(regIndex, &regData);
 			if ((res != HAL_OK) || (regData != confgSettings[regIndex - 1]))
-				CN_ReportFault(2);
+				CN_ReportFault(eErrorCodes::runtimeError);
 
 		}
 
@@ -112,7 +119,7 @@ private:
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_RESET);
 			HAL_Delay(25);
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_SET);
-			HAL_Delay(1);
+			HAL_Delay(5);
 	 }
 
 	 HAL_StatusTypeDef CS4270_RegWrite (uint8_t regAddr, uint8_t regData)
@@ -130,4 +137,6 @@ private:
 };
 
 }
+
+#endif
 

@@ -8,29 +8,21 @@
   ==============================================================================
 */
 
+#ifdef USE_SSD1309_DRIVER
+
 #pragma once
 
 #include <math.h>
 #include <string.h>
 
-#include "main.h"
+#include "CasualNoises.h"
+#include "../../Graphics/Fonts/Font.h"
+#include "maths.h"
 
-#include "Font.h"
+#include "main.h"
 
 namespace CasualNoises
 {
-
-//==============================================================================
-//          bitOperations
-//
-//  CasualNoises    25/12/2024  First implementation
-//==============================================================================
-enum class bitOperations
-{
-	SetBitOp,
-	ClearBitOp,
-	InvertBitOp
-};
 
 //==============================================================================
 //          SSD1309_ConfigData
@@ -46,7 +38,19 @@ typedef struct
 	GPIO_TypeDef*		CS_PORT;
 	uint16_t			CS_PIN;
 	SPI_HandleTypeDef*	SPI;
-} SSD1309_ConfigData;
+} sSSD1309_ConfigData;
+
+//==============================================================================
+//          bitOperations
+//
+//  CasualNoises    25/12/2024  First implementation
+//==============================================================================
+enum class bitOperations
+{
+	SetBitOp,
+	ClearBitOp,
+	InvertBitOp
+};
 
 //==============================================================================
 //          SSD1309_Driver class
@@ -63,10 +67,11 @@ public:
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
 	SSD1309_Driver() = delete;
-	SSD1309_Driver(SSD1309_ConfigData *configDataPtr)
+	SSD1309_Driver(sSSD1309_ConfigData *configDataPtr)
 	: mConfigDataPtr (configDataPtr)
 	{
 		resetDisplay();
+		displayOn();
 		clearDisplay();
 	}
 
@@ -428,25 +433,67 @@ public:
 
 	}
 
+	//==============================================================================
+	//          drawWave()
+	//
+	// Draw a wave onto the display
+	// No of samples in the wave should be equal to the width of the display
+	//
+	//  CasualNoises    27/12/2024  First implementation
+	//==============================================================================
+	void drawWave(const float* wavePtr)
+	{
+		for (uint32_t x = 0; x < cDisplayWidth; ++x)
+		{
+			float sample = wavePtr[x];
+			uint32_t y = cn_map (sample, -1.0f, 1.0f, (float)cDisplayHeight, 0.0f);
+			drawPixel(x, y);
+		}
+	}
+
+	//==============================================================================
+	//          drawWave()
+	//
+	// Draw a wave onto the display
+	// No of samples in the wave should be equal to the width of the display
+	//
+	//  CasualNoises    28/12/2024  First implementation
+	//==============================================================================
+	void drawWave(const AudioBuffer& audioBuffer)
+	{
+		const float* rpt = audioBuffer.getReadPointer(0);
+		drawWave(rpt);
+	}
+
+	//==============================================================================
+	//          getDisplayWidth()
+	//
+	//  CasualNoises    27/12/2024  First implementation
+	//==============================================================================
 	uint32_t getDisplayWidth()
 	{
 		return cDisplayWidth;
 	}
 
+	//==============================================================================
+	//          getDisplayHeight()
+	//
+	//  CasualNoises    27/12/2024  First implementation
+	//==============================================================================
 	uint32_t getDisplayHeight()
 	{
 		return cDisplayHeight;
 	}
 
 private:
-	static constexpr int32_t		cDisplayWidth		= 128;
-	static constexpr int32_t		cDisplayHeight		= 64;
+	static constexpr int32_t		cDisplayWidth		= DISPLY_WIDTH;
+	static constexpr int32_t		cDisplayHeight		= DISPLAY_HEIGHT;
 	static constexpr int32_t		cBitMapSize			= cDisplayWidth * cDisplayHeight;
 	static constexpr int32_t		cBitMapBufferSize	= cBitMapSize / 8;
 
-	SSD1309_ConfigData *mConfigDataPtr	{ nullptr };
-	uint8_t				mBitMap[cDisplayWidth][cDisplayHeight];
-	uint8_t				mBitMapBuffer[cBitMapBufferSize];
+	sSSD1309_ConfigData*	mConfigDataPtr	{ nullptr };
+	uint8_t					mBitMap[cDisplayWidth][cDisplayHeight];
+	uint8_t					mBitMapBuffer[cBitMapBufferSize];
 
 	//==============================================================================
 	//          clipRect()
@@ -555,3 +602,5 @@ private:
 };
 
 } // namespace CasualNoises
+
+#endif

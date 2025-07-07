@@ -12,10 +12,6 @@
 
 #pragma once
 
-#include "main.h"
-
-#include "CasualNoises.h"
-
 namespace CasualNoises
 {
 /*

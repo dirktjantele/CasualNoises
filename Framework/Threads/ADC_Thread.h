@@ -1,18 +1,17 @@
 /*
   ==============================================================================
 
-    PotentiometerThread.h
+    ADC_Thread.h
 
-    Handles potentiometers events
+    Handles ADC events
 
-    Created: 25/10/2024
+    Created: 18/04/2025
     Author:  Dirk Tjantele
 
   ==============================================================================
 */
 
-
-#ifdef CASUALNOISES_POTENTIOMETER_THREAD
+#ifdef CASUALNOISES_ADC_THREAD
 
 #pragma once
 
@@ -32,18 +31,12 @@ typedef struct
 	TIM_HandleTypeDef	htim;					// Timer used to trigger ADC conversions
 	QueueHandle_t		clientQueueHandle;		// Handle to a queue to report potentiometer events to
 												//  in most cases this is the UI thread event queue
-} sPotentiometerThreadData;
+} sADC_ThreadData;
 
-// Structure of an potentiometer queue event
-typedef struct
-{
-	eEventSourceID	eventSourceID;
-	uint16_t		potentiometerId;
-	float			potentiometerValue;
-} sPotentiometerEventStruct;
+
 
 // Start thread function
-BaseType_t startPotentiometerThread(void *argument, TaskHandle_t* xHandlePtr);
+BaseType_t startADC_Thread(void *argument, TaskHandle_t* xHandlePtr);
 
 } // namespace CasualNoises
 

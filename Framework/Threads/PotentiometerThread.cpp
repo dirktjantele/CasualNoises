@@ -5,7 +5,7 @@
 
     Handles potentiometers events
 
-    Created: 25 oct 2024
+    Created: 25/10/2024
     Author:  Dirk Tjantele
 
   ==============================================================================
@@ -14,7 +14,8 @@
 #ifdef CASUALNOISES_POTENTIOMETER_THREAD
 
 #include "PotentiometerThread.h"
-
+#include "Utilities/CallbackHandlers.h"
+#include "Utilities/ReportFault.h"
 #include "SystemConfig.h"
 
 namespace CasualNoises
@@ -28,7 +29,7 @@ namespace CasualNoises
 //  CasualNoises    09/11/2024  First implementation
 //==============================================================================
 
-constexpr uint32_t noOfPotConvertions	= 3;
+constexpr uint32_t noOfPotConvertions	= 4;
 constexpr uint32_t potAverageCount		= 10;			// This will generate new data at 10Hz
 
 ADC_HandleTypeDef* Potentiometer_adc;
@@ -37,12 +38,18 @@ uint32_t potDataRunning[noOfPotConvertions];			// Running average values
 uint32_t potConvCnt = 0;
 bool	 newPotDataAvailable = false;
 
+//==============================================================================
+//          PotentiometerConvCpltCallback()
+//
+// Conversion complete callback
 // Should be called at a rate of about 100Hz
-void PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
+//
+//  CasualNoises    01/11/2024  First implementation
+//==============================================================================
+bool PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if ((hadc == Potentiometer_adc) && ! newPotDataAvailable)
 	{
-//		toggleMarker_1();		// ToDo remove this
 
 		// Update running average
 		for (uint32_t i = 0; i < noOfPotConvertions; ++i)
@@ -56,11 +63,16 @@ void PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
 			newPotDataAvailable = true;
 		}
 
+		return true;
+	} else
+	{
+		return false;
 	}
+
 }
 
 //==============================================================================
-//          potentiometerThread
+//          potentiometerThread()
 //
 // Handle all potentiometer events
 //
@@ -91,15 +103,19 @@ void potentiometerThread(void* pvParameters)
 
 	// Calibrate the ADC converter used and start in DMA mode then start the timer to trigger conversions
 	HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start(Potentiometer_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
-	if (res != HAL_OK) CN_ReportFault(1);
+	if (res != HAL_OK)
+		CN_ReportFault(eErrorCodes::adcThreadError);
 	res = HAL_ADC_Start_DMA(Potentiometer_adc, (uint32_t *)potData, noOfPotConvertions);
-	if (res != HAL_OK) CN_ReportFault(1);
+	if (res != HAL_OK)
+		CN_ReportFault(eErrorCodes::adcThreadError);
 	HAL_TIM_Base_Start(&htim);
-	if (res != HAL_OK) CN_ReportFault(1);
+	if (res != HAL_OK)
+		CN_ReportFault(eErrorCodes::adcThreadError);
 
 	// Loop here awaiting new potentiometer values
 	for (;;)
 	{
+//		setTimeMarker_3();
 
 		// New data available and average difference is larger than 1% -> send message
 		if (newPotDataAvailable)
@@ -112,17 +128,23 @@ void potentiometerThread(void* pvParameters)
 				if ((diff > 1.0f) || (diff < -1.0f))
 				{
 					sPotentiometerEventStruct event;
+					event.eventSourceID = eEventSourceID::potentiometerThreadSourceID;
 					event.potentiometerId = i;
 					event.potentiometerValue = potDataAverage[i];
-					BaseType_t res = xQueueSendToBack(clientQueueHandle, (void*)&event, 10);
-					if (res != pdPASS) CN_ReportFault(4);
+					if (clientQueueHandle != nullptr)
+					{
+						BaseType_t res = xQueueSendToBack(clientQueueHandle, (void*)&event, 10);
+						if (res != pdPASS)
+							CN_ReportFault(eErrorCodes::adcThreadError);
+					}
 					prevPotDataAverage[i] = potDataAverage[i];
 				}
 				potDataRunning[i] = 0;
 			}
-
 			newPotDataAvailable = false;
 		}
+
+//		resetTimeMarker_3();
 
 		// Wait x ticks
 		osDelay(10);
@@ -132,19 +154,18 @@ void potentiometerThread(void* pvParameters)
 }
 
 //==============================================================================
-//          StartPotentiometerThread
+//          StartPotentiometerThread()
 //
 // Handle all potentiometer events
 //
 //  CasualNoises    01/11/2024  First implementation
 //==============================================================================
-BaseType_t startPotentiometerThread(void *argument)
+BaseType_t startPotentiometerThread(void *argument, TaskHandle_t* xHandlePtr)
 {
 
 	// Create the thread to scan the potentiometers
-	TaskHandle_t xHandle;
-	BaseType_t res = xTaskCreate(potentiometerThread,	"PotentiometerThread", DEFAULT_STACK_SIZE / 2, argument,
-			UI_THREAD_PRIORITY,	&xHandle);
+	BaseType_t res = xTaskCreate(potentiometerThread, "PotentiometerThread", DEFAULT_STACK_SIZE / 2, argument,
+			UI_THREAD_PRIORITY,	xHandlePtr);
 	return res;
 
 }

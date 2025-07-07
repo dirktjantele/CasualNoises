@@ -75,6 +75,9 @@ public:
 
 	bool				outOfRangeDetected() override	{ return mOutOfRangeDetected; }
 
+	uint32_t			getNoOfDevices() override		{ return mInitDataPtr->noOfDevices; }
+	uint32_t			getDeviceCapacity()	override	{ return mDeviceCapacity; }
+
 private:
 	const sNVM_DriverInitData* mInitDataPtr  { nullptr };	// Copy of the pointer found in the constructor
 

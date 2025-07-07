@@ -12,6 +12,7 @@
 
 #include "AudioBasics/Buffers/AudioBuffer.h"
 #include "AudioBasics/Wavetable/WaveTable.h"
+#include "AudioBasics/Processors/WaveFolder.h"
 
 #include "AudioProcessors/Processors/AudioProcessor.h"
 
@@ -30,8 +31,10 @@
 #include "Drivers/NVM Drivers/NVM Driver/NVM_Driver.h"
 #include "Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h"
 #include "Drivers/TLV Driver/TLV_Driver.h"
+#include "Drivers/OLED/SSD1309_Driver.h"
 
 #include "Graphics/Contexts/GraphicsContext.h"
+#include "Graphics/Fonts/Font.h"
 
 #include "Graphics/Geometry/Line.h"
 #include "Graphics/Geometry/Point.h"
@@ -48,9 +51,12 @@
 
 #include "Synthesizer/Utilities/SmoothedValue.h"
 
+#include "Threads/ADC_Thread.h"
 #include "Threads/AudioThread.h"
-#include "Threads/EncoderThread.h"
+#include "Threads/PCF8574_EncoderThread.h"
 #include "Threads/PotentiometerThread.h"
+#include "Threads/SPI_EncoderThread.h"
+#include "Threads/SPI_LED_Thread.h"
 #include "Threads/TriggerThread.h"
 
 #include "Utilities/ReportFault.h"

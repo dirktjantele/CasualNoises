@@ -78,7 +78,7 @@ uint32_t TLV_Driver::findNextTLV (uint32_t tag, uint32_t index)
 {
 
 	// Skip current TLV or start from the first one?
-	if (index <= 1)
+	if (index < 1)
 		index = 1;
 	else
 		index += getLength(index);
@@ -168,6 +168,45 @@ void TLV_Driver::deleteTLV(uint32_t tag, bool deleteAll)
 	// Save changes into the flash devices
 	mNVM_DriverPtr->flushSectorCache();
 
+}
+
+//==============================================================================
+//          getLargestFreeTLV_Size()
+//
+// Scan all TLV's and return the size of the largest free TLV
+//
+//  CasualNoises    13/02/2025  First implementation
+//==============================================================================
+uint32_t TLV_Driver::getLargestFreeTLV_Size()
+{
+	uint32_t index = findNextTLV (cFreeTLV_Tag, 0);
+	uint32_t size = 0;
+	while (index > 0)
+	{
+		if (getLength(index) > size)
+			size = getLength(index);
+		index = findNextTLV (cFreeTLV_Tag, index);
+	}
+	return size;
+}
+
+//==============================================================================
+//          getTotalNoOfTLV_FreeBlocks()
+//
+// Scan all TLV's and return the no of free RLV blocks found
+//
+//  CasualNoises    13/02/2025  First implementation
+//==============================================================================
+uint32_t TLV_Driver::getTotalNoOfTLV_FreeBlocks()
+{
+	uint32_t index = findNextTLV (cFreeTLV_Tag, 0);
+	uint32_t count = 0;
+	while (index > 0)
+	{
+		count += 1;
+		index = findNextTLV (cFreeTLV_Tag, index);
+	}
+	return count;
 }
 
 } // namespace CasualNoises

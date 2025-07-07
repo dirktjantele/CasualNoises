@@ -62,7 +62,7 @@ public:
 		std::string str (string);
 		mStringLength = str.length();
 		mStringPtr = (char*)pvPortMalloc(mStringLength);
-		if (mStringPtr == nullptr) CN_ReportFault(1);
+		if (mStringPtr == nullptr) CN_ReportFault(eErrorCodes::unknowError);
 		for (uint16_t i = 0; i < mStringLength; ++i)
 			mStringPtr[i] = string[i];
 	}
@@ -93,7 +93,7 @@ public:
 		mStringLength = str.length();
 		mStringPtr = (char*)pvPortMalloc(mStringLength);
 		if (mStringPtr == nullptr)
- 	 	 	 CN_ReportFault(1);
+ 	 	 	 CN_ReportFault(eErrorCodes::unknowError);
 		for (uint16_t i = 0; i < mStringLength; ++i)
 			mStringPtr[i] = tmp[i];
     }

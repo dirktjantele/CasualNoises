@@ -45,7 +45,7 @@ public:
 			mAudioProcessorPtr = audioProcessorPtr;
 			return &mAudioProcessorPlayer;
 		}
-		CN_ReportFault(1);
+		CN_ReportFault(eErrorCodes::AudioThreadError);
 		return nullptr;
 	};
 

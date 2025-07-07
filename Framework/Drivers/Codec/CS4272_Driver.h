@@ -5,6 +5,8 @@
  *      Author: dirk tjantele
  */
 
+#ifdef USE_CS4272_Driver
+
 #pragma once
 
 #include "Codec_Driver.h"
@@ -54,15 +56,23 @@ public:
 		resetCodec();
 
 		// Put codec in power down mode before adjusting configuration params
-		res = CS4272_RegWrite(CS4272_MODE_CNTRL_2, 0x03);
+		for (uint32_t cnt = 0; cnt < 10; ++cnt)
+		{
+			res = CS4272_RegWrite(CS4272_MODE_CNTRL_2, 0x03);
+			if (res == HAL_OK)
+				break;
+			resetCodec();
+		}
 		if (res != HAL_OK)
-			CN_ReportFault(2);
+//			CN_ReportFault(eErrorCodes::CS4272_DriverError);
+			return res;
 
 		// Verify the device id
 		uint8_t deviceId = 0x00;
 		res = CS4272_RegRead(CS4272_CHIP_ID, &deviceId);
 		if ((res  != HAL_OK) || ((deviceId & 0xF0) != CS4272_DEVICEID))
-			CN_ReportFault(2);
+//			CN_ReportFault(eErrorCodes::CS4272_DriverError);
+			return res;
 
 		// Default configuration register settings
 		uint8_t confgSettings[8] =
@@ -83,13 +93,16 @@ public:
 
 			// Write 'default' value to register
 			res = CS4272_RegWrite(regIndex + 1, confgSettings[regIndex]);
-			if (res != HAL_OK) CN_ReportFault(2);
+			if (res != HAL_OK)
+//				CN_ReportFault(eErrorCodes::CS4272_DriverError);
+				return res;
 
 			// Read-back register value
 			uint8_t regData;
 			res = CS4272_RegRead(regIndex + 1, &regData);
 			if ((res != HAL_OK) || (regData != confgSettings[regIndex]))
-				CN_ReportFault(2);
+//				CN_ReportFault(eErrorCodes::CS4272_DriverError);
+				return res;
 
 		}
 
@@ -109,9 +122,13 @@ private:
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_SET);
 			HAL_Delay(5);
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_RESET);
-			HAL_Delay(25);
+			HAL_Delay(100);
 			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_SET);
-			HAL_Delay(5);
+			HAL_Delay(100);
+			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_RESET);
+			HAL_Delay(100);
+			HAL_GPIO_WritePin(mParams.codecResetPort, mParams.codecResetPin, GPIO_PIN_SET);
+			HAL_Delay(100);
 	 }
 
 	 HAL_StatusTypeDef CS4272_RegWrite (uint8_t regAddr, uint8_t regData)
@@ -129,4 +146,6 @@ private:
 };
 
 }
+
+#endif
 

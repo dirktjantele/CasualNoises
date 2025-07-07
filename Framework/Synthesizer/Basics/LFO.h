@@ -66,7 +66,7 @@ public:
 		float sample = sin(mAngle);
 		mAngle += mStep;
 		if (mAngle > (2 * pi))
-			mAngle = 0.0f;
+			mAngle -= 2 * pi;
 		return sample;
 	}
 

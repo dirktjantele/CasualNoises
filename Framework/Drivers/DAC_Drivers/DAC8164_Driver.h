@@ -10,6 +10,8 @@
 
 #pragma once
 
+#ifdef USE_DAC8164
+
 #include "DAC_Driver.h"
 
 //#include "HAL_Includes.h"
@@ -156,3 +158,5 @@ private:
 };
 
 } // namespace CasualNoises
+
+#endif

@@ -26,8 +26,8 @@ public:
 
 	SmoothedValue (float newTarget, uint32_t newCountDown)
 	: mTarget        (newTarget),
-	  mCountdown     (newCountDown),
-	  mInitCountdown (newCountDown)
+	  mInitCountdown (newCountDown),
+	  mCountdown     (newCountDown)
 	{
 		mStep = mTarget / mCountdown;
 	}
@@ -48,6 +48,13 @@ public:
 		return mCurrentValue;
 	}
 
+	inline void setTargetValue(float target) noexcept
+	{
+		mCountdown = mInitCountdown;
+		mStep = (target - mCurrentValue) / mCountdown;
+		mTarget = target;
+	}
+
 	inline float getNextSmoothedValue() noexcept
 	{
 		if (isSmoothing())
@@ -58,6 +65,8 @@ public:
 		return mCurrentValue;
 	}
 
+#ifdef USE_AUDIO_BUFFER
+
 	void applyGain(AudioBuffer& buffer) noexcept
 	{
 		uint32_t noChannels = buffer.getNumChannels();
@@ -65,13 +74,14 @@ public:
 		assert(noChannels == 2);
 		float* lwptr = buffer.getWritePointer(0);
 		float* rwptr = buffer.getWritePointer(1);
-		if (isSmoothing())
 		for (uint32_t i = 0; i < noSamples; ++i)
 		{
 			*lwptr++ *= getNextSmoothedValue();
 			*rwptr++ *= getCurrentValue();
 		}
 	}
+
+#endif
 
 private:
 

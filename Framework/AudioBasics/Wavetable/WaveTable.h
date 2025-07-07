@@ -10,9 +10,7 @@
 
 #pragma once
 
-#include "cmsis_os.h"
-
-#include "CasualNoises.h"
+#include "stm32h7xx_hal.h"
 
 namespace CasualNoises
 {

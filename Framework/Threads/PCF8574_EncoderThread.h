@@ -12,13 +12,13 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISES_ENCODER_THREAD
+#ifdef CASUALNOISES_ENCODER_THREAD_PCF8574
 
 #pragma once
 
-#include "main.h"
-
-#include "CasualNoises.h"
+#include "stm32h7xx_hal.h"
+#include "FreeRTOS.h"
+#include "queue.h"
 
 namespace CasualNoises
 {

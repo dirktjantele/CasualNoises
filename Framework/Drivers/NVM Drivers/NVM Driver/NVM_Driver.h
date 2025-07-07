@@ -16,12 +16,12 @@
 
 namespace CasualNoises {
 
-const uint16_t	cMaxNoOfDevices 	  = 4;
+constexpr uint16_t	cMaxNoOfDevices 	  = 8;
 
 /*
  * Data structure used to initialise the driver
  */
-typedef struct sNVM_DriverInitData
+typedef struct
 {
 
 	uint16_t		noOfDevices;							// Actual no of devices present
@@ -31,7 +31,7 @@ typedef struct sNVM_DriverInitData
 
 	SPI_HandleTypeDef* hspix_ptr;							// SPI device to use for communication
 
-};
+} sNVM_DriverInitData;
 
 /*
  * The NVM_Driver class
@@ -49,6 +49,9 @@ public:
 	virtual uint32_t			getTotalCapacity() 	= 0;
 
 	virtual bool				outOfRangeDetected() = 0;
+
+	virtual uint32_t			getNoOfDevices() 		= 0;
+	virtual uint32_t			getDeviceCapacity() 	= 0;
 
 };
 

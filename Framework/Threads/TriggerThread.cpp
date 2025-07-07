@@ -28,9 +28,9 @@ void CasualNoises::TriggerThread(void* pvParameters)
 {
 	while ( true )
 	{
-		toggleTrigger_1();
+		setTimeMarker_1();
+		resetTimeMarker_1();
 	}
-
 }
 
 #endif

@@ -47,7 +47,8 @@ static int64_t loopCounter = 0;
 // Interrupt callback for buffer half transfer completed
 void HAL_I2SEx_TxRxHalfCpltCallback (I2S_HandleTypeDef * hi2s)
 {
-	if (doGenerateAudio && checkForOverRun) CasualNoises::CN_ReportFault(1);
+	if (doGenerateAudio && checkForOverRun)
+		CN_ReportFault(eErrorCodes::runtimeError);
 	doGenerateAudio = true;
 	checkForOverRun = false;
 	tx_audioDataPtr = &tx_rawAudioBuffer[0];
@@ -59,7 +60,8 @@ void HAL_I2SEx_TxRxHalfCpltCallback (I2S_HandleTypeDef * hi2s)
 // Interrupt callback for buffer full transfer completed
 void HAL_I2SEx_TxRxCpltCallback (I2S_HandleTypeDef * hi2s)
 {
-	if (doGenerateAudio && checkForOverRun) CasualNoises::CN_ReportFault(1);
+	if (doGenerateAudio && checkForOverRun)
+		CN_ReportFault(eErrorCodes::runtimeError);
 	doGenerateAudio = true;
 	checkForOverRun = false;
 	tx_audioDataPtr = &tx_rawAudioBuffer[FULL_AUDIO_BUFFER_SIZE / 2];
@@ -87,7 +89,7 @@ void AudioProcessorPlayer::runAudioProcessor(
 	// Create a binary semaphore for task/interrupt synchronisation
 	xAudioProcessorPlayerSemaphore = xSemaphoreCreateBinary();
 	if (xAudioProcessorPlayerSemaphore == nullptr)
-		CN_ReportFault(1);
+		CN_ReportFault(eErrorCodes::runtimeError);
 
 	// Clear buffers
 	for (uint32_t i = 0; i < FULL_AUDIO_BUFFER_SIZE; ++i)
@@ -101,7 +103,8 @@ void AudioProcessorPlayer::runAudioProcessor(
 									(uint16_t *)tx_rawAudioBuffer,
 									(uint16_t *)rx_rawAudioBuffer,
 									FULL_AUDIO_BUFFER_SIZE * 1);
-	if (res != HAL_OK )	CN_ReportFault(1);
+	if (res != HAL_OK )
+		CN_ReportFault(eErrorCodes::runtimeError);
 
 	// Info used to fill the AudioBuffer
 	uint32_t 			numSamples 	= audioBufferPtr->getNumSamples();
@@ -111,16 +114,17 @@ void AudioProcessorPlayer::runAudioProcessor(
 	mAudioProcessorPtr->prepareToPlay(SAMPLE_FREQUENCY, numSamples, mSynthesiserParamsPtr);
 
 	// Process incoming audio data block when a DMA interrupt is received
-	float scale = static_cast<float>(0x7fffffff);
+	float scale = static_cast<float>(0x7fffff00);
 	for (;;)
 	{
 
 		// Wait for next interrupt
 		BaseType_t res = xSemaphoreTake( xAudioProcessorPlayerSemaphore, portMAX_DELAY );
-		if (res != pdPASS) CN_ReportFault(1);
+		if (res != pdPASS)
+			CN_ReportFault(eErrorCodes::runtimeError);
 
 		// Mark start of audio processing
-		setTrigger_2();
+		setTimeMarker_2();
 
 		// Counting is done for testing info only...
 		++loopCounter;
@@ -143,8 +147,8 @@ void AudioProcessorPlayer::runAudioProcessor(
 		float* rptr = pointers->audioBuffer2;
 		for (uint32_t i = 0; i < (numSamples * 2); i += 2)
 		{
-			tx_audioDataPtr[i]     = static_cast<uint32_t>((*lptr++ + 1.0f) * scale);
-			tx_audioDataPtr[i + 1] = static_cast<uint32_t>((*rptr++ + 1.0f) * scale);
+			tx_audioDataPtr[i]     = static_cast<int32_t>(*lptr++ * scale);
+			tx_audioDataPtr[i + 1] = static_cast<int32_t>(*rptr++ * scale);
 		}
 
 		// Processing is done, start checking for overruns
@@ -152,7 +156,7 @@ void AudioProcessorPlayer::runAudioProcessor(
 		checkForOverRun = true;
 
 		// Mark end of audio processing
-		resetTrigger_2();
+		resetTimeMarker_2();
 
 	}
 }

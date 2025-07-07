@@ -13,9 +13,91 @@
 #include "cmsis_os.h"
 
 #include "main.h"
-#include "SystemConfig.h"
+//#include "SystemConfig.h"
 
 #include "FreeRTOS.h"
+
+//  ------------------------------ eErrorCodes  ------------------------------
+enum class eErrorCodes
+{
+	unknowError				= 1,
+	FreeRTOS_ErrorRes,
+	runtimeError,
+	northSoudComInitFailed,
+	northSoudComInvalidState,
+	northSouthDMA_Error,
+	audioBufferError,
+	adcThreadError,
+	CS4270_DriverError,
+	UI_ThreadError,
+	AudioThreadError,
+	threadHalted,
+};
+
+// ------------------------------ NerveNet  ------------------------------
+#ifdef NERVE_NET
+
+static void CN_ReportFault(eErrorCodes faultCode)
+{
+	vTaskSuspendAll();
+	uint32_t code = (uint32_t)faultCode;
+	for (;;)
+	{
+		if (code & 0x00000001)
+			HAL_GPIO_WritePin(GPIOE, STATUS_LED_1_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000002)
+			HAL_GPIO_WritePin(GPIOE, STATUS_LED_2_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000004)
+			HAL_GPIO_WritePin(GPIOG, STATUS_LED_3_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000008)
+			HAL_GPIO_WritePin(GPIOG, STATUS_LED_4_Pin, GPIO_PIN_RESET);
+		HAL_Delay(200);
+		HAL_GPIO_WritePin(GPIOE, STATUS_LED_2_Pin|STATUS_LED_1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOG, STATUS_LED_4_Pin|STATUS_LED_3_Pin, GPIO_PIN_SET);
+		HAL_Delay(200);
+	}
+}
+
+#endif
+
+// ------------------------------ Fellhorn  ------------------------------
+#ifdef NORTH_SIDE
+
+static void CN_ReportFault(eErrorCodes faultCode)
+{
+	vTaskSuspendAll();
+	uint32_t code = (uint32_t)faultCode;
+	for (;;)
+	{
+		if (code & 0x00000001)
+			HAL_GPIO_WritePin(GPIOE, STATUS_LED_1_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000002)
+			HAL_GPIO_WritePin(GPIOE, STATUS_LED_2_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000004)
+			HAL_GPIO_WritePin(GPIOG, STATUS_LED_3_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000008)
+			HAL_GPIO_WritePin(GPIOG, STATUS_LED_4_Pin, GPIO_PIN_RESET);
+		HAL_Delay(200);
+		HAL_GPIO_WritePin(GPIOE, STATUS_LED_2_Pin|STATUS_LED_1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOG, STATUS_LED_4_Pin|STATUS_LED_3_Pin, GPIO_PIN_SET);
+		HAL_Delay(200);
+	}
+}
+
+#endif
+
+#ifdef SOUTH_SIDE
+
+static void CN_ReportFault(eErrorCodes faultCode)
+{
+	vTaskSuspendAll();
+	for (;;)
+	{
+		// ToDo implement reporter
+	}
+}
+
+#endif
 
 // ------------------------------ SIMPLE_SYNTH_0_1 ------------------------------
 #ifdef SIMPLE_SYNTH_0_1

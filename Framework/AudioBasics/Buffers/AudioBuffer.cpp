@@ -8,15 +8,38 @@
   ==============================================================================
 */
 
+#ifdef USE_AUDIO_BUFFER
+
 #include "AudioBuffer.h"
 
 #include "Utilities/ReportFault.h"
+#include "maths.h"
 
 namespace CasualNoises
 {
 
 //==============================================================================
-//          AudioBuffer()     /       ~AudioBuffer
+//          createBuffer()
+//
+//  CasualNoises    28/02/2025  First implementation
+//==============================================================================
+void AudioBuffer::createBuffer()
+{
+
+	 // Buffers used to hold the float representation of the audio data for processing
+	 for (uint8_t i = 0; i < mNumChannels; ++i)
+	 {
+		 mAudioBuffer[i] = (float*)pvPortMalloc(mNumSamples * sizeof(float));
+		 if (mAudioBuffer[i] == nullptr) CN_ReportFault(eErrorCodes::audioBufferError);
+	 }
+
+	 // Clear audio data buffers
+	 clearAudioBuffer();
+
+}
+
+//==============================================================================
+//          AudioBuffer()     /       ~AudioBuffer()
 //
 // bufferSize: since double buffering is used, this should be large enough to hold
 //				two half buffers
@@ -26,25 +49,24 @@ namespace CasualNoises
 //
 //  CasualNoises    26/07/2023  First implementation
 //==============================================================================
- AudioBuffer::AudioBuffer()
- {
+AudioBuffer::AudioBuffer()
+: mNumSamples ( NUM_SAMPLES ),
+  mNumChannels ( NUM_CHANNELS )
+{
+	createBuffer();
+}
 
-	 // Buffers used to hold the float representation of the audio data for processing
-	 for (uint8_t i = 0; i < getNumChannels(); ++i)
-	 {
-		 mAudioBuffer[i] = (float*)pvPortMalloc(getNumSamples() * sizeof(float));
-		 if (mAudioBuffer[i] == nullptr) CN_ReportFault(1);
-	 }
+AudioBuffer::AudioBuffer(uint32_t numSamples, uint32_t numChannels)
+: mNumSamples ( numSamples ),
+  mNumChannels ( numChannels )
+{
+	createBuffer();
+}
 
-	 // Clear audio data buffers
-	 clearAudioBuffer();
-
- }
-
- AudioBuffer::~AudioBuffer()
- {
+AudioBuffer::~AudioBuffer()
+{
 	 vPortFree((void *)mAudioBuffer);
- }
+}
 
  //==============================================================================
  //          clearAudioBuffer()
@@ -66,5 +88,39 @@ namespace CasualNoises
 	 }
  }
 
+ //==============================================================================
+ //          normalizeAudioBuffer()
+ //
+ // Apply normalisation to the content of an audio buffer
+ //
+ //  CasualNoises    28/02/2025  First implementation
+ //==============================================================================
+ void AudioBuffer::normalizeAudioBuffer()
+ {
+	 int32_t noOfSamples = getNumSamples();
+	 for (uint8_t i = 0; i < getNumChannels(); ++i)
+	 {
+		 float* ptr = mAudioBuffer[i];
+		 float min =  99.9f;
+		 float max = -99.9f;
+		 for (int32_t j = 0; j < noOfSamples; ++j)
+		 {
+			 if (*ptr < min)
+				 min = *ptr;
+			 if (*ptr > max)
+				 max = *ptr;
+			 ++ptr;
+		 }
+		 ptr = mAudioBuffer[i];
+		 for (int32_t j = 0; j < noOfSamples; ++j)
+		 {
+			 float sample = *ptr;
+			 sample = cn_map(sample, min, max, -1.0f, +1.0f);
+			 *ptr++ = sample;
+		 }
+	 }
+ }
+
 } // namespace CasualNoises
 
+#endif

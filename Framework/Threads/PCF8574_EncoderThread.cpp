@@ -12,9 +12,9 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISES_ENCODER_THREAD
+#ifdef CASUALNOISES_ENCODER_THREAD_PCF8574
 
-#include "EncoderThread.h"
+#include <Threads/PCF8574_EncoderThread.h>
 
 #include "SystemConfig.h"
 

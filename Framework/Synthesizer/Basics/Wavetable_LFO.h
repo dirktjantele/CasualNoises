@@ -8,10 +8,14 @@
   ==============================================================================
 */
 
+#ifdef USE_AUDIO_BUFFER
+
 #pragma once
 
 #include <arm_math.h>
 #include "maths.h"
+
+#include "AudioBasics/Buffers/AudioBuffer.h"
 
 namespace CasualNoises
 {
@@ -48,10 +52,12 @@ public:
 	//  CasualNoises    06/12/2024  First implementation
 	//==============================================================================
 	Wavetable_LFO(float sampleRate, float frequency = 440.0f)
-	: mSampleRate (sampleRate),
-	  mFrequency (frequency)
+	: mSampleRate ( sampleRate ),
+	  mFrequency ( frequency ),
+	  mWaveIndex ( 0.0f )
 	{
 		setFrequency(mFrequency);
+		setMorphFactor(0.0f);
 		createWaveTable();
 	};
 
@@ -158,13 +164,51 @@ public:
 	}
 
 	//==============================================================================
-	//          reset
+	//          reset()
 	//
 	//  CasualNoises    14/12/2024  First implementation
 	//==============================================================================
 	void reset() noexcept
 	{
 		mWaveIndex = 0.0f;
+	}
+
+	//==============================================================================
+	//          fillAudioBuffer()
+	//
+	// Fill an audio buffer with one cycle of the lfo
+	//
+	//  CasualNoises    28/02/2025  First implementation
+	//==============================================================================
+	void fillAudioBuffer(AudioBuffer& audioBuffer) noexcept
+	{
+
+		// Save current state
+		float curSampleRate = mSampleRate;
+		float curFrequency  = mFrequency;
+		float curStep		= mStep;
+		float waveIndex     = mWaveIndex;
+
+		mSampleRate = (float)audioBuffer.getNumSamples();
+		setFrequency(1.0f);
+		float* wptr1 = audioBuffer.getWritePointer(0);
+		float* wptr2 = nullptr;
+		if (audioBuffer.getNumChannels() > 1)
+			wptr2 = audioBuffer.getWritePointer(1);
+		for (uint32_t i = 0; i < mSampleRate; ++i)
+		{
+			float sample = nextSample();
+			*wptr1++ = sample;
+			if (wptr2 != nullptr)
+				*wptr2++ = sample;
+		}
+
+		// Restore lfo state
+		mSampleRate = curSampleRate;
+		mFrequency  = curFrequency;
+		mStep		= curStep;
+		mWaveIndex  = waveIndex;
+
 	}
 
 protected:
@@ -188,6 +232,10 @@ protected:
 	void createWaveTable()
 	{
 
+		// Do we already have a wavetable?
+		if (mWavetable != nullptr)
+			return;
+
 		// Allocate memory for the wave table and it's waves
 		mWavetable = new float*[mWavetableCount];
 		for (uint32_t i = 0; i < mNoOfWavesToCalculate; ++i)
@@ -200,16 +248,12 @@ protected:
 		mWavetable[7] = mWavetable[3];
 		mWavetable[8] = mWavetable[0];
 
-		// Buffer used to hold a morph-ed wave
-		mActualWavePtr = new float[mWaveLength];
-
 		// Calculate sine wave, this is also the default wave
 		float angle = 0.0f;
 		float step  = (2 * pi) / mWaveLength;
 		for (uint32_t i = 0; i < mWaveLength; ++i)
 		{
 			mWavetable[0][i] = sin(angle);
-			mActualWavePtr[i] = mWavetable[0][i];
 			angle += step;
 		}
 
@@ -234,7 +278,7 @@ protected:
 		i = 0;
 		for (float v = -1.0f; i < mWaveLength; ++i, v += step)
 		{
-			mWavetable[2][i] = 1.0f - v;
+			mWavetable[2][i] = v;
 		}
 
 		// Calculate square wave
@@ -267,7 +311,7 @@ protected:
 
 	float				mSampleRate				{ 0.0f };
 	float				mFrequency				{ 0.0f };
-	float				mMorphAmount			{ 0.0f };			// 0.0f <= mMorphAmount <= 1.0f
+	float				mMorphAmount			{ -1.0f };			// 0.0f <= mMorphAmount <= 1.0f
 
 	const uint32_t		mWaveLength				{ 1024 };
 
@@ -275,8 +319,7 @@ private:
 	const uint32_t		mNoOfWavesToCalculate	{ 4 };
 	const uint32_t		mWavetableCount			{ 9 };
 
-	float** 			mWavetable	 			{ nullptr };
-	float*				mActualWavePtr			{ nullptr };
+	static float** 		mWavetable;
 
 	// Calculated from the target frequency
 	float  				mStep					{ 0.0f };
@@ -290,75 +333,6 @@ private:
 
 };
 
-//==============================================================================
-//          CachedWavetable_LFO
-//
-//  CasualNoises    06/12/2024  First implementation
-//==============================================================================
-class CachedWavetable_LFO : public Wavetable_LFO
-{
-public:
-	CachedWavetable_LFO() = delete;
-	CachedWavetable_LFO ( const Wavetable_LFO& ) = delete;
-	CachedWavetable_LFO ( Wavetable_LFO&& ) = delete;
-
-	//==============================================================================
-	//          CachedWavetable_LFO
-	//
-	//  CasualNoises    15/12/2024  First implementation
-	//==============================================================================
-	CachedWavetable_LFO(float sampleRate, float frequency = 440.0f)
-	{
-		mSampleRate = sampleRate;
-		mFrequency  = frequency;
-		setFrequency(mFrequency);
-		createWaveTable();
-		mCacheFlags   = new bool[mWaveLength];
-		mCachedValues = new float[mWaveLength];
-	}
-
-	//==============================================================================
-	//          ~CachedWavetable_LFO
-	//
-	//  CasualNoises    15/12/2024  First implementation
-	//==============================================================================
-	~CachedWavetable_LFO()
-	{
-		deleteWaveTable();
-		delete mCacheFlags;
-		delete mCachedValues;
-	}
-
-	//==============================================================================
-	//          setMorphFactor
-	//
-	// factor:	0.0f -> 1.0f
-	//
-	//  CasualNoises    14/12/2024  First implementation
-	//==============================================================================
-	void setMorphFactor(float morph) noexcept override
-	{
-		if (morph != mMorphAmount)
-		{
-
-			// Update morph factor
-			Wavetable_LFO::setMorphFactor(morph);
-
-			// Mark cache changed
-			for (uint32_t i = 0; i < mWaveLength; ++i)
-			{
-				mCacheFlags[i] = false;
-			}
-
-		}
-	}
-
-private:
-
-	bool*		mCacheFlags		{ nullptr };
-	float*		mCachedValues	{ nullptr };
-
-};
-
 } // namespace CasualNoises
 
+#endif

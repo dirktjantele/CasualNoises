@@ -79,7 +79,8 @@ public:
 	{
 		address &= 0xfe;														// Clear R/W bit
 		HAL_StatusTypeDef res = I2C_Transmit(&address, 1, true, false);			// Send address byte
-		if (res != HAL_OK) return res;
+		if (res != HAL_OK)
+			return res;
 		res = I2C_Transmit(data, size, false, true);							// Send data
 		HAL_GPIO_WritePin(mSCL_Port, mSCL_Pin, GPIO_PIN_SET);					// Set pins to idle state
 		HAL_GPIO_WritePin(mSCL_Port, mSDA_Pin, GPIO_PIN_SET);
@@ -125,6 +126,7 @@ private:
 	{
 		for (uint32_t cnt = 0; cnt < mDelayCount; )
 			++cnt;
+		osDelay(1);
 	}
 
 	//==============================================================================
