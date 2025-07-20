@@ -36,18 +36,20 @@ public:
 	  inline uint32_t		getFullBufferSize() const noexcept		{ return FULL_AUDIO_BUFFER_SIZE; }
 
 	  void					clearAudioBuffer() noexcept;
+	  void					copyAudio(AudioBuffer& buffer) noexcept;
+
+	  void					importAudio(float* ptr) noexcept;
+	  void					exportAudio(float* ptr) noexcept;
 
 	  void					normalizeAudioBuffer() noexcept;
 
 	  inline const float*	getReadPointer  (int channelNumber) const noexcept  { return mAudioBuffer[channelNumber]; }
 	  inline float* 	    getWritePointer (int channelNumber) const noexcept  { return mAudioBuffer[channelNumber]; }
 
-	  inline sAudioBufferPtrs* getAudioBufferPtrs()
+	  inline void getAudioBufferPtrs(sAudioBufferPtrs* ptrs) noexcept
 	  {
-		  static sAudioBufferPtrs pointers;
-		  pointers.audioBuffer1 = mAudioBuffer[0];
-		  pointers.audioBuffer2 = mAudioBuffer[1];
-		  return &pointers;
+		  ptrs->audioBuffer1 = mAudioBuffer[0];
+		  ptrs->audioBuffer2 = mAudioBuffer[1];
 	  }
 
 private:

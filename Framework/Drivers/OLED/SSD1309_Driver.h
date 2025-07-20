@@ -83,7 +83,7 @@ public:
 	void resetDisplay()
 	{
 		  HAL_GPIO_WritePin(mConfigDataPtr->NRST_PORT, mConfigDataPtr->NRST_PIN, GPIO_PIN_RESET);
-		  HAL_Delay(100);
+		  vTaskDelay(pdMS_TO_TICKS(100));
 		  HAL_GPIO_WritePin(mConfigDataPtr->NRST_PORT, mConfigDataPtr->NRST_PIN, GPIO_PIN_SET);
 	}
 

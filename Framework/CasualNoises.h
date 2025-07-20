@@ -11,7 +11,6 @@
 #pragma once
 
 #include "AudioBasics/Buffers/AudioBuffer.h"
-#include "AudioBasics/Wavetable/WaveTable.h"
 #include "AudioBasics/Processors/WaveFolder.h"
 
 #include "AudioProcessors/Processors/AudioProcessor.h"
@@ -44,6 +43,10 @@
 #include "GUI/GUI_Basics/Components/BoxComponent.h"
 
 #include "GUI/GUI_Utilities/WaveView.h"
+
+#include "NerveNet/NerveNetConfig.h"
+#include "NerveNet/NerveNetMasterThread.h"
+#include "NerveNet/NerveNetSlaveThread.h"
 
 #include "Synthesizer/Basics/ADSR.h"
 #include "Synthesizer/Basics/LFO.h"

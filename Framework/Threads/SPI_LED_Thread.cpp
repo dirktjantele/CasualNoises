@@ -51,7 +51,6 @@ bool					LT_TxReady = false;
 //==============================================================================
 void Handle_LED_RefreshInterrupts ()
 {
-	setTimeMarker_4();
 
 	// Previous DMA request should be ready
 	if ( ! LT_TxReady)
@@ -68,7 +67,6 @@ void Handle_LED_RefreshInterrupts ()
 	if (LT_CurrentStateNo >= stateDepth)
 		LT_CurrentStateNo = 0;
 
-	resetTimeMarker_4();
 }
 
 
@@ -83,7 +81,6 @@ bool handle_LT_DMA_Cplt(SPI_HandleTypeDef* hspi)
 {
 	if (hspi == LT_spiPtr)
 	{
-		setTimeMarker_4();
 
 		// Pending dma transfert is completed
 		LT_TxReady = true;
@@ -91,8 +88,6 @@ bool handle_LT_DMA_Cplt(SPI_HandleTypeDef* hspi)
 		// Latch the shift register
 		HAL_GPIO_WritePin(LT_latchPort, LT_latchPin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(LT_latchPort, LT_latchPin, GPIO_PIN_RESET);
-
-		resetTimeMarker_4();
 
 		return true;
 	} else

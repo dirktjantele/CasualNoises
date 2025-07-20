@@ -13,6 +13,8 @@
 
 #ifdef CASUALNOISES_POTENTIOMETER_THREAD
 
+#include "FreeRTOS.h"
+
 #include "PotentiometerThread.h"
 #include "Utilities/CallbackHandlers.h"
 #include "Utilities/ReportFault.h"
@@ -42,7 +44,7 @@ bool	 newPotDataAvailable = false;
 //          PotentiometerConvCpltCallback()
 //
 // Conversion complete callback
-// Should be called at a rate of about 100Hz
+// Should be called at a rate of about 1KHz
 //
 //  CasualNoises    01/11/2024  First implementation
 //==============================================================================
@@ -146,8 +148,8 @@ void potentiometerThread(void* pvParameters)
 
 //		resetTimeMarker_3();
 
-		// Wait x ticks
-		osDelay(10);
+		// Wait 10ms ticks
+		vTaskDelay(pdMS_TO_TICKS(10));
 
 	}
 

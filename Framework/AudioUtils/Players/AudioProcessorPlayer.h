@@ -15,6 +15,8 @@
 #include "Utilities/ReportFault.h"
 #include "AudioProcessors/Processors/AudioProcessor.h"
 
+#include "../../NerveNet/NerveNetMessage.h"
+
 #include "semphr.h"
 
 namespace CasualNoises
@@ -53,10 +55,10 @@ public:
 	inline void sethi2sHandlePtr (I2S_HandleTypeDef* ptr) noexcept { m_hi2sHandlePtr = ptr; }
 
 	// Set pointer to the synthesiser parameters
-	inline void setSynthesiserParamsPtr (void* ptr) noexcept { mSynthesiserParamsPtr = ptr; }
+//	inline void setSynthesiserParamsPtr (void* ptr) noexcept { mSynthesiserParamsPtr = ptr; }
 
 	// Run the player, this method never returns
-	void runAudioProcessor(/*AudioProcessor* audioProcessor,*/ AudioBuffer* audioBufferPtr);
+	void runAudioProcessor(AudioBuffer* audioBufferPtr, void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*));
 
 private:
 

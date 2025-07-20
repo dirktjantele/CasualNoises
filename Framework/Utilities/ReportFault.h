@@ -23,9 +23,7 @@ enum class eErrorCodes
 	unknowError				= 1,
 	FreeRTOS_ErrorRes,
 	runtimeError,
-	northSoudComInitFailed,
-	northSoudComInvalidState,
-	northSouthDMA_Error,
+	NerveNetThread_Error,
 	audioBufferError,
 	adcThreadError,
 	CS4270_DriverError,
@@ -33,6 +31,19 @@ enum class eErrorCodes
 	AudioThreadError,
 	threadHalted,
 };
+
+// Delay loop
+static void CN_Delay()
+{
+	uint32_t cnt;
+	for (uint32_t i = 0; i < 1000000; ++i)
+	{
+		for (uint32_t j = 0; j < 10; ++j)
+		{
+			++cnt;
+		}
+	}
+}
 
 // ------------------------------ NerveNet  ------------------------------
 #ifdef NERVE_NET
@@ -63,6 +74,7 @@ static void CN_ReportFault(eErrorCodes faultCode)
 // ------------------------------ Fellhorn  ------------------------------
 #ifdef NORTH_SIDE
 
+__attribute__((unused))
 static void CN_ReportFault(eErrorCodes faultCode)
 {
 	vTaskSuspendAll();
@@ -77,10 +89,10 @@ static void CN_ReportFault(eErrorCodes faultCode)
 			HAL_GPIO_WritePin(GPIOG, STATUS_LED_3_Pin, GPIO_PIN_RESET);
 		if (code & 0x00000008)
 			HAL_GPIO_WritePin(GPIOG, STATUS_LED_4_Pin, GPIO_PIN_RESET);
-		HAL_Delay(200);
+		CN_Delay();
 		HAL_GPIO_WritePin(GPIOE, STATUS_LED_2_Pin|STATUS_LED_1_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOG, STATUS_LED_4_Pin|STATUS_LED_3_Pin, GPIO_PIN_SET);
-		HAL_Delay(200);
+		CN_Delay();
 	}
 }
 
@@ -88,12 +100,25 @@ static void CN_ReportFault(eErrorCodes faultCode)
 
 #ifdef SOUTH_SIDE
 
+__attribute__((unused))
 static void CN_ReportFault(eErrorCodes faultCode)
 {
 	vTaskSuspendAll();
+	uint32_t code = (uint32_t)faultCode;
 	for (;;)
 	{
-		// ToDo implement reporter
+		if (code & 0x00000001)
+			HAL_GPIO_WritePin(GPIOB, STATUS_LED_1_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000002)
+			HAL_GPIO_WritePin(GPIOB, STATUS_LED_2_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000004)
+			HAL_GPIO_WritePin(GPIOF, STATUS_LED_3_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000008)
+			HAL_GPIO_WritePin(GPIOF, STATUS_LED_4_Pin, GPIO_PIN_RESET);
+		CN_Delay();
+		HAL_GPIO_WritePin(GPIOB, STATUS_LED_2_Pin|STATUS_LED_1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOF, STATUS_LED_4_Pin|STATUS_LED_3_Pin, GPIO_PIN_SET);
+		CN_Delay();
 	}
 }
 

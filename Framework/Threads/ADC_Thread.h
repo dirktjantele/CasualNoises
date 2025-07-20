@@ -15,8 +15,9 @@
 
 #pragma once
 
-#include "stm32h7xx_hal.h"
+#include "main.h"
 #include "FreeRTOS.h"
+#include "task.h"
 #include "queue.h"
 
 #include "SystemConfig.h"
@@ -28,9 +29,8 @@ namespace CasualNoises
 typedef struct
 {
 	ADC_HandleTypeDef 	*hadc;					// Handle to the ADC to be used
-	TIM_HandleTypeDef	htim;					// Timer used to trigger ADC conversions
+	TIM_HandleTypeDef	*htim;					// Timer used to trigger ADC conversions
 	QueueHandle_t		clientQueueHandle;		// Handle to a queue to report potentiometer events to
-												//  in most cases this is the UI thread event queue
 } sADC_ThreadData;
 
 

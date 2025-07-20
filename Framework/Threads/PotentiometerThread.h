@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "stm32h7xx_hal.h"
-#include "FreeRTOS.h"
+#include "main.h"
+#include "task.h"
 #include "queue.h"
 
 #include "SystemConfig.h"
@@ -38,7 +38,7 @@ typedef struct
 typedef struct
 {
 	eEventSourceID	eventSourceID;
-	uint16_t		potentiometerId;
+	uint32_t		potentiometerId;
 	float			potentiometerValue;
 } sPotentiometerEventStruct;
 

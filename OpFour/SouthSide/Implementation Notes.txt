@@ -1,0 +1,8 @@
+Device allocation:
+------------------
+
+ADC3 1V/OCT & CV inputs
+
+TIM2 ADC3 trigger (10 KHz)
+TIM3 Internal clock (when external clock in is not used) (200Hz)
+TIM5 Used to calculate elapsed time during processBlock::AudioProcessor() + overhead (1MHz)

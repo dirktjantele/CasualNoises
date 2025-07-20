@@ -23,6 +23,7 @@ namespace CasualNoises
 //
 //  CasualNoises    28/02/2025  First implementation
 //==============================================================================
+inline __attribute__((optimize("Ofast"),always_inline))
 void AudioBuffer::createBuffer()
 {
 
@@ -68,34 +69,112 @@ AudioBuffer::~AudioBuffer()
 	 vPortFree((void *)mAudioBuffer);
 }
 
- //==============================================================================
- //          clearAudioBuffer()
- //
- // Clear the audio output buffer (does not clear the raw audio buffers)
- //
- //  CasualNoises    26/07/2023  First implementation
- //==============================================================================
- void AudioBuffer::clearAudioBuffer()
+//==============================================================================
+//          clearAudioBuffer()
+//
+// Clear the audio output buffer (does not clear the raw audio buffers)
+//
+//  CasualNoises    26/07/2023  First implementation
+//==============================================================================
+void AudioBuffer::clearAudioBuffer()
  {
-	 int32_t noOfSamples = getNumSamples();
-	 for (uint8_t i = 0; i < getNumChannels(); ++i)
-	 {
-		 float* ptr = mAudioBuffer[i];
-		 for (int32_t j = noOfSamples - 1; j >= 0; --j)
-		 {
-			 *ptr++ = 0.0f;
-		 }
-	 }
+	int32_t noOfSamples = getNumSamples();
+
+	for (uint32_t i = 0; i < getNumChannels(); ++i)
+	{
+		float* wptr = getWritePointer(i);
+		for (int32_t j = noOfSamples - 1; j >= 0; --j)
+		{
+			*wptr++ = 0.0f;
+		}
+	}
+
  }
 
- //==============================================================================
- //          normalizeAudioBuffer()
- //
- // Apply normalisation to the content of an audio buffer
- //
- //  CasualNoises    28/02/2025  First implementation
- //==============================================================================
- void AudioBuffer::normalizeAudioBuffer()
+//==============================================================================
+//          copyAudio()
+//
+// Copy audio from another buffer (does not affect the raw audio buffers)
+//
+//  CasualNoises    13/07/2025  First implementation
+//==============================================================================
+void AudioBuffer::copyAudio(AudioBuffer& inBuffer)
+{
+	assert(getNumChannels() == 2);
+
+	int32_t noOfSamples = getNumSamples();
+
+	const float* rptr1 = inBuffer.getReadPointer(0);
+	const float* rptr2 = inBuffer.getReadPointer(1);
+	float* wptr1 = getWritePointer(0);
+	float* wptr2 = getWritePointer(1);
+
+	for (int32_t j = noOfSamples - 1; j >= 0; --j)
+	{
+		*wptr1++ = *rptr1++;
+		*wptr2++ = *rptr2++;
+	}
+
+}
+
+//==============================================================================
+//          importAudio()
+//
+// Import audio data from an array of floats into this AudioBuffer
+// The array should have the right amount of samples (mNumSamples * mNumChannels)
+// Samples in the array are pairs of right/left audio samples
+//
+//  CasualNoises    13/07/2025  First implementation
+//==============================================================================
+void AudioBuffer::importAudio(float* ptr)
+{
+	assert(getNumChannels() == 2);
+
+	int32_t noOfSamples = getNumSamples();
+
+	float* wptr1 = getWritePointer(0);
+	float* wptr2 = getWritePointer(1);
+	for (int32_t j = noOfSamples - 1; j >= 0; --j)
+	{
+		*wptr1++ = *ptr++;
+		*wptr2++ = *ptr++;
+	}
+
+}
+
+//==============================================================================
+//          exportAudio()
+//
+// Copy audio from another buffer (does not affect the raw audio buffers)
+// The array should have the right amount of samples (mNumSamples * mNumChannels)
+// Samples in the array are pairs of right/left audio samples
+//
+//  CasualNoises    13/07/2025  First implementation
+//==============================================================================
+void AudioBuffer::exportAudio(float* ptr)
+{
+	assert(getNumChannels() == 2);
+
+	int32_t noOfSamples = getNumSamples();
+
+	const float* rptr1 = getReadPointer(0);
+	const float* rptr2 = getReadPointer(1);
+	for (int32_t j = noOfSamples - 1; j >= 0; --j)
+	{
+		*ptr++ = *rptr1++;
+		*ptr++ = *rptr2++;
+	}
+
+}
+
+//==============================================================================
+//          normalizeAudioBuffer()
+//
+// Apply normalisation to the content of an audio buffer
+//
+//  CasualNoises    28/02/2025  First implementation
+//==============================================================================
+void AudioBuffer::normalizeAudioBuffer()
  {
 	 int32_t noOfSamples = getNumSamples();
 	 for (uint8_t i = 0; i < getNumChannels(); ++i)

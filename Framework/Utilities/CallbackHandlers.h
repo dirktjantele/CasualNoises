@@ -12,9 +12,18 @@
 
 #include "main.h"
 
+// CN_TIM_PeriodElapsedCallback handler
+// ------------------------------------
+
+// Timer callback handlers
+typedef bool (*CN_TimerPeriodElapsedCallback)(TIM_HandleTypeDef* hadc);
+void add_TimerPeriodElapsedCallback(CN_TimerPeriodElapsedCallback callback);
+
+void CN_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+
 // HAL_SPI_TxCpltCallback and HAL_SPI_TxRxCpltCallback handlers
 // ------------------------------------------------------------
-#ifdef CASUALNOISE_TxRxCplt_CALLBACKS
+#ifdef CASUALNOISES_TxRxCplt_CALLBACKS
 
 // SPI DMA Tx complete callback handlers
 typedef bool (*CN_HAL_SPI_TxCpltCallback)(SPI_HandleTypeDef* hspi);
@@ -28,7 +37,7 @@ void add_HAL_SPI_TxRxCpltCallback(CN_HAL_SPI_TxRxCpltCallback callback);
 
 // HAL_ADC_ConvCpltCallback handler
 // --------------------------------
-#ifdef CASUALNOISE_ADC_CALLBACKS
+#ifdef CASUALNOISES_ADC_CALLBACKS
 
 // ADC conversion complete callback handlers
 typedef bool (*ADC_ConvCpltCallback)(ADC_HandleTypeDef* hadc);
@@ -38,9 +47,12 @@ void add_ADC_ConvCpltCallback(ADC_ConvCpltCallback callback);
 
 // HAL_GPIO_EXTI_Callback handler
 // ------------------------------
-#ifdef CASUALNOISE_EXTI_CALLBACKS
+#ifdef CASUALNOISES_EXTI_CALLBACKS
 
 typedef bool (*GPIO_EXTI_Callback)(uint16_t GPIO_Pin);
 void add_EXTI_ConvCpltCallback(GPIO_EXTI_Callback callback);
 
 #endif
+
+
+

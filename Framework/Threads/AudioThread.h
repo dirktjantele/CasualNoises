@@ -12,11 +12,10 @@
 
 #pragma once
 
-#include "stm32h7xx_hal.h"
-#include "FreeRTOS.h"
-#include "queue.h"
+#include "main.h"
 
 #include "AudioProcessors/Processors/AudioProcessor.h"
+#include "../NerveNet/NerveNetMessage.h"
 
 namespace CasualNoises
 {
@@ -25,7 +24,8 @@ typedef struct
 {
 	AudioProcessor*		audioProcessorPtr;
 	I2S_HandleTypeDef*  hi2sHandlePtr;
-	void*				synthesizerParamsPtr;
+	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*);
+//	void*				synthesizerParamsPtr;
 } sAudioThreadInitData;
 
 BaseType_t StartAudioThread(void *argument);

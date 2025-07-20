@@ -13,9 +13,6 @@
 #include "TriggerThread.h"
 
 #include "main.h"
-#include "SystemConfig.h"
-
-#include "CasualNoises.h"
 
 //==============================================================================
 //          TriggerThread

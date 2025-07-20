@@ -37,22 +37,13 @@ void AudioThread(void* pvParameters)
 	// Create an audio buffer
 	static AudioBuffer* audioBufferPtr = new AudioBuffer();
 
-	// Create an AudioProcessor according to the hardware platform
-	AudioProcessor* audioProcessorPtr = nullptr;
-#ifdef OpFour_Hardware
-	void* ptr = OpFourAudioProcessor::getOpFourAudioProcessor();
-	audioProcessorPtr = dynamic_cast<AudioProcessor*>((AudioProcessor*)ptr);
-#endif
-//	if (audioProcessorPtr == nullptr)
-//		CN_ReportFault(eErrorCodes::AudioThreadError);
-
 	// Create an audio player and start it, this call should never return
 	sAudioThreadInitData* params = (sAudioThreadInitData*) pvParameters;
 	AudioProcessorPlayer* player = AudioProcessorPlayer::getAudioProcessorPlayer(params->audioProcessorPtr/*, audioBufferPtr*/);
 	player->sethi2sHandlePtr(params->hi2sHandlePtr);
-	player->setSynthesiserParamsPtr(params->synthesizerParamsPtr);
-	player->runAudioProcessor(/*audioProcessorPtr,*/ audioBufferPtr);
-
+//	player->setSynthesiserParamsPtr(params->synthesizerParamsPtr);
+	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = params->nerveNetCallBackPtr;
+	player->runAudioProcessor(audioBufferPtr, nerveNetCallBackPtr);
 	// We should never come here
 	CN_ReportFault(eErrorCodes::AudioThreadError);
 

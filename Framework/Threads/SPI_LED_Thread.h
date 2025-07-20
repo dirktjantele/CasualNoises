@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "stm32h7xx_hal.h"
+#include "main.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 

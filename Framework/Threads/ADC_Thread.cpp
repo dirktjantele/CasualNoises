@@ -21,8 +21,10 @@
 namespace CasualNoises
 {
 
-constexpr uint32_t noOfADC_Convertions	= 4;
+//constexpr uint32_t noOfADC_Convertions	= 4;
+constexpr uint32_t noOfADC_Convertions	= 2;
 volatile uint16_t ADC_Data[noOfADC_Convertions];			// Raw ADC data from DMA
+//__attribute__((section(".RAM_D3"))) uint16_t ADC_Data[noOfADC_Convertions];
 
 ADC_HandleTypeDef* ADC_adc;
 
@@ -38,9 +40,9 @@ bool ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if (hadc == ADC_adc)
 	{
-//		setTimeMarker_4();
+		setTimeMarker_4();
 
-//		resetTimeMarker_4();
+		resetTimeMarker_4();
 		return true;
 	} else
 	{
@@ -61,8 +63,7 @@ void ADC_Thread(void* pvParameters)
 	// Get arguments
 	sADC_ThreadData* arguments = (sADC_ThreadData*)pvParameters;
 	ADC_adc 							= arguments->hadc;
-	TIM_HandleTypeDef htim				= arguments->htim;
-	QueueHandle_t clientQueueHandle 	= arguments->clientQueueHandle;
+	TIM_HandleTypeDef* htim				= arguments->htim;
 
 	// Register a callback for the potentiometer adc
 	add_ADC_ConvCpltCallback(ADC_ConvCpltCallback);
@@ -74,7 +75,7 @@ void ADC_Thread(void* pvParameters)
 	res = HAL_ADC_Start_DMA(ADC_adc, (uint32_t *)ADC_Data, noOfADC_Convertions);
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
-	res = HAL_TIM_Base_Start(&htim);
+	res = HAL_TIM_Base_Start(htim);
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 
@@ -102,7 +103,7 @@ BaseType_t startADC_Thread(void *argument, TaskHandle_t* xHandlePtr)
 
 	// Create the thread to scan the ADC convertions
 	BaseType_t res = xTaskCreate(ADC_Thread, "ADC_Thread", DEFAULT_STACK_SIZE / 2, argument,
-			UI_THREAD_PRIORITY,	xHandlePtr);
+			ADC_THREAD_PRIORITY, xHandlePtr);
 	return res;
 
 }

@@ -10,6 +10,9 @@
 
 #ifdef NVM_DRIVER_SUPPORT
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 #include "W25Qxx_Driver.h"
 
 namespace CasualNoises {
@@ -43,7 +46,8 @@ W25Qxx_Driver::W25Qxx_Driver(const sNVM_DriverInitData* initDataPtr)
 		if (res != HAL_OK) goto error;
 		res = sendDeviceCommand(i, eFlashCommandCodes::Reset, 1);
 		if (res != HAL_OK) goto error;
-		HAL_Delay(1);					// Give the device time to reset (more than 64uSec)
+//		HAL_Delay(1);					// Give the device time to reset (more than 64uSec)
+		vTaskDelay(pdMS_TO_TICKS(1));
 		res = sendDeviceCommand(i, eFlashCommandCodes::ManufactuereDeviceId, 6);
 		if ((res != HAL_OK) ||
 				(((mInBuffer[4] != 0xef) || (mInBuffer[5] != 0x15)) &&
@@ -269,7 +273,8 @@ HAL_StatusTypeDef W25Qxx_Driver::waitUntilDeviceReady(uint16_t deviceNo)
 		res = readStatusRegisters(deviceNo);
 		if ((res != HAL_OK) || ((mStatusRegisters[deviceNo].sStatisBits_S7_S0 & 0x01) == 0))
 			break;
-		HAL_Delay(1);
+//		HAL_Delay(1);
+		vTaskDelay(pdMS_TO_TICKS(1));
 	}
 	return res;
 }
@@ -357,7 +362,7 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 
 	// Erase sector if required
 	HAL_StatusTypeDef res;
-	uint16_t deviceSelectPin;
+	uint16_t deviceSelectPin = 0xffff;
 	if (mSectorEraseRequired)
 	{
 
@@ -434,7 +439,8 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 	error:
 
 	// Chip select goes high to end the transaction
-	HAL_GPIO_WritePin (mInitDataPtr->deviceSelectPorts[deviceNo], deviceSelectPin, GPIO_PIN_SET);
+	if (deviceSelectPin != 0xffff)
+		HAL_GPIO_WritePin (mInitDataPtr->deviceSelectPorts[deviceNo], deviceSelectPin, GPIO_PIN_SET);
 
 	return res;
 

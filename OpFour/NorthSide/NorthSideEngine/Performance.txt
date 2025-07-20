@@ -1,0 +1,3 @@
+NorthSideAudioProcessor::processBlock:
+	buffer.copyAudio(NN_buffer)		363us			
+	

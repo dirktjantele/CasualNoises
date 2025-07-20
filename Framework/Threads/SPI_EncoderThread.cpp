@@ -158,7 +158,6 @@ void encoderThread(void* pvParameters)
 					break;
 				case signalType::enc_a:
 				{
-					sEncoderSignature* sigPtr = &signatures[encNo];
 					uint32_t indx = (signatures[encNo].enc_B_DevNo << 3) + signatures[encNo].enc_B_PinNo;
 					if (newStateTable[indx])
 						encIncTable[encNo] += 1;
