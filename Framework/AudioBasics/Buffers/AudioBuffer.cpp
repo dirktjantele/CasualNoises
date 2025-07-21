@@ -66,7 +66,14 @@ AudioBuffer::AudioBuffer(uint32_t numSamples, uint32_t numChannels)
 
 AudioBuffer::~AudioBuffer()
 {
-	 vPortFree((void *)mAudioBuffer);
+	 for (uint8_t i = 0; i < mNumChannels; ++i)
+	 {
+		 if (mAudioBuffer[i] != nullptr)
+		 {
+			 vPortFree((void *)mAudioBuffer[i]);
+			 mAudioBuffer[i] = nullptr;
+		 }
+	 }
 }
 
 //==============================================================================
