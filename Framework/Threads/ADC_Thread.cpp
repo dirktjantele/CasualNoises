@@ -18,15 +18,17 @@
 #include "Utilities/ReportFault.h"
 #include "SystemConfig.h"
 
+#include "semphr.h"
+
 namespace CasualNoises
 {
 
-//constexpr uint32_t noOfADC_Convertions	= 4;
-constexpr uint32_t noOfADC_Convertions	= 2;
-volatile uint16_t ADC_Data[noOfADC_Convertions];			// Raw ADC data from DMA
-//__attribute__((section(".RAM_D3"))) uint16_t ADC_Data[noOfADC_Convertions];
-
-ADC_HandleTypeDef* ADC_adc;
+// ADC conversion buffers
+ADC_HandleTypeDef* 	ADC_adc;
+constexpr uint32_t 	noOfADC_Convertions	= 4;
+volatile uint16_t 	ADC_Data[noOfADC_Convertions];			// Raw ADC data from DMA
+bool	 			newCvDataAvailable = false;
+SemaphoreHandle_t   CvSemaphoreHandle = nullptr;
 
 //==============================================================================
 //          ADC_ConvCpltCallback()
@@ -38,9 +40,13 @@ ADC_HandleTypeDef* ADC_adc;
 //==============================================================================
 bool ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	if (hadc == ADC_adc)
+	if ((hadc == ADC_adc)  && ( ! newCvDataAvailable))
 	{
 		setTimeMarker_4();
+
+		newCvDataAvailable = true;
+		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+		xSemaphoreGiveFromISR(CvSemaphoreHandle, &xHigherPriorityTaskWoken);
 
 		resetTimeMarker_4();
 		return true;
@@ -56,6 +62,7 @@ bool ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 // Handle all ADC events
 //
 //  CasualNoises    18/04/2025  First implementation
+//  CasualNoises    21/07/2025  Using semaphores to synchronise events
 //==============================================================================
 void ADC_Thread(void* pvParameters)
 {
@@ -79,13 +86,21 @@ void ADC_Thread(void* pvParameters)
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 
+	// Create a binary semaphore to awake thread when new data is available
+	CvSemaphoreHandle = xSemaphoreCreateBinary();
+
 	// Loop here awaiting new potentiometer values
 	for (;;)
 	{
 
-		// ToDo: use a semaphore to wake-up the thread
-		// Wait x ticks
-		osDelay(10);
+		// Wait for new data
+		BaseType_t res = xSemaphoreTake(CvSemaphoreHandle, portMAX_DELAY);
+		UNUSED(res);
+
+		// ... Process data
+
+
+		newCvDataAvailable = false;
 
 	}
 

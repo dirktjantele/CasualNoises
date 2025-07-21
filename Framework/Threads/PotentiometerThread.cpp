@@ -20,6 +20,8 @@
 #include "Utilities/ReportFault.h"
 #include "SystemConfig.h"
 
+#include "semphr.h"
+
 namespace CasualNoises
 {
 
@@ -35,10 +37,11 @@ constexpr uint32_t noOfPotConvertions	= 4;
 constexpr uint32_t potAverageCount		= 10;			// This will generate new data at 10Hz
 
 ADC_HandleTypeDef* Potentiometer_adc;
-volatile uint16_t potData[noOfPotConvertions];			// Raw ADC data from DMA
-uint32_t potDataRunning[noOfPotConvertions];			// Running average values
-uint32_t potConvCnt = 0;
-bool	 newPotDataAvailable = false;
+volatile 			uint16_t potData[noOfPotConvertions];			// Raw ADC data from DMA
+uint32_t 			potDataRunning[noOfPotConvertions];			// Running average values
+uint32_t 			potConvCnt = 0;
+bool	 			newPotDataAvailable = false;
+SemaphoreHandle_t	PotSemaphoreHandle = nullptr;
 
 //==============================================================================
 //          PotentiometerConvCpltCallback()
@@ -63,6 +66,8 @@ bool PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
 		{
 			potConvCnt = 0;
 			newPotDataAvailable = true;
+			BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+			xSemaphoreGiveFromISR(PotSemaphoreHandle, &xHigherPriorityTaskWoken);
 		}
 
 		return true;
@@ -79,6 +84,7 @@ bool PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
 // Handle all potentiometer events
 //
 //  CasualNoises    01/11/2024  First implementation
+//  CasualNoises    21/07/2025  Using semaphores to synchronise events
 //==============================================================================
 void potentiometerThread(void* pvParameters)
 {
@@ -114,42 +120,44 @@ void potentiometerThread(void* pvParameters)
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 
+	// Create a binary semaphore to awake thread when new data is available
+	PotSemaphoreHandle = xSemaphoreCreateBinary();
+
 	// Loop here awaiting new potentiometer values
 	for (;;)
 	{
+
 //		setTimeMarker_3();
 
+		// Wait for new data
+		BaseType_t res = xSemaphoreTake(PotSemaphoreHandle, portMAX_DELAY);
+		UNUSED(res);
+
 		// New data available and average difference is larger than 1% -> send message
-		if (newPotDataAvailable)
+		for (uint32_t i = 0; i < noOfPotConvertions; ++i)
 		{
-			for (uint32_t i = 0; i < noOfPotConvertions; ++i)
+			potDataRunning[i] /= potAverageCount;
+			potDataAverage[i] = (float)(potDataRunning[i] * 100) / 65535.0f;
+			float diff = potDataAverage[i] - prevPotDataAverage[i];
+			if ((diff > 1.0f) || (diff < -1.0f))
 			{
-				potDataRunning[i] /= potAverageCount;
-				potDataAverage[i] = (float)(potDataRunning[i] * 100) / 65535.0f;
-				float diff = potDataAverage[i] - prevPotDataAverage[i];
-				if ((diff > 1.0f) || (diff < -1.0f))
+				sPotentiometerEventStruct event;
+				event.eventSourceID = eEventSourceID::potentiometerThreadSourceID;
+				event.potentiometerId = i;
+				event.potentiometerValue = potDataAverage[i];
+				if (clientQueueHandle != nullptr)
 				{
-					sPotentiometerEventStruct event;
-					event.eventSourceID = eEventSourceID::potentiometerThreadSourceID;
-					event.potentiometerId = i;
-					event.potentiometerValue = potDataAverage[i];
-					if (clientQueueHandle != nullptr)
-					{
-						BaseType_t res = xQueueSendToBack(clientQueueHandle, (void*)&event, 10);
-						if (res != pdPASS)
-							CN_ReportFault(eErrorCodes::adcThreadError);
-					}
-					prevPotDataAverage[i] = potDataAverage[i];
+					BaseType_t res = xQueueSendToBack(clientQueueHandle, (void*)&event, 10);
+					if (res != pdPASS)
+						CN_ReportFault(eErrorCodes::adcThreadError);
 				}
-				potDataRunning[i] = 0;
+				prevPotDataAverage[i] = potDataAverage[i];
 			}
-			newPotDataAvailable = false;
+			potDataRunning[i] = 0;
 		}
+		newPotDataAvailable = false;
 
 //		resetTimeMarker_3();
-
-		// Wait 10ms ticks
-		vTaskDelay(pdMS_TO_TICKS(10));
 
 	}
 
