@@ -2,7 +2,7 @@
   ==============================================================================
 
     Wavetable_LFO.h
-    Created: Dec 5, 2024
+    Created: 05/12/2024
     Author:  Dirk Tjantele
 
   ==============================================================================
@@ -27,34 +27,22 @@ namespace CasualNoises
 //==============================================================================
 class Wavetable_LFO
 {
-protected:
-
-	 Wavetable_LFO() = default;
-
 public:
+
+	 Wavetable_LFO() = delete;
+
 	 Wavetable_LFO ( const Wavetable_LFO& ) = default;
-	 Wavetable_LFO ( Wavetable_LFO&& ) = default;
+	 Wavetable_LFO ( Wavetable_LFO&& ) 		= default;
 
 	//==============================================================================
 	//          Wavetable_LFO
 	//
-	// 	Calculate basic waves that fill up the table
-	//					mWavetable[0] = sine wave
-	//					mWavetable[1] = triangle wave
-	//					mWavetable[2] = sawtooth wave
-	//					mWavetable[3] = square wave
-	//					mWavetable[4] = sine wave
-	//					mWavetable[5] = sawtooth wave
-	//					mWavetable[6] = triangle wave
-	//					mWavetable[7] = square wave
-	//					mWavetable[8] = sine wave
-	//
 	//  CasualNoises    06/12/2024  First implementation
 	//==============================================================================
 	Wavetable_LFO(float sampleRate, float frequency = 440.0f)
-	: mSampleRate ( sampleRate ),
-	  mFrequency ( frequency ),
-	  mWaveIndex ( 0.0f )
+	: mWaveIndex ( 0.0f ),
+	  mSampleRate ( sampleRate ),
+	  mFrequency ( frequency )
 	{
 		setFrequency(mFrequency);
 		setMorphFactor(0.0f);
@@ -76,7 +64,7 @@ public:
 	//
 	//  CasualNoises    06/12/2024  First implementation
 	//==============================================================================
-	inline void setFrequency(float frequency) noexcept
+	virtual void setFrequency(float frequency) noexcept
 	{
 		mFrequency	= frequency;
 		mStep 		= (mFrequency / mSampleRate) * mWaveLength;
@@ -142,10 +130,10 @@ public:
 	//
 	//  CasualNoises    06/12/2024  First implementation
 	//==============================================================================
-	virtual const float nextSample() noexcept
+	virtual float nextSample() noexcept
 	{
 		float nextWaveIndex = mWaveIndex + mStep;
-		if (nextWaveIndex > mWaveLength)
+		if (nextWaveIndex >= mWaveLength)
 			nextWaveIndex -= mWaveLength;
 
 		uint32_t integerPart1 = static_cast<uint32_t>(mWaveIndex);
@@ -197,7 +185,7 @@ public:
 			wptr2 = audioBuffer.getWritePointer(1);
 		for (uint32_t i = 0; i < mSampleRate; ++i)
 		{
-			float sample = nextSample();
+			float sample = Wavetable_LFO::nextSample();
 			*wptr1++ = sample;
 			if (wptr2 != nullptr)
 				*wptr2++ = sample;
@@ -212,6 +200,18 @@ public:
 	}
 
 protected:
+
+	// Calculated from the target frequency
+	float			 	mWaveIndex				{ 0.0f };
+	float  				mStep					{ 0.0f };
+
+	// No of samples in a single wave
+	const uint32_t		mWaveLength				{ 1024 };
+
+	const uint32_t		mNoOfWavesToCalculate	{ 4 };
+	const uint32_t		mWavetableCount			{ 9 };
+
+private:
 
 	//==============================================================================
 	//          createWaveTable()
@@ -313,23 +313,123 @@ protected:
 	float				mFrequency				{ 0.0f };
 	float				mMorphAmount			{ -1.0f };			// 0.0f <= mMorphAmount <= 1.0f
 
-	const uint32_t		mWaveLength				{ 1024 };
-
-private:
-	const uint32_t		mNoOfWavesToCalculate	{ 4 };
-	const uint32_t		mWavetableCount			{ 9 };
-
 	static float** 		mWavetable;
-
-	// Calculated from the target frequency
-	float  				mStep					{ 0.0f };
-	float			 	mWaveIndex				{ 0.0f };
 
 	// Calculated from morph factor
 	uint32_t			mIndexTable1			{ 0 };
 	uint32_t			mIndexTable2			{ 0 };
 	float 				mScale1					{ 0.0f };
 	float 				mScale2					{ 0.0f };
+
+};
+
+class CachedWavetable_LFO : public Wavetable_LFO
+{
+public:
+
+	 CachedWavetable_LFO() = delete;
+	~CachedWavetable_LFO()
+	{
+		if (mWavetablePtr != nullptr)
+			delete mWavetablePtr;
+	};
+
+	CachedWavetable_LFO ( const CachedWavetable_LFO& ) = default;
+	CachedWavetable_LFO ( CachedWavetable_LFO&& ) 	   = default;
+
+	//==============================================================================
+	//          CachedWavetable_LFO
+	//
+	//  CasualNoises    21/07/2025  First implementation
+	//==============================================================================
+	CachedWavetable_LFO(float sampleRate, float frequency = 440.0f)
+	: Wavetable_LFO(sampleRate, frequency)
+	{
+		mWavetablePtr = new float[mWaveLength];
+		reset();
+		AudioBuffer audioBuffer = AudioBuffer(mWaveLength, 1);
+		fillAudioBuffer(audioBuffer);
+		const float* rptr = audioBuffer.getReadPointer(0);
+		for (uint32_t i = 0; i < mWaveLength; ++i)
+		{
+			mWavetablePtr[i] = *rptr++;
+		}
+		setMorphFactor(0.0f);
+	};
+
+	//==============================================================================
+	//          setMorphFactor
+	//
+	// factor:	0.0f -> 1.0f
+	//
+	//  CasualNoises    21/07/2025  First implementation
+	//==============================================================================
+	virtual void setMorphFactor(float morph) noexcept override
+	{
+
+		if (morph != getMorphFactor())
+		{
+			Wavetable_LFO::setMorphFactor(morph);
+
+			// Fill wave table buffer
+			AudioBuffer audioBuffer = AudioBuffer(mWaveLength, 1);
+			fillAudioBuffer(audioBuffer);
+			const float* rptr = audioBuffer.getReadPointer(0);
+			for (uint32_t i = 0; i < mWaveLength; ++i)
+			{
+				mWavetablePtr[i] = *rptr++;
+			}
+
+			// Normalise wave table
+			float max = -1.0f;
+			float min =  1.0f;
+			for (uint32_t i = 0; i < mWaveLength; ++i)
+			{
+				if (mWavetablePtr[i] > max)
+					max = mWavetablePtr[i];
+				if (mWavetablePtr[i] < min)
+					min = mWavetablePtr[i];
+			}
+			for (uint32_t i = 0; i < mWaveLength; ++i)
+			{
+				mWavetablePtr[i] = cn_map(mWavetablePtr[i], min, max, -1.0f, 1.0f);
+			}
+
+		}
+
+	}
+
+	//==============================================================================
+	//          nextSample
+	//
+	//  CasualNoises    21/07/2025  First implementation
+	//==============================================================================
+	float nextSample() noexcept override
+	{
+
+		float nextWaveIndex = mWaveIndex + mStep;
+		if (nextWaveIndex >= mWaveLength)
+			nextWaveIndex -= mWaveLength;
+/*
+		uint32_t integerPart1 = static_cast<uint32_t>(mWaveIndex);
+		int integerPart2 = static_cast<int>(nextWaveIndex);
+		float fraction = mWaveIndex - static_cast<float>(integerPart1);
+
+		float sample = (mWavetablePtr[integerPart1] * (1.0f - fraction)) + (mWavetablePtr[integerPart2] * fraction);
+*/
+
+		float sample = mWavetablePtr[static_cast<uint32_t>(mWaveIndex)];
+
+
+		mWaveIndex = nextWaveIndex;
+
+		return sample;
+	}
+
+
+private:
+
+	float* 	mWavetablePtr		{ nullptr };
 
 };
 
