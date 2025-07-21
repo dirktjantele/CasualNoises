@@ -50,6 +50,7 @@
 
 #include "Synthesizer/Basics/ADSR.h"
 #include "Synthesizer/Basics/LFO.h"
+#include "Synthesizer/Basics/PulsarSynth.h"
 #include "Synthesizer/Basics/Wavetable_LFO.h"
 
 #include "Synthesizer/Utilities/SmoothedValue.h"
