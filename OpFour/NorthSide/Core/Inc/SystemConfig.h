@@ -26,10 +26,10 @@ constexpr uint32_t	DEFAULT_STACK_SIZE 				= 256;
 
 constexpr uint32_t	AUDIO_THREAD_PRIORITY			= configMAX_PRIORITIES - 1;
 constexpr uint32_t	NERVENET_THRAD_PRIORITY			= AUDIO_THREAD_PRIORITY - 10;
-constexpr uint32_t	ADC_THREAD_PRIORITY				= AUDIO_THREAD_PRIORITY - 20;
 constexpr uint32_t	UI_THREAD_PRIORITY				= 10;
+constexpr uint32_t	EVENT_THREAD_PRIORITY			= 10;
 constexpr uint32_t	POT_THREAD_PRIORITY				= UI_THREAD_PRIORITY;
-constexpr uint32_t	CV_IN_THREAD_PRIORITY			= UI_THREAD_PRIORITY + 10;
+constexpr uint32_t	CV_IN_THREAD_PRIORITY			= 2;
 constexpr uint32_t	TRIGGER_THREAD_PRIORITY			= 1;
 
 constexpr uint32_t	MAX_NO_OF_NERVENET_MASTER_THREADS = 1;			// Only 1 master thread is supported

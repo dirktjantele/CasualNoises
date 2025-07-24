@@ -1043,6 +1043,16 @@ void StartDefaultTask(void *argument)
     // Get the amount of free heap memory
     size_t xFreeHeapSize = xPortGetFreeHeapSize();
     UNUSED(xFreeHeapSize);
+
+    // Create a trigger thread to toggle TimeMarker_1
+#ifdef CASUALNOISES_TRIGGER_THREAD
+	TaskHandle_t xHandle;
+	BaseType_t _res = xTaskCreate(CasualNoises::TriggerThread, "TriggerThread", 32, nullptr,
+			TRIGGER_THREAD_PRIORITY, &xHandle);
+	if (_res != pdPASS)
+		CN_ReportFault(eErrorCodes::runtimeError);
+#endif
+
 /*
 	// Create a TLV driver
 	CasualNoises::sNVM_DriverInitData NVM_Data;
@@ -1069,12 +1079,12 @@ void StartDefaultTask(void *argument)
 */
 
 	// Synthesiser parameters
-//    static CasualNoises::sSynthesiserParams synthParams;
-//	synthParams.frequency = 440.0f;
+    static CasualNoises::sSynthesiserParams synthParams;
+	synthParams.frequency = 110.0f;
 
 	// Create an audio thread and run it
 	static CasualNoises::AudioProcessor* audioProcessorPtr = CasualNoises::SouthSideAudioProcessor::getSouthSideAudioProcessor();
-	audioProcessorPtr->prepareToPlay(SAMPLE_FREQUENCY, NUM_SAMPLES, nullptr);
+	audioProcessorPtr->prepareToPlay(SAMPLE_FREQUENCY, NUM_SAMPLES, &synthParams);
 
 	// There are no NerveNet threads running
 	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_MASTER_THREADS; ++i)
@@ -1101,8 +1111,6 @@ void StartDefaultTask(void *argument)
 	BaseType_t res = CasualNoises::startNerveNetSlaveThread(&nerveNetSlaveThread, &nerveNetThreadData, &xHandlePtr);
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
-
-
 
 	// Update status led's
 	displayStatus(scReady);

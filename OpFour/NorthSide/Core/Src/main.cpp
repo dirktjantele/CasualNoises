@@ -31,7 +31,9 @@
 #include "YellowPages.h"
 
 #include "NorthSideAudioProcessor.h"
+
 #include "UI_Thread.h"
+#include "EventHandlerThread.h"
 
 #include "../CasualNoises/NerveNet/NerveNetMessage.h"
 
@@ -76,6 +78,7 @@ DMA_HandleTypeDef hdma_spi6_tx;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim8;
+TIM_HandleTypeDef htim15;
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
@@ -110,6 +113,7 @@ static void MX_TIM2_Init(void);
 static void MX_I2C4_Init(void);
 static void MX_TIM8_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM15_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -251,6 +255,7 @@ int main(void)
   MX_I2C4_Init();
   MX_TIM8_Init();
   MX_TIM4_Init();
+  MX_TIM15_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -1002,9 +1007,9 @@ static void MX_TIM8_Init(void)
 
   /* USER CODE END TIM8_Init 1 */
   htim8.Instance = TIM8;
-  htim8.Init.Prescaler = 2400-1;
+  htim8.Init.Prescaler = 240 - 1;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 10-1;
+  htim8.Init.Period = 40-1;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -1027,6 +1032,52 @@ static void MX_TIM8_Init(void)
   /* USER CODE BEGIN TIM8_Init 2 */
 
   /* USER CODE END TIM8_Init 2 */
+
+}
+
+/**
+  * @brief TIM15 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM15_Init(void)
+{
+
+  /* USER CODE BEGIN TIM15_Init 0 */
+
+  /* USER CODE END TIM15_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM15_Init 1 */
+
+  /* USER CODE END TIM15_Init 1 */
+  htim15.Instance = TIM15;
+  htim15.Init.Prescaler = 24000 - 1;
+  htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim15.Init.Period = 100 - 1;
+  htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim15.Init.RepetitionCounter = 0;
+  htim15.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim15) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim15, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim15, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM15_Init 2 */
+
+  /* USER CODE END TIM15_Init 2 */
 
 }
 
@@ -1433,8 +1484,16 @@ void StartDefaultTask(void *argument)
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 
+	// Wait until GUI thread is running
 	while ( ! CasualNoises::gYellowPages.gUI_ThreadRunning)
-		osDelay(1);
+		vTaskDelay(pdMS_TO_TICKS(10));
+
+	// Start event handler thread
+	CasualNoises::sEventHandlerThreadData eventHandlerData;
+	eventHandlerData.TimerHandle = &htim15;
+	res = CasualNoises::StartEventHandlerThread(&eventHandlerData);
+	if (res != pdPASS)
+		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 
 	// Create an audio thread and run it
 	CasualNoises::AudioProcessor* audioProcessorPtr = CasualNoises::NorthSideAudioProcessor::getNorthSideAudioProcessor();
@@ -1526,6 +1585,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM4)
   {
 	  CasualNoises::Handle_LED_RefreshInterrupts();
+  }
+
+  if (htim->Instance == TIM15)
+  {
+	  CasualNoises::eventHandlerTimerInterrupts();
   }
 
   /* USER CODE END Callback 0 */

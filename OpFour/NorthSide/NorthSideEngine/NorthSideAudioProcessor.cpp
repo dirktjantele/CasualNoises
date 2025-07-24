@@ -42,21 +42,6 @@ void NorthSideAudioProcessor::prepareToPlay (
 	mSampleRate 					= sampleRate;
 	mMaximumExpectedSamplesPerBlock = maximumExpectedSamplesPerBlock;
 
-	mLFO_ptr = new LFO(mSampleRate, 440.0f);
-
-/*
-	mSynthesiserParamsPtr			= static_cast<sSynthesiserParams*>(synthParams);
-	if (mSynthesiserParamsPtr == nullptr)
-		CN_ReportFault(eErrorCodes::runtimeError);
-
-	mWavetable_LFO_1_ptr = new Wavetable_LFO(mSampleRate, mSynthesiserParamsPtr->frequency);
-	mWavetable_LFO_1_ptr->setMorphFactor(mSynthesiserParamsPtr->morph);
-
-	mWavetable_LFO_2_ptr = new Wavetable_LFO(mSampleRate, mSynthesiserParamsPtr->frequency);
-	mWavetable_LFO_2_ptr->setMorphFactor(mSynthesiserParamsPtr->morph);
-
-	mSmoothedValuePtr = new SmoothedValue(1.0f, mMaximumExpectedSamplesPerBlock * 4);
-*/
 }
 
 //==============================================================================

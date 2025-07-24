@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <UI_DisplayHandlers/DisplayHandlerRoot.h>
+#include "GUI_Handler/DisplayHandlerRoot.h"
 #include "NorthSideAudioProcessor.h"
 
 namespace CasualNoises

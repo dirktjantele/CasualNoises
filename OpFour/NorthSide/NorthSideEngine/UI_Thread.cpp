@@ -19,13 +19,13 @@
 
 #include "../../Common Sources/SynthEngineMessage.h"
 
-#include "UI_DisplayHandlers/MainDisplayHandler.h"
+#include "GUI_Handler/MainDisplayHandler.h"
 
 namespace CasualNoises
 {
 
 // Pointer to the current display page handler
-DisplayHandlerRoot*				currentDisplayHandlerPtr	{ nullptr };
+static DisplayHandlerRoot* gCurrentDisplayHandlerPtr	{ nullptr };
 
 //==============================================================================
 //          handleNerveNetCallBacks()
@@ -36,17 +36,15 @@ DisplayHandlerRoot*				currentDisplayHandlerPtr	{ nullptr };
 //==============================================================================
 void handleNerveNetCallBacks(CasualNoises::sNerveNetData* ptr)
 {
+	// ToDo implement GUI
 	uint32_t size 	 = ptr->size;
-	if (size > 0)
-	{
-		uint8_t* dataPtr = ptr->data;
-	}
+	uint8_t* dataPtr = ptr->data;
 }
 
 //==============================================================================
 //          UI_Thread()
 //
-// Start all threads except for the TriggerThread which is started first
+// Start all threads except for the TriggerThread which is started first in main()
 // ... handle all UI events
 //
 //  CasualNoises    15/02/2025  First implementation
@@ -54,6 +52,7 @@ void handleNerveNetCallBacks(CasualNoises::sNerveNetData* ptr)
 void UI_Thread(void* pvParameters)
 {
 
+	// Get parameters
 	UI_ThreadData* params = (UI_ThreadData*)pvParameters;
 	void (*funcPtr)(CasualNoises::sNerveNetData* ptr) = &handleNerveNetCallBacks;
 	params->nerveNetCallBackPtr = &funcPtr;
@@ -136,11 +135,15 @@ void UI_Thread(void* pvParameters)
 	TaskHandle_t xPotentiometerThreadHandle;
 	params->potentiometerThreadData.clientQueueHandle = xUI_ThreadQueue;
 	res = startPotentiometerThread((void *)&params->potentiometerThreadData, &xPotentiometerThreadHandle);
+	if (res != pdPASS)
+		CN_ReportFault(eErrorCodes::UI_ThreadError);
 
 	// Create an ADC handler thread - CV inputs are handled by the southside ToDo: remove this code
 	TaskHandle_t xADC_ThreadHandle;
-	params->ADC_ThreadData.clientQueueHandle = xUI_ThreadQueue;
+//	params->ADC_ThreadData.clientQueueHandle = xUI_ThreadQueue;
 	res = startADC_Thread((void *)&params->ADC_ThreadData, &xADC_ThreadHandle);
+	if (res != pdPASS)
+		CN_ReportFault(eErrorCodes::UI_ThreadError);
 
 	// Short delay while the init display is visual
 	vTaskDelay(pdMS_TO_TICKS(1000));
@@ -170,8 +173,8 @@ void UI_Thread(void* pvParameters)
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 
 	// Enter main display
-	currentDisplayHandlerPtr = new MainDisplayHandler();
-	currentDisplayHandlerPtr->openDisplayPage(oledDriverPtr);
+	gCurrentDisplayHandlerPtr = new MainDisplayHandler();
+	gCurrentDisplayHandlerPtr->openDisplayPage(oledDriverPtr);
 
 	// Main thread loop
 	for (;;)
@@ -217,7 +220,7 @@ void UI_Thread(void* pvParameters)
 //==============================================================================
 //          Start_UI_Thread()
 //
-// Handle all UI events
+// StartGUI thread
 //
 //  CasualNoises    15/02/2025  First implementation
 //==============================================================================

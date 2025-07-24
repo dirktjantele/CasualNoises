@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include "main.h"
-
-#include "CasualNoises.h"
+#include "AudioProcessors/Processors/AudioProcessor.h"
+#include "Utilities/ReportFault.h"
 
 namespace CasualNoises
 {
@@ -22,7 +21,7 @@ typedef struct
 	float 		frequency;
 } sSynthesiserParams;
 
-//class SouthSideAudioProcessor
+class PulsarSynthEngine;
 class SouthSideAudioProcessor : public AudioProcessor
 {
 public:
@@ -50,7 +49,9 @@ public:
 		return nullptr;
 	}
 
-	void 	prepareToPlay (float sampleRate, uint32_t maximumExpectedSamplesPerBlock, void* synthParams) override;
+	void 	prepareToPlay (float sampleRate,
+						   uint32_t maximumExpectedSamplesPerBlock,
+						   void* inSynthParams) override;
 	void 	releaseResources() override;
 	void 	processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) override;
 	void 	processBlock (AudioBuffer &buffer, AudioBuffer& NN_buffer) override;
@@ -62,12 +63,7 @@ private:
 	static SouthSideAudioProcessor	mSouthSideAudioProcessor;
 	static bool						mIsAllocated;
 
-	float 							mSampleRate 					{ 0.0f };
-	uint32_t						mMaximumExpectedSamplesPerBlock { 0 };
-
-	float							mPotionMeterValues[4];
-
-	LFO*							mLFO_ptr						{ nullptr };
+	PulsarSynthEngine*				mPulsarSynthEnginePtr			{ nullptr };
 
 };
 

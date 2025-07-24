@@ -13,6 +13,7 @@ TIM2 ADC1 trigger (1 KHz)
 		TIM2 counter is also used in NerveNetMasterThread for performance meassurment - counter runs at 1MHz
 TIM4 led handler thread
 TIM8 ADC2 trigger
+TIM15 used as internal synth clock (reset ADSR, retrigger arpeggiater, ...) (100Hz)
 
 Using BDMA on SPI6
 ------------------
