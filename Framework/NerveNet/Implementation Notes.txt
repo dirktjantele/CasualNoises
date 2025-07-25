@@ -1,0 +1,75 @@
+NerveNet message
+----------------
+
+Struct NerveNetAudio
+{
+... size : NUM_SAMPLES in SystemConfig.h
+}
+
+Struct NerveNetData
+{
+... size : 1 KByte
+}
+
+Struct NerveNetMessage
+{
+	NerveNetAudio	audio;
+	NerveNetData	data;
+}
+
+Tx buffers
+						-------------------
+	To be send (TBS)	| NerveNetMessage |		Data to be send on next NerveNet cycle
+						-------------------
+						-------------------
+	Waiting				| NerveNetMessage |		Data waiting to be send after 
+						-------------------
+						-------------------
+	Filling				| NerveNetMessage |		Buffer used to add new data to
+						-------------------
+				
+	FillIndex: index in Filling buffer used to add data
+				when rotating buffers, this index should be set to zero
+
+Rx buffers
+						-------------------
+	Receiving			| NerveNetMessage |		Buffer used to receive data on next NerveNet cycle
+						-------------------
+						-------------------
+	Processing			| NerveNetMessage |		Data received from previous NerveNet cycle
+						-------------------
+
+NerveNet cycle
+--------------
+	
+a) I2S HAL_I2SEx_TxRxHalfCpltCallback & HAL_I2SEx_TxRxCpltCallback IRQ
+b) NerveNet Request line		(REQ)
+c) NerveNet Acknowledge line	(ACK)
+d) SPI clock & data lines
+
+a) __|-|______________________________
+b) ______|-----------------|__________
+c) __________|-----------------|______
+d)             <- data ->
+
+     ^   ^   ^             ^   ^
+     1   2   3             4   5
+
+1) on master I2S IRQ (generate new audio)
+	- Master swaps Rx buffers
+	- Master set Request line high to start NerveNet cycle to get new audio in the Receiving buffer
+	- Call processBlock() processing data using the Rx Processing buffer
+2) on slave rising REQ IRQ
+	- Slave starts SPI TxRx DMA in slave mode
+	- Slave sets ACK line high 	
+ 	- slave runs AudioProcessor::processBlock
+3) on master ACK IRQ : start of NerveNet data transfert
+	- Master starts SPI TxRx DMA in master mode
+ 	- Master rotates Tx buffers (reset FillIndex)
+4) on master SPI IRQ : end of NerveNet data transfert 
+ 	- Master receives an DMA completed IRQ & sets REQ low
+ 	- Slave sets ACK line low
+ 5) on slave faling REQ request
+ 	- slave rotates Tx buffers (reset FillIndex)
+ 	- Slave swaps Rx buffers
+ 	
