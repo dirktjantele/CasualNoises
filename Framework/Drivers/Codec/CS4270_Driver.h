@@ -80,7 +80,7 @@ public:
 /* 5 */			0x00,					// Transition (independent volume controls)
 /* 6 */			0x00,					// No mute on channels A & b
 /* 7 */			0x00,					// DAC A Vol (0 db)
-/* 8 */			0x00,					// DAC A Vol (0 db)
+/* 8 */			0x00,					// DAC B Vol (0 db)
 		};
 		//confgSettings[3] |= 0x20;		// Enable digital loop back
 

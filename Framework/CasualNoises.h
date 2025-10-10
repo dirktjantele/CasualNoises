@@ -15,6 +15,7 @@
 
 #include "AudioProcessors/Processors/AudioProcessor.h"
 
+#include "Core/Maths/Average.h"
 #include "Core/Maths/MathsFunctions.h"
 #include "Core/Maths/Range.h"
 
@@ -29,8 +30,11 @@
 #include "Drivers/IO_Drivers/PCF8574_Driver.h"
 #include "Drivers/NVM Drivers/NVM Driver/NVM_Driver.h"
 #include "Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h"
-#include "Drivers/TLV Driver/TLV_Driver.h"
 #include "Drivers/OLED/SSD1309_Driver.h"
+#include "Drivers/ST7735S/ST7735S_Driver.h"
+#include "Drivers/TLV Driver/TLV_Driver.h"
+
+#include "DSP/Filter.h"
 
 #include "Graphics/Contexts/GraphicsContext.h"
 #include "Graphics/Fonts/Font.h"

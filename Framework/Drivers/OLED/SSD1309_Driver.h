@@ -150,7 +150,7 @@ public:
 		HAL_GPIO_WritePin(mConfigDataPtr->DC_PORT, mConfigDataPtr->DC_PIN, GPIO_PIN_SET);
 		HAL_StatusTypeDef res;
 		res = HAL_SPI_Transmit(mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize, HAL_MAX_DELAY);
-// ToDo: uses dma for the transfert
+// ToDo: use dma for the transfert
 //		res = HAL_SPI_Transmit_DMA(mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize);
 		HAL_GPIO_WritePin(mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_SET);
 		return res;

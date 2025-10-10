@@ -25,12 +25,12 @@
 namespace CasualNoises
 {
 
-constexpr uint32_t 	cNoOfPotConvertions		= 4;
+//constexpr uint32_t 	cNoOfPotConvertions		= 4;
 constexpr uint32_t 	cPotAverageCount		= 10;				// This will generate new data at 10Hz
 
 ADC_HandleTypeDef* 	gPotentiometer_adc;
-volatile uint16_t 	gPotData[cNoOfPotConvertions];				// Raw ADC data from DMA
-uint32_t 			gPotDataRunning[cNoOfPotConvertions];		// Running average values
+volatile uint16_t 	gPotData[NUM_POT_INPUTS];					// Raw ADC data from DMA
+uint32_t 			gPotDataRunning[NUM_POT_INPUTS];		// Running average values
 uint32_t 			gPotConvCnt 			= 0;
 bool	 			gNewPotDataAvailable 	= false;
 SemaphoreHandle_t	gPotSemaphoreHandle 	= nullptr;
@@ -49,7 +49,7 @@ bool PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
 	{
 
 		// Update running average
-		for (uint32_t i = 0; i < cNoOfPotConvertions; ++i)
+		for (uint32_t i = 0; i < NUM_POT_INPUTS; ++i)
 			gPotDataRunning[i] += gPotData[i];
 		gPotConvCnt += 1;
 
@@ -80,11 +80,11 @@ bool PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
 //==============================================================================
 void potentiometerThread(void* pvParameters)
 {
-	float    potDataAverage[cNoOfPotConvertions];			// Average values in %
-	float	 prevPotDataAverage[cNoOfPotConvertions];		// Previous potentiometer values
+	float    potDataAverage[NUM_POT_INPUTS];			// Average values in %
+	float	 prevPotDataAverage[NUM_POT_INPUTS];		// Previous potentiometer values
 
 	// Clear conversion data buffers
-	for (uint32_t i = 0; i < cNoOfPotConvertions; ++i)
+	for (uint32_t i = 0; i < NUM_POT_INPUTS; ++i)
 	{
 		gPotData[i] 			= 0;
 		gPotDataRunning[i]		= 0;
@@ -105,7 +105,7 @@ void potentiometerThread(void* pvParameters)
 	HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start(gPotentiometer_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
-	res = HAL_ADC_Start_DMA(gPotentiometer_adc, (uint32_t *)gPotData, cNoOfPotConvertions);
+	res = HAL_ADC_Start_DMA(gPotentiometer_adc, (uint32_t *)gPotData, NUM_POT_INPUTS);
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 	HAL_TIM_Base_Start(&htim);
@@ -114,6 +114,8 @@ void potentiometerThread(void* pvParameters)
 
 	// Create a binary semaphore to awake thread when new data is available
 	gPotSemaphoreHandle = xSemaphoreCreateBinary();
+	if (gPotSemaphoreHandle == nullptr)
+		CN_ReportFault(eErrorCodes::adcThreadError);
 
 	// Loop here awaiting new potentiometer values
 	for (;;)
@@ -125,7 +127,7 @@ void potentiometerThread(void* pvParameters)
 			CN_ReportFault(eErrorCodes::adcThreadError);
 
 		// New data available and average difference is larger than 1% -> send message
-		for (uint32_t i = 0; i < cNoOfPotConvertions; ++i)
+		for (uint32_t i = 0; i < NUM_POT_INPUTS; ++i)
 		{
 			gPotDataRunning[i] /= cPotAverageCount;
 			potDataAverage[i] = (float)(gPotDataRunning[i] * 100) / 65535.0f;

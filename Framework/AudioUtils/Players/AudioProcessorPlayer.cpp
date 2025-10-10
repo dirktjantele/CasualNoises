@@ -170,7 +170,7 @@ void AudioProcessorPlayer::runAudioProcessor(
 #endif
 
 		// Convert incoming audio data to float format and fill the AudioBuffer
-		for (uint32_t i = 0, j = 0; i < numSamples; i += 2, ++j)
+		for (uint32_t i = 0, j = 0; i < (numSamples * 2); i += 2, ++j)
 		{
 			float fsample = static_cast<float>(rx_audioDataPtr[i]);
 			fsample /= scale;

@@ -74,75 +74,28 @@ public:
 	float nextValue() noexcept
 	{
 
-		// Recalculate state table
-		if ((mADSR_State == eADSR_State::waiting) && mUpdateState)
+		// Restart envelop?
+		if (mResetCycle)
 		{
-			mUpdateState = false;
-			mStateCountDown = 0;
-			mCurrentStateIndex = 0;
-			if (mHoldTime1 > 0)
-			{
-				mStateTable[mCurrentStateIndex]     = eADSR_State::hold1;
-				mValueIncrementTable[mCurrentStateIndex] = 0.0f;
-				mStateCountDown = mHoldTime1;
-				mCurrentStateIndex += 1;
-			}
-			if (mAttackTime > 0)
-			{
-				mStateTable[mCurrentStateIndex]     = eADSR_State::attack;
-				mValueIncrementTable[mCurrentStateIndex] = 1.0f / mAttackTime;
-				if (mStateCountDown == 0)
-					mStateCountDown = mAttackTime;
-				mCurrentStateIndex += 1;
-			}
-			if (mHoldTime2 > 0)
-			{
-				mStateTable[mCurrentStateIndex] 	= eADSR_State::hold2;
-				mValueIncrementTable[mCurrentStateIndex] = 0.0f ;
-				if (mStateCountDown == 0)
-					mStateCountDown = mHoldTime2;
-				mCurrentStateIndex += 1;
-			}
-			if (mDecayTime > 0)
-			{
-				mStateTable[mCurrentStateIndex] = eADSR_State::decay;
-				mValueIncrementTable[mCurrentStateIndex] = (mSustainLevel - 1.0f) / mDecayTime;
-				if (mStateCountDown == 0)
-					mStateCountDown = mDecayTime;
-				mCurrentStateIndex += 1;
-			}
-			if (mSustainTime > 0)
-			{
-				mStateTable[mCurrentStateIndex] = eADSR_State::sustain;
-				mValueIncrementTable[mCurrentStateIndex] = 0.0f ;
-				if (mStateCountDown == 0)
-					mStateCountDown = mSustainTime;
-				mCurrentStateIndex += 1;
-			}
-			if (mReleaseTime > 0)
-			{
-				mStateTable[mCurrentStateIndex] = eADSR_State::release;
-				mValueIncrementTable[mCurrentStateIndex] = (mSustainLevel - 1.0f) / mReleaseTime;
-				if (mStateCountDown == 0)
-					mStateCountDown = mReleaseTime;
-				mCurrentStateIndex += 1;
-			}
-			mStateTable[mCurrentStateIndex] = eADSR_State::waiting;
-			mCurrentStateIndex = 0;
-			mValueIncrement    = mValueIncrementTable[mCurrentStateIndex];
-			mADSR_State 	   = mStateTable[0];
-			mCurrentValue	   = 0.0f;
+			mCurrentStateIndex 	= 0;
+			mADSR_State     	= mStateTable[mCurrentStateIndex];
+			mStateCountDown		= mFirstStateCountDown;
+			mValueIncrement 	= mValueIncrementTable[mCurrentStateIndex];
+			mCurrentValue		= 0.0f;
+			mResetCycle 		= false;
 		}
 
 		// Proceed to next stage?
 		if ((mADSR_State != eADSR_State::waiting) && (mStateCountDown <= 0))
 		{
 			mCurrentStateIndex += 1;
-			mADSR_State     = mStateTable[mCurrentStateIndex];
-			mValueIncrement = mValueIncrementTable[mCurrentStateIndex];
+			mADSR_State     	= mStateTable[mCurrentStateIndex];
+			mValueIncrement 	= mValueIncrementTable[mCurrentStateIndex];
 			switch (mADSR_State)
 			{
 			case eADSR_State::waiting:
+				mCurrentValue		= 0.0f;
+				mValueIncrement		= 0.0f;
 				break;
 			case eADSR_State::hold1:
 				mStateCountDown = mHoldTime1;
@@ -168,7 +121,8 @@ public:
 		// Update state
 		float value      = mCurrentValue;
 		mCurrentValue   += mValueIncrement;
-		mStateCountDown -= 1;
+		if (mStateCountDown > 0)
+			mStateCountDown -= 1;
 
 		return value;
 	}
@@ -180,23 +134,43 @@ public:
 	//==============================================================================
 	void handleTrigger() noexcept
 	{
+
+		// When waiting, just start...
+		if (mADSR_State == eADSR_State::waiting)
+		{
+			mResetCycle = true;
+			return;
+		}
+
+		// Else, act according the envelop type
 		switch (mADSR_Type)
 		{
 		case eADSR_Type::cyclic:
 		case eADSR_Type::oneShot:
+			if (mADSR_State == eADSR_State::waiting)
+			{
+				mADSR_State		= mStateTable[0];
+				mValueIncrement = mValueIncrementTable[0];
+				mStateCountDown = mFirstStateCountDown;
+			}
+			else
+			{
+				mValueIncrement += 0;						// Why do we come here???
+			}
 			break;
 		case eADSR_Type::triggerOff:
 			if (mADSR_State == eADSR_State::sustain)
 			{
 				mCurrentStateIndex += 1;
+				mValueIncrement = mValueIncrementTable[mCurrentStateIndex];
 				mStateCountDown = mReleaseTime;
 			}
-			else
+			else										// ToDo what to do on a trigger when not in sustain state???
 			{
-				mCurrentStateIndex  = 0;
-				mStateCountDown		= 0;
+				mResetCycle = true;
 			}
-			mADSR_State = mStateTable[mCurrentStateIndex];
+			mADSR_State 	= mStateTable[mCurrentStateIndex];
+			mValueIncrement	= mValueIncrementTable[mCurrentStateIndex];
 			break;
 		case eADSR_Type::retrigger:
 			mCurrentStateIndex = 0;
@@ -238,46 +212,107 @@ public:
 			mSustainTime = 0;
 		} else if ((mADSR_Type == eADSR_Type::cyclic) || (mADSR_Type == eADSR_Type::oneShot))
 		{
-			mSustainTime = mCycleTime - sum;
+			if (mSustainLevel > 0.0f)
+				mSustainTime = mCycleTime - sum;
 		} else
 		{
 			mSustainTime = 0xffffffff;
 		}
 
-		mUpdateState = true;
+		if (mReleaseTime == 0.0f)
+		{
+			mReleaseTime += 0.01f * mSampleRate;
+			mSustainTime -= 0.01f * mSampleRate;
+		}
+
+		// Recalculate state table
+		mFirstStateCountDown = 0;
+		mCurrentStateIndex = 0;
+		if (mHoldTime1 > 0)
+		{
+			mStateTable[mCurrentStateIndex]     = eADSR_State::hold1;
+			mValueIncrementTable[mCurrentStateIndex] = 0.0f;
+			mFirstStateCountDown = mHoldTime1;
+			mCurrentStateIndex += 1;
+		}
+		if (mAttackTime > 0)
+		{
+			mStateTable[mCurrentStateIndex]     = eADSR_State::attack;
+			mValueIncrementTable[mCurrentStateIndex] = 1.0f / mAttackTime;
+			if (mFirstStateCountDown == 0)
+				mFirstStateCountDown = mAttackTime;
+			mCurrentStateIndex += 1;
+		}
+		if (mHoldTime2 > 0)
+		{
+			mStateTable[mCurrentStateIndex] 	= eADSR_State::hold2;
+			mValueIncrementTable[mCurrentStateIndex] = 0.0f ;
+			if (mFirstStateCountDown == 0)
+				mFirstStateCountDown = mHoldTime2;
+			mCurrentStateIndex += 1;
+		}
+		if (mDecayTime > 0)
+		{
+			mStateTable[mCurrentStateIndex] = eADSR_State::decay;
+			mValueIncrementTable[mCurrentStateIndex] = (mSustainLevel - 1.0f) / mDecayTime;
+			if (mFirstStateCountDown == 0)
+				mFirstStateCountDown = mDecayTime;
+			mCurrentStateIndex += 1;
+		}
+		if (mSustainTime > 0)
+		{
+			mStateTable[mCurrentStateIndex] = eADSR_State::sustain;
+			mValueIncrementTable[mCurrentStateIndex] = 0.0f ;
+			if (mFirstStateCountDown == 0)
+				mFirstStateCountDown = mSustainTime;
+			mCurrentStateIndex += 1;
+		}
+		if (mReleaseTime > 0)
+		{
+			mStateTable[mCurrentStateIndex] = eADSR_State::release;
+			mValueIncrementTable[mCurrentStateIndex] = (mSustainLevel / mReleaseTime) * -1.0f;
+			if (mFirstStateCountDown == 0)
+				mFirstStateCountDown = mReleaseTime;
+			mCurrentStateIndex += 1;
+		}
+		mStateTable[mCurrentStateIndex] = eADSR_State::waiting;
+		mValueIncrementTable[mCurrentStateIndex] = 0.0f;
+		mCurrentStateIndex	= 0;
+		mCurrentValue		= 0.0f;
 
 	}
 
 private:
-	float			mSampleRate 		{ 0.0f };
+	float			mSampleRate 			{ 0.0f };
 
 	// adsr type and current state
-	eADSR_Type		mADSR_Type			{ eADSR_Type::triggerOff };
-	eADSR_State		mADSR_State			{ eADSR_State::waiting };
+	eADSR_Type		mADSR_Type				{ eADSR_Type::triggerOff };
+	eADSR_State		mADSR_State				{ eADSR_State::waiting };
 
 	// Times below are in samples
-	uint32_t		mHoldTime1			{ 0 };
-	uint32_t		mAttackTime			{ 0 };
-	uint32_t		mHoldTime2			{ 0 };
-	uint32_t		mDecayTime			{ 0 };
-	float			mSustainLevel		{ 0.0f };
-	uint32_t		mSustainTime		{ 0 };
-	uint32_t		mReleaseTime		{ 0 };
-	uint32_t		mCycleTime			{ 0 };
+	uint32_t		mHoldTime1				{ 0 };
+	uint32_t		mAttackTime				{ 0 };
+	uint32_t		mHoldTime2				{ 0 };
+	uint32_t		mDecayTime				{ 0 };
+	float			mSustainLevel			{ 0.0f };
+	uint32_t		mSustainTime			{ 0 };
+	uint32_t		mReleaseTime			{ 0 };
+	uint32_t		mCycleTime				{ 0 };
 
 	// adsr settings
 	tADSR_Settings	mSettings;
 
 	// State table
-	bool			mUpdateState		{ false };
 	eADSR_State		mStateTable[(uint32_t)eADSR_State::release];
 	float			mValueIncrementTable[(uint32_t)eADSR_State::release];
-	uint32_t		mCurrentStateIndex	{ 0 };
-	int32_t			mStateCountDown		{ 0 };
+	uint32_t		mCurrentStateIndex		{ 0 };
+	uint32_t		mFirstStateCountDown	{ 0 };
+	int32_t			mStateCountDown			{ 0 };
+	bool			mResetCycle				{ false };
 
 	// Current value and increment
-	float			mCurrentValue		{ 0 };
-	float 			mValueIncrement		{ 0 };
+	float			mCurrentValue			{ 0 };
+	float 			mValueIncrement			{ 0 };
 
 };
 

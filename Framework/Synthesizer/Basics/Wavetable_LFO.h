@@ -15,8 +15,6 @@
 #include <arm_math.h>
 #include "maths.h"
 
-#include "main.h"			// ToDo: remove include
-
 #include "AudioBasics/Buffers/AudioBuffer.h"
 
 namespace CasualNoises
@@ -350,7 +348,7 @@ public:
 	//
 	//  CasualNoises    21/07/2025  First implementation
 	//==============================================================================
-	CachedWavetable_LFO(float sampleRate, float frequency = 440.0f)
+	CachedWavetable_LFO(float sampleRate, float frequency)
 	: Wavetable_LFO(sampleRate, frequency)
 	{
 		mWavetablePtr = new float[mWaveLength];
@@ -413,20 +411,13 @@ public:
 		float nextWaveIndex = mWaveIndex + mStep;
 		if (nextWaveIndex >= mWaveLength)
 			nextWaveIndex -= mWaveLength;
-/*
-		uint32_t integerPart1 = static_cast<uint32_t>(mWaveIndex);
-		int integerPart2 = static_cast<int>(nextWaveIndex);
-		float fraction = mWaveIndex - static_cast<float>(integerPart1);
-
-		float sample = (mWavetablePtr[integerPart1] * (1.0f - fraction)) + (mWavetablePtr[integerPart2] * fraction);
-*/
 
 		float sample = mWavetablePtr[static_cast<uint32_t>(mWaveIndex)];
-
 
 		mWaveIndex = nextWaveIndex;
 
 		return sample;
+
 	}
 
 

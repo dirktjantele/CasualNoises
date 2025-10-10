@@ -14,8 +14,6 @@
 
 #include "Wavetable_LFO.h"
 
-#include "main.h"													// ToDo remove this
-
 #include "../../AudioBasics/Processors/WaveFolder.h"
 
 namespace CasualNoises
@@ -77,8 +75,8 @@ public:
 		{
 			CachedWavetable_LFO::mWaveIndex = mPulsarCurvePtr[idx];
 			sample = CachedWavetable_LFO::nextSample();
+			sample = fold(sample, mWaveFold);
 		}
-		sample = fold(sample, mWaveFold);
 
 		// Increase index, on next cycle update morph amount to avoid clicks
 		//      also update pulsar curve
@@ -151,6 +149,17 @@ public:
 	{
 		mWaveFold = cn_limit(fold, 0.0f, 1.0f);
 		mWaveFold = cn_map((float)mWaveFold, 0.0f, 1.0f, 1.0f, 10.0f);
+	}
+
+	//==============================================================================
+	//          setFrequency
+	//
+	//  CasualNoises    28/07/2025  First implementation
+	//==============================================================================
+	virtual void setFrequency(float frequency) noexcept
+	{
+		CachedWavetable_LFO::setFrequency(frequency);
+		mPulsarStep = mStep;
 	}
 
 private:

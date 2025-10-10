@@ -45,6 +45,18 @@ static void CN_Delay()
 	}
 }
 
+// ------------------------------ Empty fault handler  -------------------
+#ifdef USE_EMPTY_FAULT_HANDLER
+static void CN_ReportFault(eErrorCodes faultCode)
+{
+	vTaskSuspendAll();
+	for (;;)
+	{
+	}
+}
+
+#endif
+
 // ------------------------------ NerveNet  ------------------------------
 #ifdef NERVE_NET
 
