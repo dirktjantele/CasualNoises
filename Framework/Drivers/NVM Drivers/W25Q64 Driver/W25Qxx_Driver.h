@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#ifdef NVM_DRIVER_SUPPORT
+#ifdef CASUALNOISES_NVM_DRIVER_SUPPORT
 
 #pragma once
 

@@ -6,11 +6,11 @@
  */
 
 #include <arm_math.h>
-#include "maths.h"
+#include "../../maths.h"
 
 #include "IIRFilters.h"
 
-#include "Core/Maths/MathsFunctions.h"
+#include "../../Core/Maths/MathsFunctions.h"
 
 namespace CasualNoises {
 namespace Filter {

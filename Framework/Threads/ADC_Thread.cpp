@@ -20,7 +20,7 @@
 
 #ifdef ADC_NERVENET_SUPPORT				// ToDo: remove this on Fellhorn rev 2
 
-#include "../../Common Sources/SynthEngineMessage.h"
+#include "SynthEngineMessage.h"
 #include "NerveNet/NerveNetMasterThread.h"
 #include "../../NorthSideEngine/YellowPages.h"
 

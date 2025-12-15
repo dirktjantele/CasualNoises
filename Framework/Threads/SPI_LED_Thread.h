@@ -4,7 +4,7 @@
     SPI_LED_Thread.h
 
     This thread handles led's connected to 74HC595 shift registers
-    Communication is done using SPI
+    Communication is done using SPI using (B)DMA
     Current implementation supports up to 4 shift registers for a total of 32 led's
 
     Created: 04/07/2025

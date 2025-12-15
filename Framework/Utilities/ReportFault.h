@@ -84,7 +84,33 @@ static void CN_ReportFault(eErrorCodes faultCode)
 #endif
 
 // ------------------------------ Fellhorn  ------------------------------
-#ifdef NORTH_SIDE
+#ifdef FELLHORN_DEVICE_BOARD
+
+__attribute__((unused))
+static void CN_ReportFault(eErrorCodes faultCode)
+{
+	vTaskSuspendAll();
+	uint32_t code = (uint32_t)faultCode;
+	for (;;)
+	{
+		if (code & 0x00000001)
+			HAL_GPIO_WritePin(GPIOB, STATUS_LED_1_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000002)
+			HAL_GPIO_WritePin(GPIOB, STATUS_LED_2_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000004)
+			HAL_GPIO_WritePin(GPIOE, STATUS_LED_3_Pin, GPIO_PIN_RESET);
+		if (code & 0x00000008)
+			HAL_GPIO_WritePin(GPIOE, STATUS_LED_4_Pin, GPIO_PIN_RESET);
+		CN_Delay();
+		HAL_GPIO_WritePin(GPIOB, STATUS_LED_2_Pin|STATUS_LED_1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOE, STATUS_LED_4_Pin|STATUS_LED_3_Pin, GPIO_PIN_SET);
+		CN_Delay();
+	}
+}
+
+#endif
+
+#ifdef FELLHORN_NORTH_SIDE
 
 __attribute__((unused))
 static void CN_ReportFault(eErrorCodes faultCode)
@@ -110,7 +136,7 @@ static void CN_ReportFault(eErrorCodes faultCode)
 
 #endif
 
-#ifdef SOUTH_SIDE
+#ifdef FELLHORN_SOUTH_SIDE
 
 __attribute__((unused))
 static void CN_ReportFault(eErrorCodes faultCode)
@@ -120,16 +146,16 @@ static void CN_ReportFault(eErrorCodes faultCode)
 	for (;;)
 	{
 		if (code & 0x00000001)
-			HAL_GPIO_WritePin(GPIOB, STATUS_LED_1_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOG, SS_STATUS_LED_1_Pin, GPIO_PIN_RESET);
 		if (code & 0x00000002)
-			HAL_GPIO_WritePin(GPIOB, STATUS_LED_2_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOG, SS_STATUS_LED_2_Pin, GPIO_PIN_RESET);
 		if (code & 0x00000004)
-			HAL_GPIO_WritePin(GPIOF, STATUS_LED_3_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOG, SS_STATUS_LED_3_Pin, GPIO_PIN_RESET);
 		if (code & 0x00000008)
-			HAL_GPIO_WritePin(GPIOF, STATUS_LED_4_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOG, SS_STATUS_LED_4_Pin, GPIO_PIN_RESET);
 		CN_Delay();
-		HAL_GPIO_WritePin(GPIOB, STATUS_LED_2_Pin|STATUS_LED_1_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOF, STATUS_LED_4_Pin|STATUS_LED_3_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOG, SS_STATUS_LED_2_Pin|SS_STATUS_LED_1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOG, SS_STATUS_LED_4_Pin|SS_STATUS_LED_3_Pin, GPIO_PIN_SET);
 		CN_Delay();
 	}
 }

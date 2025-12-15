@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#ifdef USE_AUDIO_BUFFER
+
 #include "Wavetable_LFO.h"
 
 namespace CasualNoises
@@ -17,3 +19,4 @@ float** 		Wavetable_LFO::mWavetable = nullptr;
 
 } // namespace CasualNoises
 
+#endif

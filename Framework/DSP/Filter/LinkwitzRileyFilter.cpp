@@ -7,7 +7,7 @@ LinkwitzRileyFilter *
 #include "IIRFilters.h"
 
 #include <arm_math.h>
-#include "maths.h"
+#include "../../maths.h"
 
 #include "IIRFilters.h"
 

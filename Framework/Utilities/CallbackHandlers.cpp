@@ -15,14 +15,16 @@
 
 #include "CallbackHandlers.h"
 
-#include "NerveNet/NerveNetMasterThread.h"
-#include "NerveNet/NerveNetSlaveThread.h"
+#include "../NerveNet/NerveNetMasterThread.h"
+#include "../NerveNet/NerveNetSlaveThread.h"
 
-#include "Utilities/ReportFault.h"
+#include "ReportFault.h"
 
 // Global NerveNet master an slave thread pointers
+#ifdef CASUALNOISES_NERVENET_THREAD
 extern CasualNoises::NerveNetMasterThread* gNerveNetMasterThreadPtr[MAX_NO_OF_NERVENET_MASTER_THREADS];
 extern CasualNoises::NerveNetSlaveThread* gNerveNetSlaveThreadPtr[MAX_NO_OF_NERVENET_SLAVE_THREADS];
+#endif
 
 // CN_TimerPeriodElapsedCallback handlers
 // --------------------------------------

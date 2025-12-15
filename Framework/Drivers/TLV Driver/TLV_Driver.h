@@ -10,7 +10,7 @@
   ==============================================================================
 */
 
-#ifdef NVM_DRIVER_SUPPORT
+#ifdef CASUALNOISES_NVM_DRIVER_SUPPORT
 
 #pragma once
 
@@ -18,7 +18,7 @@
 
 namespace CasualNoises {
 
-const uint32_t			cMagicCode 		= 0x09122024;
+const uint32_t			cMagicCode 		= 0x14122025;
 const uint32_t			cFreeTLV_Tag 	= 'e' << 24 | 'e' << 16 | 'r' << 8 | 'F';		// "Free"
 
 /*

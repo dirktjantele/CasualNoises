@@ -205,8 +205,13 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 
 	// Audio buffers to be used in AudioProcessor::processBlock() call
+#ifdef USE_AUDIO_BUFFER
 	AudioBuffer* inBufferPtr  = new AudioBuffer();
 	AudioBuffer* outBufferPtr = new AudioBuffer();
+#else
+	AudioBuffer* inBufferPtr  = nullptr;
+	AudioBuffer* outBufferPtr = nullptr;
+#endif
 
 	// Thread is ready
 	mThreadReady = true;
@@ -221,7 +226,11 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	}
 
 	// Theoretical cycle time in micro sec
+#ifdef SAMPLE_FREQUENCY
 	int32_t cycleTime = 1000000 / (SAMPLE_FREQUENCY / NUM_SAMPLES);
+#else
+	int32_t cycleTime = 0;
+#endif
 
 	// Main thread loop
 	for (;;)
@@ -283,9 +292,11 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 			}
 
 			// Generate new audio in the current filling buffer using audio from the current processing buffer
+#ifdef USE_AUDIO_BUFFER
 			inBufferPtr->importAudio(mRxMessageBuffers[mRxProcessingBufferIndex]->audio.audioData);
 			mSouthSideAudioProcessorPtr->processBlock(*inBufferPtr, *outBufferPtr);
 			outBufferPtr->exportAudio(mTxMessageBuffers[mTxFillingBufferIndex]->audio.audioData);
+#endif
 
 			resetTimeMarker_2();
 

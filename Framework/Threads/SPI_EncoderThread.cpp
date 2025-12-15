@@ -65,7 +65,7 @@ void encoderThread(void* pvParameters)
 		{
 			indx = (signatures[encNo].enc_A_DevNo << 3) + signatures[encNo].enc_A_PinNo;
 			typeTablePtr[indx]  = signalType::enc_a;
-			encNoTablePtr[indx] = signatures[encNo].encoderNo;
+//			encNoTablePtr[indx] = signatures[encNo].encoderNo;
 		}
 		if (signatures[encNo].enc_B_DevNo < 0xff)
 		{

@@ -4,7 +4,7 @@
     SPI_LED_Thread.cpp
 
     This thread handles led's connected to 74HC595 shift registers
-    Communication is done using SPI using BDMA (Basic DMA)
+    Communication is done using SPI using (B)DMA
     Current implementation supports up to 4 shift registers for a total of 32 led's
 
     Created: 04/07/2025
@@ -34,7 +34,8 @@ GPIO_TypeDef* 			LT_latchPort;
 uint16_t 				LT_latchPin;
 
 constexpr uint32_t stateDepth = 25;
-__attribute__((section(".RAM_D3"))) uint32_t state[stateDepth];
+//__attribute__((section(".RAM_D3"))) uint32_t state[stateDepth];
+uint32_t state[stateDepth];
 
 uint32_t				LT_CurrentStateNo = 0;
 
@@ -102,6 +103,7 @@ bool handle_LT_DMA_Cplt(SPI_HandleTypeDef* hspi)
 // Main led driver thread
 //
 //  CasualNoises    04/07/2025  First implementation
+//  CasualNoises    14/12/2025  Bug fix in led no mapping
 //==============================================================================
 void LED_Thread(void* pvParameters)
 {
@@ -148,17 +150,21 @@ void LED_Thread(void* pvParameters)
 	for (;;)
 	{
 
+		// Get led no
 		sLED_Event event;
 		BaseType_t res = xQueueReceive(xUI_ThreadQueue, &event, portMAX_DELAY);
 		if (res != pdPASS)
 			CN_ReportFault(eErrorCodes::UI_ThreadError);
 
-		uint32_t ledBitNum = event.ledBitNum << 8;
+		// Map it to a bit mask
+		uint32_t ledBitNum = 0x0001 << (event.ledBitNum - 1);;
 
+		// Update state
 		uint32_t noOfOnTicks = (event.ledIntensity * stateDepth) / 100;
 		uint32_t indx = 0;
 		for ( ; indx < noOfOnTicks; ++indx)
 			state[indx] &= ~ledBitNum;
+		state[indx] &= ~ledBitNum;
 		for ( ; indx < stateDepth; ++indx)
 			state[indx] |= ledBitNum;
 

@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#ifdef USE_SSD1309_DRIVER
+#ifdef CASUALNOISES_SSD1309_DRIVER
 
 #pragma once
 
@@ -56,6 +56,7 @@ enum class bitOperations
 //          SSD1309_Driver class
 //
 //  CasualNoises    25/12/2024  First implementation
+//  CasualNoises    13/12/2025  Made it more generic for Fellhorn rev 2
 //==============================================================================
 class SSD1309_Driver
 {
@@ -112,7 +113,7 @@ public:
 	{
 		for (uint32_t y = 0; y < cDisplayHeight; ++y)
 			for (uint32_t x = 0; x < cDisplayWidth; ++x)
-			mBitMap[x][y] = 0x00;
+				mBitMap[x][y] = 0x00;
 		return refreshDisplay();
 	}
 
@@ -459,11 +460,13 @@ public:
 	//
 	//  CasualNoises    28/12/2024  First implementation
 	//==============================================================================
+#ifdef USE_AUDIO_BUFFER
 	void drawWave(const AudioBuffer& audioBuffer)
 	{
 		const float* rpt = audioBuffer.getReadPointer(0);
 		drawWave(rpt);
 	}
+#endif
 
 	//==============================================================================
 	//          getDisplayWidth()
@@ -486,10 +489,10 @@ public:
 	}
 
 private:
-	static constexpr int32_t		cDisplayWidth		= DISPLY_WIDTH;
-	static constexpr int32_t		cDisplayHeight		= DISPLAY_HEIGHT;
-	static constexpr int32_t		cBitMapSize			= cDisplayWidth * cDisplayHeight;
-	static constexpr int32_t		cBitMapBufferSize	= cBitMapSize / 8;
+	static constexpr int32_t	cDisplayWidth 		= 128;
+	static constexpr int32_t	cDisplayHeight		= 64;
+	static constexpr int32_t	cBitMapSize			= cDisplayWidth * cDisplayHeight;
+	static constexpr int32_t	cBitMapBufferSize	= cBitMapSize / 8;
 
 	sSSD1309_ConfigData*	mConfigDataPtr	{ nullptr };
 	uint8_t					mBitMap[cDisplayWidth][cDisplayHeight];

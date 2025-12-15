@@ -10,7 +10,7 @@
   ==============================================================================
 */
 
-#ifdef TLV_DRIVER_SUPPORT
+#ifdef CASUALNOISES_NVM_DRIVER_SUPPORT
 
 #include "TLV_Driver.h"
 
