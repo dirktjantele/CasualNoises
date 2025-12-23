@@ -86,7 +86,9 @@ uint32_t TLV_Driver::findNextTLV (uint32_t tag, uint32_t index)
 	// Find TLV until end of NVM space
 	while ((index < mNVM_AfterEndIndex) &&
 			(getTag(index) != tag))
+	{
 		index += getLength(index);
+	}
 
 	// Return index if TLV found
 	if (index >= mNVM_AfterEndIndex)
@@ -116,6 +118,7 @@ bool TLV_Driver::addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
 	{
 		if (getLength(index) >= length + 2)
 			break;
+		index = findNextTLV (cFreeTLV_Tag, index);
 	}
 	if (index == 0)
 		return false;
@@ -165,8 +168,37 @@ void TLV_Driver::deleteTLV(uint32_t tag, bool deleteAll)
 		proceed = deleteAll;
 	}
 
+	// ToDo join with next free tlv if there is one
+
 	// Save changes into the flash devices
 	mNVM_DriverPtr->flushSectorCache();
+
+}
+
+//==============================================================================
+//          updateTLV()
+//
+// Update a TLV in the flash
+// If the TLV does not already exists, create one
+// If the TLV exists, but differs in size, delete it and create a new one
+// 	otherwise, update the TLV in location
+//
+//  CasualNoises    22/12/2025  First implementation
+//==============================================================================
+bool TLV_Driver::updateTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
+{
+
+	// Does TLV exists?
+	uint32_t tlvIndex =	findNextTLV(tag, 0);
+	if (tlvIndex == 0)
+	{
+		return addTLV(tag, length, valuePtr);
+	}
+
+	// ToDo finish this code
+
+	// Mission successful
+	return true;
 
 }
 
@@ -193,7 +225,7 @@ uint32_t TLV_Driver::getLargestFreeTLV_Size()
 //==============================================================================
 //          getTotalNoOfTLV_FreeBlocks()
 //
-// Scan all TLV's and return the no of free RLV blocks found
+// Scan all TLV's and return the no of free TLV blocks found
 //
 //  CasualNoises    13/02/2025  First implementation
 //==============================================================================
@@ -207,6 +239,32 @@ uint32_t TLV_Driver::getTotalNoOfTLV_FreeBlocks()
 		index = findNextTLV (cFreeTLV_Tag, index);
 	}
 	return count;
+}
+
+//==============================================================================
+//          getTotalNoOfTLVs()
+//
+// Scan all TLV's and return the no of TLV blocks found
+//		return 0 if the flash is inconsistent
+//
+//  CasualNoises    23/12/2025  First implementation
+//==============================================================================
+uint32_t TLV_Driver::getTotalNoOfTLVs()
+{
+	uint32_t index = 1;
+	uint32_t count = 0;
+	while (index <  mNVM_AfterEndIndex)
+	{
+		count += 1;
+		uint32_t step = getLength(index);
+		if (step == 0)
+			return 0;
+		index += step;
+	}
+	if (index > mNVM_AfterEndIndex)
+		return 0;
+	else
+		return count;
 }
 
 } // namespace CasualNoises

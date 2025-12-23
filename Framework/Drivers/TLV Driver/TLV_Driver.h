@@ -18,8 +18,8 @@
 
 namespace CasualNoises {
 
-const uint32_t			cMagicCode 		= 0x14122025;
-const uint32_t			cFreeTLV_Tag 	= 'e' << 24 | 'e' << 16 | 'r' << 8 | 'F';		// "Free"
+const uint32_t			cMagicCode 		= 0x23122025;
+const uint32_t			cFreeTLV_Tag 	= 0x65657246;		// "Free"
 
 /*
  * The TLV_Driver class
@@ -34,11 +34,19 @@ public:
 
 	void		deleteAllTLVs();
 	uint32_t	findNextTLV (uint32_t tag, uint32_t index);
-	bool		addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr);
+	bool		addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr);				// Length in words
+	bool		addTLV_Bytes(uint32_t tag, uint32_t length, uint32_t* valuePtr)			// Length in bytes
+									{ bool flag = addTLV(tag, (length + 3) / 4, valuePtr);
+									  return flag;
+									}
 	void		deleteTLV(uint32_t tag, bool deleteAll);
+	bool		updateTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr);
+	uint32_t	getTLV_Length(uint32_t index)			{ return  (getLength(index)) - 2; }
+	uint32_t	getTLV_LengthBytes(uint32_t index)		{ return ((getLength(index)) - 2) * 4; }
 
 	uint32_t	getLargestFreeTLV_Size();
 	uint32_t	getTotalNoOfTLV_FreeBlocks();
+	uint32_t	getTotalNoOfTLVs();
 
 	NVM_Driver*	getNVM_DriverPtr()	{ return mNVM_DriverPtr; }
 
