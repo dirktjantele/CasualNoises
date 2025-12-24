@@ -36,11 +36,22 @@ public:
 	uint32_t	findNextTLV (uint32_t tag, uint32_t index);
 	bool		addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr);				// Length in words
 	bool		addTLV_Bytes(uint32_t tag, uint32_t length, uint32_t* valuePtr)			// Length in bytes
-									{ bool flag = addTLV(tag, (length + 3) / 4, valuePtr);
-									  return flag;
+									{
+										bool flag = addTLV(tag, (length + 3) / 4, valuePtr);
+										return flag;
+									}
+	uint32_t	readTLV(uint32_t index, uint32_t length, uint32_t* valuePtr);			// Length in words
+	uint32_t	readTLV_Bytes(uint32_t index, uint32_t length, uint32_t* valuePtr)		// Length in bytes
+									{
+										uint32_t cnt = readTLV(index, (length + 3) / 4, valuePtr);
+										return cnt;
+									}
+	bool		updateTLV(uint32_t index, uint32_t length, uint32_t* valuePtr);
+	bool		updateTLV_Bytes(uint32_t index, uint32_t length, uint32_t* valuePtr)
+									{
+										return updateTLV(index, (length + 3) / 4, valuePtr);
 									}
 	void		deleteTLV(uint32_t tag, bool deleteAll);
-	bool		updateTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr);
 	uint32_t	getTLV_Length(uint32_t index)			{ return  (getLength(index)) - 2; }
 	uint32_t	getTLV_LengthBytes(uint32_t index)		{ return ((getLength(index)) - 2) * 4; }
 

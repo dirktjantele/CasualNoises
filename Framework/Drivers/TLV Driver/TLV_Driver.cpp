@@ -87,7 +87,10 @@ uint32_t TLV_Driver::findNextTLV (uint32_t tag, uint32_t index)
 	while ((index < mNVM_AfterEndIndex) &&
 			(getTag(index) != tag))
 	{
-		index += getLength(index);
+		uint32_t step = getLength(index);
+		if (step ==0)
+			return 0;
+		index += step;
 	}
 
 	// Return index if TLV found
@@ -108,6 +111,8 @@ uint32_t TLV_Driver::findNextTLV (uint32_t tag, uint32_t index)
 // Return: false if no free NVM space was available
 //
 //  CasualNoises    30/10/2023  First implementation
+//  CasualNoises    24/12/2025	Bug fix
+//
 //==============================================================================
 bool TLV_Driver::addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
 {
@@ -124,7 +129,7 @@ bool TLV_Driver::addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
 		return false;
 
 	// Create a new free TLV after this one
-	if (getLength(index) > 8)
+	if (getLength(index) > (length + 8))
 	{
 		uint32_t newIndex = index + length + 2;
 		setTag(newIndex, cFreeTLV_Tag);
@@ -145,6 +150,27 @@ bool TLV_Driver::addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
 	// Mission successful
 	return true;
 
+}
+
+//==============================================================================
+//          readTLV()
+//
+// Read a TLV from flash into memory
+// length: TLV length in words
+// Return: no of words read
+//
+//  CasualNoises    23/12/2024  First implementation
+//==============================================================================
+uint32_t TLV_Driver::readTLV(uint32_t index, uint32_t length, uint32_t* valuePtr)
+{
+	uint32_t tlvLength = getLength(index) - 2;
+	if (tlvLength > length)
+		tlvLength = length;
+	for (uint32_t i = 0; i < tlvLength; ++i)
+	{
+		valuePtr[i] = getValue(index + i);
+	}
+	return tlvLength;
 }
 
 //==============================================================================
@@ -183,23 +209,14 @@ void TLV_Driver::deleteTLV(uint32_t tag, bool deleteAll)
 // If the TLV exists, but differs in size, delete it and create a new one
 // 	otherwise, update the TLV in location
 //
-//  CasualNoises    22/12/2025  First implementation
+//  CasualNoises    24/12/2025  First implementation
 //==============================================================================
-bool TLV_Driver::updateTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
+bool TLV_Driver::updateTLV(uint32_t index, uint32_t length, uint32_t* valuePtr)
 {
-
-	// Does TLV exists?
-	uint32_t tlvIndex =	findNextTLV(tag, 0);
-	if (tlvIndex == 0)
-	{
-		return addTLV(tag, length, valuePtr);
-	}
-
-	// ToDo finish this code
-
-	// Mission successful
-	return true;
-
+	uint32_t tag = getTag(index);
+	setTag(index, cFreeTLV_Tag);
+	bool res = addTLV(tag, length, valuePtr);
+	return res;
 }
 
 //==============================================================================
@@ -261,10 +278,9 @@ uint32_t TLV_Driver::getTotalNoOfTLVs()
 			return 0;
 		index += step;
 	}
-	if (index > mNVM_AfterEndIndex)
+	if (index > (mNVM_AfterEndIndex + 1))
 		return 0;
-	else
-		return count;
+	return count;
 }
 
 } // namespace CasualNoises
