@@ -1,10 +1,10 @@
 /*
   ==============================================================================
 
-    Component.h
+    ComboBox.h
     Created: 24/12/2025
 
-    Base class for all components
+    Used to select a string out of a list of strings
 
     Author:  Dirk Tjantele
 
@@ -13,24 +13,30 @@
 
 #pragma once
 
+#include "Component.h"
+
 #include "../CasualNoises/Core/Text/String.h"
 
 namespace CasualNoises
 {
 
-class Component
+typedef struct
+{
+	String		text;
+	uint32_t 	value;
+} sComboBoxItem;
+
+class ComboBox final : public Component
 {
 public:
-	 Component() = default;
-	 Component(String name);
-	~Component() = default;
+	 ComboBox() = delete;
+	 ComboBox(String name);
+	~ComboBox() = default;
 
-	void setVisible(bool shouldBeVisible)		{ mIsVisible = shouldBeVisible; }
-	bool isVisible() const						{ return mIsVisible; }
+	void addItem(String text, uint32_t value);
 
 private:
-	String mComponentName;
-	bool	mIsVisible		{ false };
+	std::vector<sComboBoxItem> 		mItems;
 
 };
 

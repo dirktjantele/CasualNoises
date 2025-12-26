@@ -122,7 +122,7 @@ typedef struct
 //
 //  CasualNoises    25/09/2025  First implementation
 //==============================================================================
-class ST7735S_Driver
+class ST7735S_Driver final
 {
 public:
 

@@ -24,7 +24,7 @@ const uint32_t			cFreeTLV_Tag 	= 0x65657246;		// "Free"
 /*
  * The TLV_Driver class
  */
-class TLV_Driver
+class TLV_Driver final
 {
 public:
 	TLV_Driver() = delete;

@@ -16,7 +16,7 @@
 namespace CasualNoises
 {
 
-class LFO
+class LFO final
 {
 public:
 	 LFO () = delete;

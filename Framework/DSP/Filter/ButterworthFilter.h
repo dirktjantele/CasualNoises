@@ -13,7 +13,7 @@
 namespace CasualNoises {
 namespace Filter {
 
-class ButterworthFilter: public IIRFilterBase
+class ButterworthFilter final : public IIRFilterBase
 {
 
 private:

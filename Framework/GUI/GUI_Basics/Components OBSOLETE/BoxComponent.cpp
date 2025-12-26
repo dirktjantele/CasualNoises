@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "BoxComponent.h"
+#include <GUI/GUI_Basics/Components OBSOLETE/BoxComponent.h>
 
 namespace CasualNoises
 {

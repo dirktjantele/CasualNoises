@@ -20,7 +20,7 @@
 namespace CasualNoises {
 namespace Filter {
 
-class IIRFilters
+class IIRFilters final
 {
 public:
 	 IIRFilters() = delete;

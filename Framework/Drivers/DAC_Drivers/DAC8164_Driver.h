@@ -38,7 +38,7 @@ typedef struct
 //==============================================================================
 //         DAC8164_Driver
 //==============================================================================
-class DAC8164_Driver : DAC_Driver
+class DAC8164_Driver final : DAC_Driver
 {
 public:
 	 DAC8164_Driver() = delete;

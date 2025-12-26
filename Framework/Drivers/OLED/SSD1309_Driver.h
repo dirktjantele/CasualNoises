@@ -58,7 +58,7 @@ enum class bitOperations
 //  CasualNoises    25/12/2024  First implementation
 //  CasualNoises    13/12/2025  Made it more generic for Fellhorn rev 2
 //==============================================================================
-class SSD1309_Driver
+class SSD1309_Driver final
 {
 public:
 

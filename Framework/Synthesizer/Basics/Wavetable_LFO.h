@@ -25,7 +25,7 @@ namespace CasualNoises
 //
 //  CasualNoises    06/12/2024  First implementation
 //==============================================================================
-class Wavetable_LFO
+class Wavetable_LFO final
 {
 public:
 

@@ -28,6 +28,7 @@ enum class eErrorCodes
 	adcThreadError,
 	CS4270_DriverError,
 	UI_ThreadError,
+	PageManagerError,
 	AudioThreadError,
 	threadHalted,
 };

@@ -13,7 +13,7 @@
 namespace CasualNoises {
 namespace Filter {
 
-class GenericFilter: public IIRFilterBase
+class GenericFilter final : public IIRFilterBase
 {
 
 private:

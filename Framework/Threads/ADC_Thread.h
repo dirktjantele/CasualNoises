@@ -26,7 +26,7 @@ namespace CasualNoises
 {
 
 // Abstract class used to handle adc data
-class ADC_DataHandler
+class ADC_DataHandler final
 {
 public:
 	 ADC_DataHandler() = default;

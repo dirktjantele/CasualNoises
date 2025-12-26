@@ -17,7 +17,7 @@
 namespace CasualNoises
 {
 
-class DAC_Driver
+class DAC_Driver final
 {
 public:
 	 DAC_Driver() = default;

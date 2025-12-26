@@ -29,7 +29,7 @@
 namespace CasualNoises
 {
 
-class CS43L22 : public CodecDriver
+class CS43L22 final : public CodecDriver
 {
 public:
 	 CS43L22() = default;

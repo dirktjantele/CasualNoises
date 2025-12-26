@@ -34,11 +34,13 @@
 
 #pragma once
 
+#include "Core/Text/String.h"
+
 namespace CasualNoises
 {
 
 template <typename ValueType>
-class Point
+class Point final
 {
 
 public:
@@ -272,10 +274,12 @@ public:
     }
 
     /** Returns the point as a string in the form "x, y". */
-    String toString() const
+    /*
+    CasualNoises::String toString() const
     {
     	return String (x) + String((char*)", ") + String (y);
     }
+    */
 
     ValueType x{};
     ValueType y{};

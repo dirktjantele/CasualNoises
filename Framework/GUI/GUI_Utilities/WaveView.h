@@ -18,7 +18,7 @@
 namespace CasualNoises
 {
 
-class WaveView : public Component
+class WaveView final : public Component
 {
 public:
 	 WaveView() = default;

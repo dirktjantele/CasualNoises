@@ -32,7 +32,7 @@ enum class eNerveNetSlaveThreadState
 
 class AudioProcessor;
 
-class NerveNetSlaveThread
+class NerveNetSlaveThread final
 {
 public:
 

@@ -35,7 +35,7 @@ enum class eNerveNetMasterThreadState
 	awaitingNotAck,
 };
 
-class NerveNetMasterThread
+class NerveNetMasterThread final
 {
 public:
 

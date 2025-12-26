@@ -28,7 +28,7 @@ typedef struct
 	uint16_t	pinNo;				// Should be 16 bit, see EncoderThread
 } sPinMapEntry;
 
-class PCF8574_Driver
+class PCF8574_Driver final
 {
 public:
 	 PCF8574_Driver() = delete;

@@ -38,7 +38,7 @@ namespace CasualNoises
 {
 
 template <typename ValueType>
-class Rectangle
+class Rectangle final
 {
 public:
 

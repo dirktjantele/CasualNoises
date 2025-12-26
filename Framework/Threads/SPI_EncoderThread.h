@@ -52,6 +52,7 @@ typedef struct
 	eEncoderEventType 	eventType;
 	uint16_t			encoderNo;
 	int16_t				encoderCount;
+	int32_t				switchBitMap;
 } sEncoderEvent;
 
 // Arguments expected when starting the thread

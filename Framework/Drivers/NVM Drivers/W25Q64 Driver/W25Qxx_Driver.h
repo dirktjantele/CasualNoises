@@ -57,7 +57,7 @@ typedef struct
 /*
  * The W25Qxx_Driver class
  */
-class W25Qxx_Driver : public NVM_Driver
+class W25Qxx_Driver final : public NVM_Driver
 {
 
 public:

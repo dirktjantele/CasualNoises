@@ -36,7 +36,7 @@ enum class colour
 	PINK         = 0xF81F
 };
 
-class Colour
+class Colour final
 {
 public:
 	Colour() = delete;

@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include <Graphics/Contexts/OBSOLETE GraphicsContext.h>
+#include <GUI/GUI_Basics/Components OBSOLETE/BoxComponent.h>
+#include <GUI/GUI_Basics/Components OBSOLETE/Component.h>
 #include "AudioBasics/Buffers/AudioBuffer.h"
 #include "AudioBasics/Processors/WaveFolder.h"
 
@@ -36,15 +39,11 @@
 
 #include "DSP/Filter.h"
 
-#include "Graphics/Contexts/GraphicsContext.h"
 #include "Graphics/Fonts/Font.h"
 
 #include "Graphics/Geometry/Line.h"
 #include "Graphics/Geometry/Point.h"
 #include "Graphics/Geometry/Rectangle.h"
-
-#include "GUI/GUI_Basics/Components/Component.h"
-#include "GUI/GUI_Basics/Components/BoxComponent.h"
 
 #include "GUI/GUI_Utilities/WaveView.h"
 
@@ -61,6 +60,7 @@
 
 #include "Threads/ADC_Thread.h"
 #include "Threads/AudioThread.h"
+#include "Threads/Multiplexed_ADC_Thread.h"
 #include "Threads/PCF8574_EncoderThread.h"
 #include "Threads/PotentiometerThread.h"
 #include "Threads/SPI_EncoderThread.h"

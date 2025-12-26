@@ -56,7 +56,7 @@ bool ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if (hadc == gADC_adc)
 	{
-		setTimeMarker_4();
+		setTimeMarker_4();				// ToDo remove this line
 
 		if (gADC_DataHandlerPtr != nullptr)
 			gADC_DataHandlerPtr->handle_ADC_Data(NUM_CV_INPUTS, gADC_Data);
@@ -69,7 +69,7 @@ bool ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 
 #endif
 
-		resetTimeMarker_4();
+		resetTimeMarker_4();			// ToDo remove this line
 
 		return true;
 	} else
@@ -118,6 +118,7 @@ void ADC_Thread(void* pvParameters)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 	xSemaphoreTake(gADC_SemaphoreHandle, portMAX_DELAY);
 
+	// Main event loop
 	for (;;)
 	{
 
@@ -168,7 +169,7 @@ BaseType_t startADC_Thread(void *argument, TaskHandle_t* xHandlePtr)
 
 	// Create the thread to scan the ADC convertions
 	BaseType_t res = xTaskCreate(ADC_Thread, "ADC_Thread", DEFAULT_STACK_SIZE / 2, argument,
-			CV_IN_THREAD_PRIORITY, xHandlePtr);
+			POT_THREAD_PRIORITY, xHandlePtr);
 	return res;
 
 }

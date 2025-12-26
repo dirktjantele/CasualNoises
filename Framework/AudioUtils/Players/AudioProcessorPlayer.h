@@ -23,7 +23,8 @@ namespace CasualNoises
 {
 
 class AudioBuffer;
-class AudioProcessorPlayer
+
+class AudioProcessorPlayer final
 {
 public:
 	 ~AudioProcessorPlayer() = default;

@@ -24,7 +24,7 @@ namespace CasualNoises
 //
 //  CasualNoises    21/07/2025  First implementation
 //==============================================================================
-class PulsarSynth : public CachedWavetable_LFO
+class PulsarSynth final : public CachedWavetable_LFO
 {
 public:
 

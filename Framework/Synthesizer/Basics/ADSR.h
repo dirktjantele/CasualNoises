@@ -46,7 +46,7 @@ typedef struct
 	float		cycleTime		{ 0.0f };
 } tADSR_Settings;
 
-class ADSR
+class ADSR final
 {
 public:
 	 ADSR() 				= delete;

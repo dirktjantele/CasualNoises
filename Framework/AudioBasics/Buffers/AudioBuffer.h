@@ -24,7 +24,7 @@ typedef struct
 	float*		audioBuffer2;
 } sAudioBufferPtrs;
 
-class AudioBuffer
+class AudioBuffer final
 {
 public:
 	  AudioBuffer();

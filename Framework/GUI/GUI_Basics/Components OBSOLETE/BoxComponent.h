@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "Component.h"
+#include <GUI/GUI_Basics/Components OBSOLETE/Component.h>
 
 namespace CasualNoises
 {

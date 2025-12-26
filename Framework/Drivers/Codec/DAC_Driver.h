@@ -30,7 +30,7 @@ typedef struct
 	uint16_t			audioWordLength;	// Word length used by the codec
 } sCodecDriverInitData;
 
-class CodecDriver
+class CodecDriver final
 {
 public:
 	 CodecDriver() = default;

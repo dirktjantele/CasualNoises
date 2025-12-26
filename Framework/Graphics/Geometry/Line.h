@@ -55,7 +55,7 @@ namespace CasualNoises
     @tags{Graphics}
 */
 template <typename ValueType>
-class Line
+class Line final
 {
 public:
     //==============================================================================

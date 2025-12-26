@@ -37,7 +37,7 @@ typedef struct CS4272_DriverParams
 	I2C_HandleTypeDef 	*hi2cHandle;
 };
 
-class CS4272_Driver : private Codec_Driver
+class CS4272_Driver final : private Codec_Driver
 {
 public:
 	~CS4272_Driver() = default;

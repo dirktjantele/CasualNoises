@@ -65,7 +65,7 @@ void encoderThread(void* pvParameters)
 		{
 			indx = (signatures[encNo].enc_A_DevNo << 3) + signatures[encNo].enc_A_PinNo;
 			typeTablePtr[indx]  = signalType::enc_a;
-//			encNoTablePtr[indx] = signatures[encNo].encoderNo;
+			encNoTablePtr[indx] = signatures[encNo].encoderNo;
 		}
 		if (signatures[encNo].enc_B_DevNo < 0xff)
 		{
@@ -149,6 +149,9 @@ void encoderThread(void* pvParameters)
 						event.eventType     = eEncoderEventType::encoderSwitch;
 						event.encoderNo     = signatures[encNo].encoderNo;
 						event.encoderCount  = 1;
+						event.switchBitMap	= 0x00000000;
+						for (int32_t i = noOfDevices - 1; i >= 0; --i)
+							event.switchBitMap = (event.switchBitMap << 8) + newData[i];
 						BaseType_t res = xQueueSendToBack(clientQueue, (void*)&event, 10);
 						if (res != pdPASS)
 							CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);

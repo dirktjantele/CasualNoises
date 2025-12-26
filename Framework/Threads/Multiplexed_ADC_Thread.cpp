@@ -161,7 +161,7 @@ void multiplexed_ADC_Thread(void* pvParameters)
 	vTaskDelay(pdMS_TO_TICKS(10));
 
 	// Select first input for all multiplexers
-	for (uint32_t i = 0; i < gNoOfMultiplexers; ++i)
+	for (int32_t i = 0; i < gNoOfMultiplexers; ++i)
 	{
 		HAL_GPIO_WritePin(gSignatures[i].SO_Port, gSignatures[i].SO_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(gSignatures[i].S1_Port, gSignatures[i].S1_Pin, GPIO_PIN_RESET);
@@ -183,9 +183,9 @@ void multiplexed_ADC_Thread(void* pvParameters)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 
 	// Clear previous value buffer
-	for (auto i = 0; i < cNoOfMultiplexerInputs; ++i)
-		for (auto j= 0; j < cNoOfMultiplexerInputs; ++j)
-			gPreviousAdcData[i][j];
+	for (uint32_t i = 0; i < cNoOfMultiplexerInputs; ++i)
+		for (uint32_t j= 0; j < cNoOfMultiplexerInputs; ++j)
+			gPreviousAdcData[i][j] = 0x0000;
 
 	// Main event loop
 
@@ -202,10 +202,10 @@ void multiplexed_ADC_Thread(void* pvParameters)
 			CN_ReportFault(eErrorCodes::adcThreadError);
 
 		// Compare new averages with previous ones
-		for (auto i = 0; i < cNoOfMultiplexerInputs; ++i)
+		for (uint32_t i = 0; i < cNoOfMultiplexerInputs; ++i)
 		{
 			uint8_t mask = gSignatures[i].mask;
-			for (auto j= 0; j < cNoOfMultiplexerInputs; ++j)
+			for (uint32_t j= 0; j < cNoOfMultiplexerInputs; ++j)
 			{
 				int32_t dev = gAverageAdcData[i][j] - gPreviousAdcData[i][j];
 				if (((dev > treschp) || (dev < treschn)) &&

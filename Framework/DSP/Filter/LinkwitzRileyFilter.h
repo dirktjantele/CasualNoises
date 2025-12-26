@@ -13,7 +13,7 @@
 namespace CasualNoises {
 namespace Filter {
 
-class LinkwitzRileyFilter: public IIRFilterBase
+class LinkwitzRileyFilter final : public IIRFilterBase
 {
 
 private:

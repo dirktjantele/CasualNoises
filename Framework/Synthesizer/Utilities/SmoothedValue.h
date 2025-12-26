@@ -14,7 +14,7 @@ namespace CasualNoises
 {
 
 //class SmoothedValue;
-class SmoothedValue
+class SmoothedValue final
 {
 public:
 	 SmoothedValue () = default;

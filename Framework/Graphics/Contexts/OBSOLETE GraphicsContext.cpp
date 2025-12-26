@@ -11,7 +11,7 @@
 // 23/1/2024 updated in order to be able to use the ILI9341 in parallel mode (8080 mode)
 #ifdef USE_ILI9341_SERIAL_MODE
 
-#include "GraphicsContext.h"
+#include <Graphics/Contexts/OBSOLETE GraphicsContext.h>
 
 #include "SystemConfig.h"
 
