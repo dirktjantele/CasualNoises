@@ -15,8 +15,6 @@
 
 #include "Component.h"
 
-#include "../CasualNoises/Core/Text/String.h"
-
 namespace CasualNoises
 {
 
@@ -33,9 +31,16 @@ public:
 	 ComboBox(String name);
 	~ComboBox() = default;
 
-	void addItem(String text, uint32_t value);
+	void paint(Graphics& g) noexcept;
+
+	void setFont (const sFont* fontPtr);
+	void addItem (String text, uint32_t value);
+
+	int getNumItems	()	const { return mItems.size(); }
+
 
 private:
+	const sFont*					mFontPtr { nullptr };
 	std::vector<sComboBoxItem> 		mItems;
 
 };

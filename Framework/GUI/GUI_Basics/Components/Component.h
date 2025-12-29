@@ -13,10 +13,13 @@
 
 #pragma once
 
-#include "../CasualNoises/Core/Text/String.h"
+#include <Core/Text/String.h>
+#include <Graphics/Geometry/Rectangle.h>
 
 namespace CasualNoises
 {
+
+class Graphics;
 
 class Component
 {
@@ -25,12 +28,18 @@ public:
 	 Component(String name);
 	~Component() = default;
 
-	void setVisible(bool shouldBeVisible)		{ mIsVisible = shouldBeVisible; }
-	bool isVisible() const						{ return mIsVisible; }
+	virtual void paint(Graphics& g) noexcept = 0;
+	void setBounds(uint32_t x, uint32_t y, uint32_t w, uint32_t h) noexcept;
+	void setBounds(Rectangle<int>& bounds) noexcept;
+	Rectangle<int>& getLocalBounds() noexcept			{ return mLocalBounds; }
+
+	void setVisible(bool shouldBeVisible) noexcept		{ mIsVisible = shouldBeVisible; }
+	bool isVisible() const noexcept						{ return mIsVisible; }
 
 private:
-	String mComponentName;
-	bool	mIsVisible		{ false };
+	String 					mComponentName;
+	Rectangle<int> 			mLocalBounds;
+	bool					mIsVisible		{ false };
 
 };
 

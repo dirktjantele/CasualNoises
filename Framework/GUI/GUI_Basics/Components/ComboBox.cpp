@@ -27,6 +27,42 @@ ComboBox::ComboBox(String name) :
 }
 
 //==============================================================================
+//          paint()
+//
+//	Paint the component
+//
+//  CasualNoises    29/12/2025  First implementation
+//==============================================================================
+void ComboBox::paint(Graphics& g)
+{
+
+	// Set to default font when no font is specified
+	if (mFontPtr == nullptr)
+		mFontPtr = &font_7x10;
+
+	Rectangle<int> bounds = getLocalBounds();
+	uint32_t textHeight = mFontPtr->height + 1;
+	uint32_t visibleItems = bounds.getHeight() / textHeight;
+	uint32_t spacing = (bounds.getHeight() - (visibleItems * mFontPtr->height + 1)) / 2;
+	uint32_t leftIndent = mFontPtr->width + 1;
+
+
+
+	uint32_t noItems = mItems.size();
+
+}
+
+//==============================================================================
+//          setFont()
+//
+//  CasualNoises    29/12/2025  First implementation
+//==============================================================================
+void ComboBox::setFont(const sFont* fontPtr)
+{
+	mFontPtr = fontPtr;
+}
+
+//==============================================================================
 //          addItem()
 //
 //  CasualNoises    26/12/2025  First implementation
