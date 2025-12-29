@@ -281,6 +281,9 @@ public:
     }
     */
 
+    /** Returns true if the coordinates are finite values. */
+    constexpr inline bool isFinite() const noexcept                    { return isfinite (x) && isfinite (y); }
+
     ValueType x{};
     ValueType y{};
 

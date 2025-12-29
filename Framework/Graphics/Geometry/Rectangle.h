@@ -34,6 +34,8 @@
 
 #pragma once
 
+#include "maths.h"
+
 namespace CasualNoises
 {
 
@@ -95,7 +97,7 @@ public:
     bool isEmpty() const noexcept                                   { return w <= ValueType() || h <= ValueType(); }
 
     /** Returns true if the rectangle's values are all finite numbers, i.e. not NaN or infinity. */
-    inline bool isFinite() const noexcept                           { return pos.isFinite() && juce_isfinite (w) && juce_isfinite (h); }
+    inline bool isFinite() const noexcept                           { return pos.isFinite() && isfinite (w) && isfinite (h); }
 
     /** Returns the x coordinate of the rectangle's left-hand-side. */
     inline ValueType getX() const noexcept                          { return pos.x; }
@@ -241,13 +243,13 @@ public:
     [[nodiscard]] Rectangle withTrimmedLeft (ValueType amountToRemove) const noexcept     { return withLeft (pos.x + amountToRemove); }
 
     /** Returns a version of this rectangle with the given amount removed from its right-hand edge. */
-    [[nodiscard]] Rectangle withTrimmedRight (ValueType amountToRemove) const noexcept    { return withWidth (w - amountToRemove); }
+//    [[nodiscard]] Rectangle withTrimmedRight (ValueType amountToRemove) const noexcept    { return withWidth (w - amountToRemove); }
 
     /** Returns a version of this rectangle with the given amount removed from its top edge. */
     [[nodiscard]] Rectangle withTrimmedTop (ValueType amountToRemove) const noexcept      { return withTop (pos.y + amountToRemove); }
 
     /** Returns a version of this rectangle with the given amount removed from its bottom edge. */
-    [[nodiscard]] Rectangle withTrimmedBottom (ValueType amountToRemove) const noexcept   { return withHeight (h - amountToRemove); }
+//    [[nodiscard]] Rectangle withTrimmedBottom (ValueType amountToRemove) const noexcept   { return withHeight (h - amountToRemove); }
 
     /** Moves the rectangle's position by adding amount to its x and y coordinates. */
      void translate (ValueType deltaX,
@@ -741,7 +743,13 @@ public:
                   jmin (h, areaToFitWithin.getHeight()) };
      }
 
-     /** Returns the smallest rectangle that can contain the shape created by applying
+     /** Returns a rectangle with the same top-left position as this one, but a new size. */
+     [[nodiscard]] Rectangle withSize (ValueType newWidth, ValueType newHeight) const noexcept
+     {
+    	 return { pos.x, pos.y, jmax (ValueType(), newWidth), jmax (ValueType(), newHeight) };
+     }
+
+      /** Returns the smallest rectangle that can contain the shape created by applying
          a transform to this rectangle.
 
          This should only be used on floating point rectangles.

@@ -35,6 +35,7 @@
 #pragma once
 
 #include "Point.h"
+#include "maths.h"
 
 namespace CasualNoises
 {
