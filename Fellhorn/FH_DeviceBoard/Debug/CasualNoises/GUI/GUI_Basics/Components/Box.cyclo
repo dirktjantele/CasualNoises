@@ -1,0 +1,17 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:165:7:void CasualNoises::SSD1309_Driver::drawPixel(int32_t, int32_t, CasualNoises::eBitOperations)	8
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:183:7:void CasualNoises::SSD1309_Driver::drawRect(int16_t, int16_t, uint16_t, uint16_t, CasualNoises::eBitOperations)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:218:7:void CasualNoises::SSD1309_Driver::drawLine(int32_t, int32_t, int32_t, int32_t, CasualNoises::eBitOperations)	12
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:551:7:void CasualNoises::SSD1309_Driver::swap(int32_t*, int32_t*)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:563:10:int32_t CasualNoises::SSD1309_Driver::abs(int32_t)	2
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:91:13:void CN_ReportFault(eErrorCodes)	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Text/String.h:32:3:CasualNoises::String::String(const CasualNoises::String&)	2
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Text/String.h:75:3:CasualNoises::String::~String()	2
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/GUI/GUI_Basics/Components/Component.h:34:18:CasualNoises::Rectangle<int>& CasualNoises::Component::getLocalBounds()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Graphics/Contexts/Graphics.h:31:18:CasualNoises::SSD1309_Driver* CasualNoises::Graphics::getScreen()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/GUI/GUI_Basics/Components/Box.cpp:26:1:CasualNoises::Box::Box(CasualNoises::String)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/GUI/GUI_Basics/Components/Box.cpp:38:6:virtual void CasualNoises::Box::paint(CasualNoises::Graphics&)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Graphics/Geometry/Rectangle.h:103:22:ValueType CasualNoises::Rectangle<ValueType>::getX() const [with ValueType = int]	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Graphics/Geometry/Rectangle.h:106:22:ValueType CasualNoises::Rectangle<ValueType>::getY() const [with ValueType = int]	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Graphics/Geometry/Rectangle.h:109:22:ValueType CasualNoises::Rectangle<ValueType>::getWidth() const [with ValueType = int]	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Graphics/Geometry/Rectangle.h:112:22:ValueType CasualNoises::Rectangle<ValueType>::getHeight() const [with ValueType = int]	1

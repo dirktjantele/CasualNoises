@@ -1,0 +1,6 @@
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/bits/std_abs.h:56:3:long int std::abs(long int)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:91:13:void CN_ReportFault(eErrorCodes)	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/Multiplexed_ADC_Thread.cpp:55:6:bool CasualNoises::multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef*)	48	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/Multiplexed_ADC_Thread.cpp:149:6:void CasualNoises::multiplexed_ADC_Thread(void*)	96	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/Multiplexed_ADC_Thread.cpp:250:12:BaseType_t CasualNoises::startMultiplexed_ADC_Thread(void*, tskTaskControlBlock**)	32	static

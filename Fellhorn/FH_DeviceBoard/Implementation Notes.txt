@@ -1,0 +1,13 @@
+Device allocation:
+------------------
+
+ADC2 potentiometer/sliders inputs
+
+SPI1 encoder/switch shift register
+SPI2 led shift register
+SPI3 oled interface
+SPI4 NerveNet
+SPI5 flash memory
+
+TIM4 led handler thread
+

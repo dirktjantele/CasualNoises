@@ -1,0 +1,6 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/LinkwitzRileyFilter.h:22:7:virtual void CasualNoises::Filter::LinkwitzRileyFilter::calculateBPF()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/LinkwitzRileyFilter.h:23:7:virtual void CasualNoises::Filter::LinkwitzRileyFilter::calculateBSF()	1
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/cmath:372:3:constexpr float std::pow(float, float)	1
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/cmath:457:3:constexpr float std::tan(float)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/LinkwitzRileyFilter.cpp:19:6:virtual void CasualNoises::Filter::LinkwitzRileyFilter::calculateLPF()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/LinkwitzRileyFilter.cpp:35:6:virtual void CasualNoises::Filter::LinkwitzRileyFilter::calculateHPF()	1
