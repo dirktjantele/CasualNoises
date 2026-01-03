@@ -40,9 +40,8 @@ public:
 	void paint(Graphics& g) override;
 	void resized() override;
 
+	void loadContext() override;
 	void saveContext() override;
-
-	void handleUI_event(sIncommingUI_Event* uiEvent, bool altState) override;
 
 private:
 //	SSD1309_Driver* m_oledDriverPtr			{ nullptr };

@@ -31,11 +31,12 @@ typedef struct
 } UI_ThreadData;
 
 // Structure of incoming messages
-typedef union
+/*typedef union
 {
 	sEncoderEvent				encoderEvent;
 	sMultiplexed_ADC_Event		multiplexed_ADC_Event;
 } sIncommingUI_Event;
+*/
 
 typedef struct
 {

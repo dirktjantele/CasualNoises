@@ -83,14 +83,30 @@ void RootPage::addAndMakeVisible (Component* child)
 //          getBounds()
 //
 // 	Returns the bouns of the parent page if there is one,
-//		otherwise return the display size												// ToDo implement this
+//		otherwise return the display size
 //
 //  CasualNoises    26/12/2025  First implementation
 //==============================================================================
-//template <typename ValueType>
 Rectangle< int > RootPage::getBounds () const
 {
 	return mLocalBounds;
+}
+
+//==============================================================================
+//          handleUI_event()
+//
+// 	Iterate over all child components & call handleUI_event
+//
+//  CasualNoises    26/12/2025  First implementation
+//==============================================================================
+bool RootPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g)
+{
+	for (auto child : mChildren)
+	{
+		if (child->handleUI_event(uiEvent, altState, g))
+			return true;
+	}
+	return false;
 }
 
 } // namespace CasualNoises

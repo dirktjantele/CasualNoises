@@ -13,8 +13,6 @@
 
 #include "LoadPage.h"
 
-#include "CasualNoises.h"
-
 namespace CasualNoises
 {
 
@@ -92,6 +90,18 @@ void LoadPage::resized()
 }
 
 //==============================================================================
+//          loadContext()
+//
+// 	Load context from flash
+//
+//  CasualNoises    03/01/2026  First implementation
+//==============================================================================
+void LoadPage::loadContext()
+{
+	// Nothing to save here
+}
+
+//==============================================================================
 //          saveContext()
 //
 // 	Save context to flash
@@ -110,9 +120,10 @@ void LoadPage::saveContext()
 //
 //  CasualNoises    25/12/2025  First implementation
 //==============================================================================
-void LoadPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState)
+/*
+bool LoadPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState)
 {
-
+	return false;
 }
-
+*/
 } // namespace CasualNoises

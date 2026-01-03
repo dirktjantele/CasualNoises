@@ -13,8 +13,6 @@
 
 #include "SetupPage.h"
 
-#include "CasualNoises.h"
-
 namespace CasualNoises
 {
 
@@ -92,6 +90,18 @@ void SetupPage::resized()
 }
 
 //==============================================================================
+//          loadContext()
+//
+// 	Load context from flash
+//
+//  CasualNoises    03/01/2026  First implementation
+//==============================================================================
+void SetupPage::loadContext()
+{
+	// Nothing to save here
+}
+
+//==============================================================================
 //          saveContext()
 //
 // 	Save context to flash
@@ -110,9 +120,10 @@ void SetupPage::saveContext()
 //
 //  CasualNoises    25/12/2025  First implementation
 //==============================================================================
-void SetupPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState)
+/*
+bool SetupPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState)
 {
-
+	return false;
 }
-
+*/
 } // namespace CasualNoises

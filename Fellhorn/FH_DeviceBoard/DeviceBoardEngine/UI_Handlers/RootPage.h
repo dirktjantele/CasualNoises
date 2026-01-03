@@ -17,6 +17,7 @@
 
 #include <Graphics/Geometry/Rectangle.h>
 #include <Graphics/Geometry/Point.h>
+#include <GUI/GUI_Basics/UI_Definitions.h>
 
 namespace CasualNoises
 {
@@ -43,9 +44,10 @@ public:
 	virtual void paint(Graphics& g) 	= 0;
 	virtual void resized() 				= 0;
 
+	virtual void loadContext() 			= 0;
 	virtual void saveContext() 			= 0;
 
-	virtual void handleUI_event(sIncommingUI_Event* uiEvent, bool altState) = 0;
+	bool handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g);
 
 protected:
 

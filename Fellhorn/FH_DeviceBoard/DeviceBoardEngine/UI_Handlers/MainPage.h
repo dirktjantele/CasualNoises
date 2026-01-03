@@ -4,7 +4,7 @@
     MainPage.h
     Created: 24/12/2025
 
-    Handle main page UI interaction
+    Handle main page UI interaction, also contains the calibration page
 
     Author:  Dirk Tjantele
 
@@ -23,6 +23,9 @@ namespace CasualNoises
 class Box;
 class ComboBox;
 
+//==============================================================================
+//          MainPage
+//==============================================================================
 class MainPage : public RootPage
 {
 public:
@@ -33,17 +36,43 @@ public:
 			  PageManager* pageManagerPtr);
 	~MainPage() override;
 
+	void onComboBoxChange();
+
 	void paint(Graphics& g) override;
 	void resized() override;
 
+	void loadContext() override;
 	void saveContext() override;
-
-	void handleUI_event(sIncommingUI_Event* uiEvent, bool altState) override;
 
 private:
 
 	Box*			mBoxPtr				{ nullptr };
 	ComboBox*		mComboBoxPtr		{ nullptr };
+
+};
+
+//==============================================================================
+//          CalibrationPage
+//==============================================================================
+class CalibrationPage : public RootPage
+{
+public:
+
+	 CalibrationPage() = delete;
+	 CalibrationPage(SSD1309_Driver* m_oledDriverPtr,
+			  TLV_Driver* mTLV_DriverPtr,
+			  PageManager* pageManagerPtr);
+	~CalibrationPage() override;
+
+	void paint(Graphics& g) override;
+	void resized() override;
+
+	void loadContext() override;
+	void saveContext() override;
+
+private:
+
+	Box*			mBoxPtr				{ nullptr };
 
 };
 

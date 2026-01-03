@@ -231,7 +231,7 @@ void UI_Thread(void* pvParameters)
 	// Main thread loop
 	for (;;)
 	{
-		osDelay(1);
+		vTaskDelay(pdMS_TO_TICKS(1));
 
 		// Handle incoming events
 		sIncommingUI_Event event;
@@ -257,7 +257,7 @@ BaseType_t Start_UI_Thread(UI_ThreadData *argument)
 
 	// Create the thread to run the UI
 	TaskHandle_t xHandlePtr;
-	BaseType_t res = xTaskCreate(UI_Thread,	"UI_Thread", DEFAULT_STACK_SIZE, argument,
+	BaseType_t res = xTaskCreate(UI_Thread,	"UI_Thread", DEFAULT_STACK_SIZE * 8, argument,
 			UI_THREAD_PRIORITY,	&xHandlePtr);
 //	gYellowPages.gUI_ThreadTaskHandle = xHandlePtr;
 	return res;

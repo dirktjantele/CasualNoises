@@ -135,6 +135,9 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 	case ePageId::loadPage:
 		pagePtr = new LoadPage(m_oledDriverPtr, mTLV_DriverPtr, this);
 		break;
+	case ePageId::calibrationPage:
+		pagePtr = new CalibrationPage(m_oledDriverPtr, mTLV_DriverPtr, this);
+		break;
 	default:
 		CN_ReportFault(eErrorCodes::PageManagerError);
 	};
@@ -158,6 +161,7 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 	// If this page is on top of the stack, show it
 	if (stackPtr == (mPageIdStackPtr - 1))
 	{
+		pagePtr->loadContext();
 		pagePtr->resized();
 		pagePtr->paintAll(*mGraphics);
 	}
@@ -174,6 +178,21 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 			CN_ReportFault(eErrorCodes::UI_ThreadError);
 	}
 
+}
+
+//==============================================================================
+//          createNewPage()
+//
+// 	Create a new page with a given target page id and add it to the stack
+//		pageId:			id for the new page
+//		updateIdStack:	false when reopening pages from a saved page stack
+//		stackPtr:		stack pointer used when above is true
+//
+//  CasualNoises    03/02/2026  First implementation
+//==============================================================================
+void PageManager::createNewPage(ePageId pageId)
+{
+	createPage(pageId, true, mPageIdStackPtr);
 }
 
 //==============================================================================
@@ -216,16 +235,22 @@ void PageManager::handleUI_event(sIncommingUI_Event* uiEvent)
 			createPage(ePageId::loadPage, true, mPageIdStackPtr);
 		}
 
-		// Skip 'ALT' switch events
+		// Skip 'ALT' switch events, but use the state
 		else if (uiEvent->encoderEvent.encoderNo != (uint16_t)eSwitchNums::ALT_SWITCH)
 		{
-			mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event(uiEvent, altState);
+			mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event(uiEvent, altState, *mGraphics);
 		}
 
 		// Adjust exit switch led intensity
 		setExitSwitchLedIntensity();
 
+	// Handle ADC events
+	} else if ((uiEvent->encoderEvent.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID) ||
+			   (uiEvent->encoderEvent.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID))
+	{
+		mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event(uiEvent, false, *mGraphics);
 	}
+
 }
 
 //==============================================================================
