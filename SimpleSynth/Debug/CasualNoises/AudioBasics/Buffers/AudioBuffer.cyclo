@@ -1,6 +1,0 @@
-../CasualNoises/AudioBasics/Buffers/AudioBuffer.h:33:21:uint32_t CasualNoises::AudioBuffer::getNumChannels() const	1
-../CasualNoises/AudioBasics/Buffers/AudioBuffer.h:34:21:uint32_t CasualNoises::AudioBuffer::getNumSamples() const	1
-/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/_Current Projects/BreakOut_0.1/Firmware/CasualNoises/Utilities/ReportFault.h:28:13:void CasualNoises::CN_ReportFault(uint32_t)	1
-../CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:29:2:CasualNoises::AudioBuffer::AudioBuffer()	3
-../CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:44:2:CasualNoises::AudioBuffer::~AudioBuffer()	1
-../CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:56:7:void CasualNoises::AudioBuffer::clearAudioBuffer()	3
