@@ -25,7 +25,9 @@ public:
 	 Box(String name);
 	~Box() = default;
 
-	void paint(Graphics& g) noexcept;
+	void paint(Graphics& g) noexcept override;
+
+	bool handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) override { return false; }
 
 private:
 
