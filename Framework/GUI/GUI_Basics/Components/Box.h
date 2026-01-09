@@ -18,18 +18,36 @@
 namespace CasualNoises
 {
 
-class Box final : public Component
+class Box : public Component
 {
 public:
-	 Box() = delete;
-	 Box(String name);
-	~Box() = default;
+	 Box () = delete;
+	 Box ( String name );
+	~Box () = default;
+
+	void paint ( Graphics& g ) noexcept override;
+
+	bool handleUI_event ( sIncommingUI_Event* uiEvent, bool altState, Graphics& g ) override { return false; }
+
+private:
+
+};
+
+class IndexBox final : public Box
+{
+public:
+	 IndexBox () = delete;
+	 IndexBox ( String name);
+	 IndexBox ( String name, uint8_t noOfTabs, uint8_t currentTab );
+	~IndexBox () = default;
+
+	void setCurrentTab ( uint8_t tab ) noexcept { mCurrentTab = tab; };
 
 	void paint(Graphics& g) noexcept override;
 
-	bool handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) override { return false; }
-
 private:
+	uint8_t		mNoOfTabs		{ 0 };
+	uint8_t		mCurrentTab		{ 0 };
 
 };
 
