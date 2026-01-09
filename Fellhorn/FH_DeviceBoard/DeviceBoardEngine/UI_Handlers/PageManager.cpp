@@ -46,8 +46,6 @@ PageManager::PageManager(SSD1309_Driver* oledDriverPtr, TLV_Driver* TLV_DriverPt
 	}
 
 	// Load page stack from flash, create one if it does not exists
-	// 	clear all page data when ALT was pressed during startup
-//	bool altState = ! (uiEvent->encoderEvent.switchBitMap & (0x00000001 << (uint32_t)eSwitchNums::ALT_SWITCH));
 	bool saveState = false;
 	uint32_t index = TLV_DriverPtr->findNextTLV((uint32_t)eTLV_Tag::UI_PageStack, 0);
 	if (index == 0)				// TLV does not exists, create new one
@@ -152,6 +150,9 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 		++mPageIdStackPtr;
 		if (mPageIdStackPtr >= cPageIdStackSize)
 			CN_ReportFault(eErrorCodes::PageManagerError);
+	} else
+	{
+		mPageObjectStack[stackPtr]->loadContext ();
 	}
 
 	// Save context of current page before opening a new page
@@ -159,22 +160,23 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 		mPageObjectStack[stackPtr - 1]->saveContext();
 
 	// If this page is on top of the stack, show it
-	if (stackPtr == (mPageIdStackPtr - 1))
+	if ( stackPtr == ( mPageIdStackPtr - 1) )
 	{
-		pagePtr->loadContext();
-		pagePtr->resized();
-		pagePtr->paintAll(*mGraphics);
+		setExitSwitchLedIntensity ();
+		pagePtr->loadContext ();
+		pagePtr->resized ();
+		pagePtr->paintAll ( *mGraphics );
 	}
 
 	// Update flash
-	if (updateIdStack)
+	if ( updateIdStack )
 	{
 		uint32_t index;
-		index = mTLV_DriverPtr->findNextTLV ((uint32_t)eTLV_Tag::UI_PageStack, 0);
-		if ( ! mTLV_DriverPtr->updateTLV_Bytes(index, sizeof(mPageIdStack), (uint32_t*) mPageIdStack) )
-			CN_ReportFault(eErrorCodes::UI_ThreadError);
-		index = mTLV_DriverPtr->findNextTLV ((uint32_t)eTLV_Tag::UI_PageStackPtr, 0);
-		if ( ! mTLV_DriverPtr->updateTLV_Bytes(index, sizeof(mPageIdStackPtr), (uint32_t*) &mPageIdStackPtr) )
+		index = mTLV_DriverPtr->findNextTLV ( (uint32_t)eTLV_Tag::UI_PageStack, 0 );
+		if ( ! mTLV_DriverPtr->updateTLV_Bytes ( index, sizeof(mPageIdStack), (uint32_t*) mPageIdStack ) )
+			CN_ReportFault ( eErrorCodes::UI_ThreadError );
+		index = mTLV_DriverPtr->findNextTLV ( (uint32_t)eTLV_Tag::UI_PageStackPtr, 0 );
+		if ( ! mTLV_DriverPtr->updateTLV_Bytes ( index, sizeof(mPageIdStackPtr), (uint32_t*) &mPageIdStackPtr ) )
 			CN_ReportFault(eErrorCodes::UI_ThreadError);
 	}
 
@@ -223,13 +225,14 @@ void PageManager::handleUI_event(sIncommingUI_Event* uiEvent)
 
 		// Handle setup switch
 		else if ((uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::SETUP_SWITCH) &&
-				 (mPageIdStack[mPageIdStackPtr - 1] != ePageId::setupPage))
+				 (mPageIdStack[mPageIdStackPtr - 1] == ePageId::mainPage))
 		{
 			createPage(ePageId::setupPage, true, mPageIdStackPtr);
 		}
 
 		// Handle LOAD switch
-		else if (uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::LOAD_SWITCH)
+		else if ((uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::LOAD_SWITCH) &&
+				 (mPageIdStack[mPageIdStackPtr - 1] == ePageId::mainPage))
 		{
 			handleExitSwitch(true, false);				// pretend that this is equal to a ALT-EXIT switch press
 			createPage(ePageId::loadPage, true, mPageIdStackPtr);
@@ -241,14 +244,16 @@ void PageManager::handleUI_event(sIncommingUI_Event* uiEvent)
 			mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event(uiEvent, altState, *mGraphics);
 		}
 
-		// Adjust exit switch led intensity
+		// Adjust exit switch led intensity & paint screen
 		setExitSwitchLedIntensity();
+		mPageObjectStack[mPageIdStackPtr - 1]->paintAll ( *mGraphics );
 
 	// Handle ADC events
 	} else if ((uiEvent->encoderEvent.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID) ||
 			   (uiEvent->encoderEvent.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID))
 	{
-		mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event(uiEvent, false, *mGraphics);
+		if ( mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event(uiEvent, false, *mGraphics))
+			mPageObjectStack[mPageIdStackPtr - 1]->paintAll ( *mGraphics );
 	}
 
 }
@@ -256,22 +261,28 @@ void PageManager::handleUI_event(sIncommingUI_Event* uiEvent)
 //==============================================================================
 //          setExitSwitchLedIntensity()
 //
-// Set the intensity of the exit switch according to the page
+// Set the intensity of the exit & ALT switch according to the page
 //
 //  CasualNoises    25/12/2025  First implementation
 //==============================================================================
 void PageManager::setExitSwitchLedIntensity()
 {
 
-	// Set exit switch led intensity
+	// Dim all switch LED's except for exit & ALT switch
+	eLED_BitNums leds[] = {
+		eLED_BitNums::EXIT_SWITCH, eLED_BitNums::SWITCH_1
+	};
 	sLED_Event event;
-	event.ledBitNum    = (uint32_t)eLED_BitNums::EXIT_SWITCH;
 	event.ledIntensity = 100;
 	if (mPageIdStackPtr == 1)
 		event.ledIntensity = 5;
-	BaseType_t res = xQueueSend(gYellowPages.gLED_ThreadQueueHandle, &event, 10);
-	if (res != pdPASS)
-		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+	for (auto led : leds)
+	{
+		event.ledBitNum = (uint32_t)led;
+		BaseType_t res = xQueueSend(gYellowPages.gLED_ThreadQueueHandle, &event, 10);
+		if (res != pdPASS)
+			CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+	}
 
 }
 
@@ -292,6 +303,7 @@ void PageManager::handleExitSwitch(bool altState, bool doPaint)									// ToDo:
 		{
 			if (mPageObjectStack[i] != nullptr)
 			{
+				mPageObjectStack[i]->saveContext();
 				delete mPageObjectStack[i];
 				mPageObjectStack[i] = nullptr;
 				mPageIdStack[i] = ePageId::empty;
@@ -305,6 +317,7 @@ void PageManager::handleExitSwitch(bool altState, bool doPaint)									// ToDo:
 	{
 		mPageIdStackPtr -= 1;
 		mPageIdStack[mPageIdStackPtr] = ePageId::empty;
+		mPageObjectStack[mPageIdStackPtr]->saveContext();
 		delete mPageObjectStack[mPageIdStackPtr];
 		mPageObjectStack[mPageIdStackPtr] = nullptr;
 	}

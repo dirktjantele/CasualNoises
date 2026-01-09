@@ -13,7 +13,10 @@
 
 #include "RootPage.h"
 
+#include "YellowPages.h"
+
 #include <GUI/GUI_Basics/Components/ComboBox.h>
+#include <xml/XmlElement.h>
 
 namespace CasualNoises
 {
@@ -44,12 +47,16 @@ RootPage::RootPage(SSD1309_Driver* m_oledDriverPtr,
 //==============================================================================
 void RootPage::paintAll(Graphics& g)
 {
+
+	// Do the actual painting
 	paint(g);
 	for(auto comp : mChildren)
 	{
-		comp->paint(g);
+		if ( comp->isVisible() )
+			comp->paint ( g );
 	}
 	m_oledDriverPtr->refreshDisplay();
+
 }
 
 //==============================================================================
@@ -101,12 +108,58 @@ Rectangle< int > RootPage::getBounds () const
 //==============================================================================
 bool RootPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g)
 {
-	for (auto child : mChildren)
+	bool success = handleLocalUI_event(uiEvent, altState, g);
+	if ( ! success )
 	{
-		if (child->handleUI_event(uiEvent, altState, g))
-			return true;
+		for (auto child : mChildren)
+		{
+			if (child->handleUI_event(uiEvent, altState, g))
+				return true;
+		}
+		return false;
 	}
-	return false;
+	return success;
+}
+
+//==============================================================================
+//          dimSwitchLeds()
+//
+// 	Set all led's except for EXIT & ALT to there dimmed state
+//
+//  CasualNoises    08/01/2026  First implementation
+//==============================================================================
+void RootPage::dimSwitchLeds ()
+{
+	eLED_BitNums dimmed[] = {
+		eLED_BitNums::SWITCH_2, eLED_BitNums::SWITCH_3, eLED_BitNums::SWITCH_4,
+		eLED_BitNums::SWITCH_5, eLED_BitNums::SWITCH_6
+	};
+	sLED_Event event;
+	event.ledIntensity = 5;
+	for (auto led : dimmed)
+	{
+		event.ledBitNum = (uint32_t)led;
+		BaseType_t res = xQueueSend(gYellowPages.gLED_ThreadQueueHandle, &event, 10);
+		if (res != pdPASS)
+			CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+	}
+}
+
+//==============================================================================
+//          setSwitchLed()
+//
+// 	Set intensity of the given led to 100%
+//
+//  CasualNoises    08/01/2026  First implementation
+//==============================================================================
+void RootPage::setSwitchLed  ( eLED_BitNums led )
+{
+	sLED_Event event;
+	event.ledIntensity = 100;
+	event.ledBitNum = (uint32_t)led;
+	BaseType_t res = xQueueSend(gYellowPages.gLED_ThreadQueueHandle, &event, 10);
+	if (res != pdPASS)
+		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 }
 
 } // namespace CasualNoises

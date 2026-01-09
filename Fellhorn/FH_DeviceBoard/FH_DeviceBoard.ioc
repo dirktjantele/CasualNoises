@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
 ADC2.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_15
 ADC2.Channel-1\#ChannelRegularConversion=ADC_CHANNEL_19
-ADC2.ClockPrescaler=ADC_CLOCK_ASYNC_DIV1
+ADC2.ClockPrescaler=ADC_CLOCK_ASYNC_DIV8
 ADC2.ContinuousConvMode=DISABLE
 ADC2.ConversionDataManagement=ADC_CONVERSIONDATA_DMA_ONESHOT
 ADC2.EOCSelection=ADC_EOC_SEQ_CONV
@@ -62,9 +62,10 @@ Dma.SPI2_TX.0.SyncEnable=DISABLE
 Dma.SPI2_TX.0.SyncPolarity=HAL_DMAMUX_SYNC_NO_EVENT
 Dma.SPI2_TX.0.SyncRequestNumber=1
 Dma.SPI2_TX.0.SyncSignalID=NONE
-FREERTOS.IPParameters=Tasks01,configUSE_NEWLIB_REENTRANT,configENABLE_FPU
+FREERTOS.IPParameters=Tasks01,configUSE_NEWLIB_REENTRANT,configENABLE_FPU,configTOTAL_HEAP_SIZE
 FREERTOS.Tasks01=defaultTask,24,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL
 FREERTOS.configENABLE_FPU=1
+FREERTOS.configTOTAL_HEAP_SIZE=245760
 FREERTOS.configUSE_NEWLIB_REENTRANT=1
 File.Version=6
 GPIO.groupedBy=Group By Peripherals

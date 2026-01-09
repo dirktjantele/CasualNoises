@@ -23,11 +23,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "string.h"
-
-#include "SystemConfig.h"
+#include "../../DeviceBoardEngine/UI_Definitions.h"
 
 #include "CasualNoises.h"
+#include "SystemConfig.h"
 
 //#include "YellowPages.h"
 
@@ -380,7 +379,7 @@ static void MX_ADC2_Init(void)
   /** Common config
   */
   hadc2.Instance = ADC2;
-  hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV128;
+  hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
   hadc2.Init.Resolution = ADC_RESOLUTION_16B;
   hadc2.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc2.Init.EOCSelection = ADC_EOC_SEQ_CONV;

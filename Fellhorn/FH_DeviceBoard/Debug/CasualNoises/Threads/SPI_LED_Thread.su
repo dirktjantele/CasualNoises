@@ -1,0 +1,6 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:91:13:void CN_ReportFault(eErrorCodes)	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/SPI_LED_Thread.cpp:53:6:void CasualNoises::Handle_LED_RefreshInterrupts()	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/SPI_LED_Thread.cpp:81:6:bool CasualNoises::handle_LT_DMA_Cplt(SPI_HandleTypeDef*)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/SPI_LED_Thread.cpp:108:6:void CasualNoises::LED_Thread(void*)	64	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/SPI_LED_Thread.cpp:182:12:BaseType_t CasualNoises::start_LED_Thread(void*, tskTaskControlBlock**)	32	static

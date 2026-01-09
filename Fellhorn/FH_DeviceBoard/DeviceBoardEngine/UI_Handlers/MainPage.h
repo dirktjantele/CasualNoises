@@ -21,7 +21,10 @@ namespace CasualNoises
 {
 
 class Box;
+class IndexBox;
 class ComboBox;
+class Label;
+class ProgressBar;
 
 //==============================================================================
 //          MainPage
@@ -46,7 +49,7 @@ public:
 
 private:
 
-	Box*			mBoxPtr				{ nullptr };
+	Box*			mOuterBoxPtr		{ nullptr };
 	ComboBox*		mComboBoxPtr		{ nullptr };
 
 };
@@ -54,6 +57,23 @@ private:
 //==============================================================================
 //          CalibrationPage
 //==============================================================================
+
+enum class eCalibrationPageState
+{
+	AwaitingMins,
+	ProcessingMins,
+	AwaitingMaxs,
+	ProcessingMaxs,
+	Completion,
+};
+
+typedef struct
+{
+	uint32_t minValues[NO_OF_ADC_MULTIPLEXERS][NO_OF_ADC_MULTI_CHANNELS];
+	uint32_t maxValues[NO_OF_ADC_MULTIPLEXERS][NO_OF_ADC_MULTI_CHANNELS];
+	bool     maskFlags[NO_OF_ADC_MULTIPLEXERS][NO_OF_ADC_MULTI_CHANNELS];
+} sCalibrationData;
+
 class CalibrationPage : public RootPage
 {
 public:
@@ -70,9 +90,34 @@ public:
 	void loadContext() override;
 	void saveContext() override;
 
+protected:
+	bool handleLocalUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) override;
+
 private:
 
-	Box*			mBoxPtr				{ nullptr };
+	IndexBox*		mOuterBoxPtr			{ nullptr };
+	Label*			mAwaitingMinLabelPtr	{ nullptr };
+	Label*			mAwaitingMaxLabelPtr	{ nullptr };
+	Label*			mCompletionLabelPtr		{ nullptr };
+	Label*			mContLabelPtr			{ nullptr };
+
+	ProgressBar*	mProgressBarPtr			{ nullptr };
+
+	uint32_t		mStartTicks				{ 0 };
+
+	float			mPotValues[NO_OF_ADC_MULTIPLEXERS][NO_OF_ADC_MULTI_CHANNELS];
+	bool			mPotValueMask[NO_OF_ADC_MULTIPLEXERS][NO_OF_ADC_MULTI_CHANNELS];
+
+	sCalibrationData mCalibrationValues;
+
+	eCalibrationPageState	mState		{ eCalibrationPageState::AwaitingMins };
+
+	void 			processADC_Event ( sIncommingUI_Event* uiEvent );
+
+	bool			allPotsAtmin () const noexcept;
+	bool			allPotsAtmax () const noexcept;
+
+	void			saveCalibrationValues () noexcept;
 
 };
 

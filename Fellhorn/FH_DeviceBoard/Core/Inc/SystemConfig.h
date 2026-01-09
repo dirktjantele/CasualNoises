@@ -30,6 +30,7 @@ constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  	= 0;
 constexpr uint32_t	AUDIO_NERVENET_THREAD_NO		  	= 0;
 constexpr uint32_t	NERVENET_DATA_SIZE				  	= 1024;
 
+/*
 // Thread source identification, part of any event send from any thread to the UI thread
 enum class eEventSourceID
 {
@@ -37,6 +38,7 @@ enum class eEventSourceID
 	potentiometerThreadSourceID,
 	multiplexerADC_ThreadSourceID,
 };
+*/
 
 // Bit pattern for led's (see schematic for shift register connections)
 // Note, all bit numbers are shifted 8 bit to the right to avoid compilation errors!
@@ -59,7 +61,13 @@ enum class eLED_BitNums
 	EXIT_SWITCH			= 31,
 };
 
-// Encoder & switch device numbers
+// Encoder switch &  other switch device numbers
+enum class eEncoderNums
+{
+	MAIN_ENCODER		= 0,
+};
+
+// Encoder switch &  other switch device numbers
 enum class eSwitchNums
 {
 	ENCODER_SWITCH		= 0,
@@ -72,6 +80,35 @@ enum class eSwitchNums
 	SAVE_SWITCH			= 6,
 };
 
+// No of ADC multiplexers and multiplexer channels
+constexpr uint32_t	NO_OF_ADC_MULTIPLEXERS		= 2;
+constexpr uint32_t	NO_OF_ADC_MULTI_CHANNELS	= 8;
+
+// ADC multiplexer channel num's for each multiplexer
+enum class eMultiplexerChannel_0
+{
+	P_1					= 2,
+	P_2					= 6,
+	P_3					= 1,
+	P_4					= 4,
+	P_NC_1				= 3,
+	P_NC_2				= 5,
+	P_NC_3				= 7,
+	P_NC_4				= 0,
+};
+
+enum class eMultiplexerChannel_1
+{
+	F_1					= 2,
+	F_2					= 1,
+	F_3					= 4,
+	F_4					= 6,
+	F_5					= 0,
+	F_6					= 3,
+	F_7					= 5,
+	F_8					= 7,
+};
+
 // TLV tags
 enum class eTLV_Tag
 {
@@ -79,6 +116,7 @@ enum class eTLV_Tag
 	UI_PageStack		= 0x73696770,			// 'pgis'
 	UI_PageStackPtr		= 0x74707370,			// 'pspt'
 	UI_MainPageState	= 0x7473706d,			// 'mpst'
+	CalibrationValues	= 0x766c6370,			// 'pclv'
 };
 
 

@@ -208,7 +208,7 @@ void UI_Thread(void* pvParameters)
 	setupMessage.header.messageTag 	 = (uint32_t)eSynthEngineMessageType::requestSetupInfo;
 	setupMessage.header.messageLength = sizeof(tRequestSetupInfoMessageData);
 	success = gNerveNetMasterThreadPtr[0]->sendMessage(&setupMessage, sizeof(tRequestSetupInfoMessageData));
-	if ( ! success)
+	if ( ! success )
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 
 	// Enter main display
@@ -257,7 +257,7 @@ BaseType_t Start_UI_Thread(UI_ThreadData *argument)
 
 	// Create the thread to run the UI
 	TaskHandle_t xHandlePtr;
-	BaseType_t res = xTaskCreate(UI_Thread,	"UI_Thread", DEFAULT_STACK_SIZE * 8, argument,
+	BaseType_t res = xTaskCreate(UI_Thread,	"UI_Thread", DEFAULT_STACK_SIZE * 16, argument,
 			UI_THREAD_PRIORITY,	&xHandlePtr);
 //	gYellowPages.gUI_ThreadTaskHandle = xHandlePtr;
 	return res;

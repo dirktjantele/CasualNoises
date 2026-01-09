@@ -110,20 +110,7 @@ void LoadPage::loadContext()
 //==============================================================================
 void LoadPage::saveContext()
 {
-
+	// Nothing to save here
 }
 
-//==============================================================================
-//          handleUI_event()
-//
-// Handle UI events for this page
-//
-//  CasualNoises    25/12/2025  First implementation
-//==============================================================================
-/*
-bool LoadPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState)
-{
-	return false;
-}
-*/
 } // namespace CasualNoises

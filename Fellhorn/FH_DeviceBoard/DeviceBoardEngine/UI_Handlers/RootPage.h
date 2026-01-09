@@ -14,10 +14,10 @@
 #pragma once
 
 #include "../UI_Thread.h"
+#include "../../DeviceBoardEngine/UI_Definitions.h"
 
 #include <Graphics/Geometry/Rectangle.h>
 #include <Graphics/Geometry/Point.h>
-#include <GUI/GUI_Basics/UI_Definitions.h>
 
 namespace CasualNoises
 {
@@ -27,7 +27,6 @@ class SSD1309_Driver;
 class TLV_Driver;
 class Component;
 class Graphics;
-//template class Rectangle<int>;
 
 class RootPage
 {
@@ -55,10 +54,15 @@ protected:
 	TLV_Driver* 	mTLV_DriverPtr			{ nullptr };
 	PageManager* 	mPageManagerPtr			{ nullptr };
 
-	void addChildComponent (Component* child);
-	void addAndMakeVisible (Component* child);
+	void addChildComponent ( Component* child );
+	void addAndMakeVisible ( Component* child );
 
 	Rectangle<int> getBounds() const;
+
+	virtual bool handleLocalUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) { return false; };
+
+	void dimSwitchLeds ();
+	void setSwitchLed  ( eLED_BitNums led );
 
 private:
 	std::vector<Component*> 	mChildren;
