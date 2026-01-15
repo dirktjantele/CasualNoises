@@ -16,44 +16,14 @@
 
 #pragma once
 
+#include "../../DeviceBoardEngine/UI_Definitions.h"
+
 #include "main.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#include "SystemConfig.h"
-
 namespace CasualNoises
 {
-
-// Encoder signature
-// A switch is a simplified encoder, device no's/pin no's for encoder switches set to 0xff
-typedef struct
-{
-	uint8_t		encoderNo;
-	uint8_t		switchDevNo;
-	uint8_t		switchPinNo;
-	uint8_t		enc_A_DevNo;
-	uint8_t		enc_A_PinNo;
-	uint8_t		enc_B_DevNo;
-	uint8_t		enc_B_PinNo;
-} sEncoderSignature;
-
-// Encoder event types
-enum class eEncoderEventType
-{
-	encoderSwitch,
-	encoderCount
-};
-
-// Structure of an encoder event
-typedef struct
-{
-	eEventSourceID		eventSourceID;
-	eEncoderEventType 	eventType;
-	uint16_t			encoderNo;
-	int16_t				encoderCount;
-	int32_t				switchBitMap;
-} sEncoderEvent;
 
 // Arguments expected when starting the thread
 typedef struct

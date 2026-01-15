@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include <Graphics/Contexts/OBSOLETE GraphicsContext.h>
-#include <GUI/GUI_Basics/Components OBSOLETE/BoxComponent.h>
-#include <GUI/GUI_Basics/Components OBSOLETE/Component.h>
 #include "AudioBasics/Buffers/AudioBuffer.h"
 #include "AudioBasics/Processors/WaveFolder.h"
 

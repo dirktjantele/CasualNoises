@@ -11,6 +11,8 @@
   ==============================================================================
 */
 
+#ifdef CASUALNOISES_DISPLAY_DRIVER
+
 #include "Component.h"
 
 namespace CasualNoises
@@ -55,3 +57,4 @@ void Component::setBounds(Rectangle<int>& bounds)
 
 } // namespace CasualNoises
 
+#endif

@@ -1,0 +1,17 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:34:21:uint32_t CasualNoises::AudioBuffer::getNumSamples() const	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:35:21:uint32_t CasualNoises::AudioBuffer::getNumChannels() const	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:46:24:const float* CasualNoises::AudioBuffer::getReadPointer(int) const	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:47:23:float* CasualNoises::AudioBuffer::getWritePointer(int) const	16	static
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/bits/std_abs.h:75:3:constexpr float std::abs(float)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:143:13:void CN_ReportFault(eErrorCodes)	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:53:1:CasualNoises::AudioBuffer::AudioBuffer()	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:60:1:CasualNoises::AudioBuffer::AudioBuffer(uint32_t, uint32_t)	40	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:67:1:CasualNoises::AudioBuffer::~AudioBuffer()	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:86:6:void CasualNoises::AudioBuffer::clearAudioBuffer()	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:108:6:void CasualNoises::AudioBuffer::copyAudio(CasualNoises::AudioBuffer&)	40	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:136:6:void CasualNoises::AudioBuffer::importAudio(float*)	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:161:6:void CasualNoises::AudioBuffer::exportAudio(float*)	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.cpp:184:6:void CasualNoises::AudioBuffer::normalizeAudioBuffer()	56	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/maths.h:35:6:Type CasualNoises::cn_map(Type, Type, Type, Type, Type) [with Type = float]	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/maths.h:26:16:constexpr bool CasualNoises::approximatelyEqual(Type, Type) [with Type = float]	24	static

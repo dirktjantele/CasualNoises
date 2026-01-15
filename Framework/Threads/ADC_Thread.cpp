@@ -136,9 +136,9 @@ void ADC_Thread(void* pvParameters)
 
 		if (gYellowPages.gNetMasterThreadRunning)
 		{
-			bool success = gNerveNetMasterThreadPtr[0]->sendMessage(&adcValueMessage, sizeof(tADC_ValueMessage));
-//			if ( ! success)
-//				CN_ReportFault(eErrorCodes::NerveNetThread_Error);		// This call should return success
+			bool success = gNerveNetMasterThreadPtr[0]->sendMessage ( &adcValueMessage, sizeof ( tADC_ValueMessage ) );
+			if ( ! success )
+				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );		// This call should return success
 		}
 
    		vTaskDelay(pdMS_TO_TICKS(1));
@@ -169,7 +169,7 @@ BaseType_t startADC_Thread(void *argument, TaskHandle_t* xHandlePtr)
 
 	// Create the thread to scan the ADC convertions
 	BaseType_t res = xTaskCreate(ADC_Thread, "ADC_Thread", DEFAULT_STACK_SIZE / 2, argument,
-			POT_THREAD_PRIORITY, xHandlePtr);
+			CV_IN_THREAD_PRIORITY, xHandlePtr);
 	return res;
 
 }

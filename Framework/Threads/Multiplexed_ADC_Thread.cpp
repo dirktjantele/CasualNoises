@@ -20,6 +20,8 @@
 
 #include "semphr.h"
 
+#include "SystemConfig.h"
+
 namespace CasualNoises
 {
 
@@ -28,16 +30,19 @@ namespace multiplexed_adc
 
 // no of ADC values to use to calculate average values
 
-ADC_HandleTypeDef* gMultiplexed_adc;										// Pointer to ADC interface handle
-const uint32_t cNoOfMultiplexerInputs 		= 8;							// No of analog multiplexer inputs (8 on a 74HC4051)
+ADC_HandleTypeDef* gMultiplexed_adc;												// Pointer to ADC interface handle
+const uint32_t cNoOfMultiplexerInputs 		= 8;									// No of analog multiplexer inputs (8 on a 74HC4051)
 
-int32_t gNoOfMultiplexers 					= 0;							// Number of analogue multiplexer chips (74HC4051)
-sADC_MultiplexerSignature* gSignatures		= nullptr;						// Signature: port and pins for channel selection
+int32_t gNoOfMultiplexers 					= 0;									// Max no of analog multiplexer chips (74HC4051)
+sADC_MultiplexerSignature* gSignatures		= nullptr;								// Signature: port and pins for channel selection
 
-const uint32_t 	cAverageSize				= 4;							// No of samples used to calculate the average value
-uint16_t gRawAdcData[cNoOfMultiplexerInputs];								// Buffer for incoming ADC DMA data
-uint16_t gAverageAdcData[cNoOfMultiplexerInputs][cNoOfMultiplexerInputs];	// Buffer for average values
-uint16_t gPreviousAdcData[cNoOfMultiplexerInputs][cNoOfMultiplexerInputs];	//   "     "    "       "
+const uint32_t cAverageSize					= 16;									// No of samples used to calculate the average value
+const uint32_t cBitShiftCnt					= 4;
+
+static uint16_t gRawAdcData[cNoOfMultiplexerInputs];								// Buffer for incoming ADC DMA data
+static uint16_t gAverageAdcData[cNoOfMultiplexerInputs][cNoOfMultiplexerInputs];	// Buffer for average values
+static uint16_t gPreviousAdcData[cNoOfMultiplexerInputs][cNoOfMultiplexerInputs];	//   "     "    "       "
+static uint16_t gPreviousDev[cNoOfMultiplexerInputs][cNoOfMultiplexerInputs];		//   "     "    "       "
 
 SemaphoreHandle_t	gSemaphoreHandle 		= nullptr;
 
@@ -57,7 +62,6 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 
 	static 		 uint32_t sum[cNoOfMultiplexerInputs];
 	static		 uint32_t cnt				= 0;
-	static const uint32_t bitShiftCnt		= 2; //__builtin_ctz(cAverageSize);
 
 	static		 uint32_t multiplexChannel	= 0;
 
@@ -78,7 +82,7 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 			// Calculate average
 			for (auto i = 0; i < gNoOfMultiplexers; ++i)
 			{
-				gAverageAdcData[i][multiplexChannel] = sum[i] >> bitShiftCnt;
+				gAverageAdcData[i][multiplexChannel] = sum[i] >> cBitShiftCnt;
 				sum[i] = 0;
 			}
 			cnt = 0;
@@ -182,17 +186,19 @@ void multiplexed_ADC_Thread(void* pvParameters)
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 
-	// Clear previous value buffer
+	// Clear previous value buffers
 	for (uint32_t i = 0; i < cNoOfMultiplexerInputs; ++i)
+	{
 		for (uint32_t j= 0; j < cNoOfMultiplexerInputs; ++j)
-			gPreviousAdcData[i][j] = 0x0000;
+		{
+			gPreviousAdcData[i][j] = 0;
+			gPreviousDev[i][j] = 0xffff;
+		}
+	}
 
 	// Main event loop
-
-	auto foo = 0;
-
-	auto treschp = 300;					// Deviation should exceed this value before sending events
-	auto treschn = treschp * -1;
+	int32_t treschp = 300;					// Deviation should exceed this value before sending events
+	int32_t treschn = treschp * -1;
 	for (;;)
 	{
 
@@ -202,18 +208,20 @@ void multiplexed_ADC_Thread(void* pvParameters)
 			CN_ReportFault(eErrorCodes::adcThreadError);
 
 		// Compare new averages with previous ones
-		for (uint32_t i = 0; i < cNoOfMultiplexerInputs; ++i)
+		for ( uint32_t i = 0; i < gNoOfMultiplexers; ++i )
 		{
 			uint8_t mask = gSignatures[i].mask;
-			for (uint32_t j= 0; j < cNoOfMultiplexerInputs; ++j)
+			for ( uint32_t j= 0; j < cNoOfMultiplexerInputs; ++j )
 			{
-				int32_t dev = gAverageAdcData[i][j] - gPreviousAdcData[i][j];
-				if (((dev > treschp) || (dev < treschn)) &&
-						(mask & 0x01))
+				int32_t dev = (int32_t) gAverageAdcData[i][j] - (int32_t) gPreviousAdcData[i][j];
+				bool send = ( ( dev > treschp ) || ( dev < treschn )  ||
+							  ( gPreviousDev[i][j] > treschp ) || ( gPreviousDev[i][j] < treschn ));
+				if ( send && ( mask & 0x01 ) )
 				{
 
-					if ((i == 0) && (std::abs(dev) > foo))													// ToDo remove test
-						foo = std::abs(dev);
+					// Update previous value
+					gPreviousAdcData[i][j] = gAverageAdcData[i][j];
+					gPreviousDev[i][j] = dev;
 
 					// Send event to the client
 					if (clientQueue != nullptr)
@@ -224,13 +232,16 @@ void multiplexed_ADC_Thread(void* pvParameters)
 						event.multiplexerChannelNo	= j;
 						event.value					= gAverageAdcData[i][j];
 						event.deviation				= dev;
-						BaseType_t res = xQueueSendToBack(clientQueue, (void*)&event, 10);
+						UBaseType_t count = uxQueueSpacesAvailable ( clientQueue );
+						while (count == 0)
+						{
+							osDelay(pdMS_TO_TICKS(10));
+							count = uxQueueSpacesAvailable ( clientQueue );
+						}
+						BaseType_t res = xQueueSendToBack ( clientQueue, (void*)&event, 10 );
 						if (res != pdPASS)
 							CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 					}
-
-					// Update previous value
-					gPreviousAdcData[i][j] = gAverageAdcData[i][j];
 
 				}
 				mask >>= 1;
@@ -251,7 +262,7 @@ BaseType_t startMultiplexed_ADC_Thread(void *argument, TaskHandle_t* xHandlePtr)
 {
 
 	// Create the thread to scan the multiplexed ADC convertions
-	BaseType_t res = xTaskCreate(multiplexed_ADC_Thread, "multiplexed_ADC_Thread", DEFAULT_STACK_SIZE / 2, argument,
+	BaseType_t res = xTaskCreate(multiplexed_ADC_Thread, "multiplexed_ADC_Thread", DEFAULT_STACK_SIZE, argument,
 			POT_THREAD_PRIORITY, xHandlePtr);
 	return res;
 

@@ -175,7 +175,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 
 	// Global pointer to be used by the HAL_GPIO_EXTI_Callback()
 	mTheadNumber = nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetThreadNo;
-	gNerveNetSlaveThreadPtr[mTheadNumber] = this;
+	gNerveNetSlaveThreadPtr [ mTheadNumber ] = this;
 
 	// Create Tx and Rx buffers
 	for (uint32_t i = 0; i < cNoOfTxMessageBuffers; ++i)
@@ -199,7 +199,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	mRemainingSpace 			 = NERVENET_DATA_SIZE;
 	mConstructionBufferBusy 	 = false;
 
-	// Create a binary semaphore for task/interrupt synchronisation
+	// Create a binary semaphore for task/interrupt synchronization
 	mStartCycleSemaphore = xSemaphoreCreateBinary();
 	if (mStartCycleSemaphore == nullptr)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
@@ -217,11 +217,11 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	mThreadReady = true;
 
 	// Start performance timer, if any
-	if (mPerformanceTestTimerPtr != nullptr)
+	if ( mPerformanceTestTimerPtr != nullptr )
 	{
-		BaseType_t res = HAL_TIM_Base_Start(mPerformanceTestTimerPtr);
+		BaseType_t res = HAL_TIM_Base_Start ( mPerformanceTestTimerPtr );
 		if (res != HAL_OK)
-			CN_ReportFault(eErrorCodes::NerveNetThread_Error);
+			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 		mPerformanceTestTimerPtr->Instance->CNT = 0;
 	}
 

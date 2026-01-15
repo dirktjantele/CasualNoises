@@ -13,10 +13,11 @@
 #pragma once
 
 #include <math.h>
-#include <string.h>
 
 #include "CasualNoises.h"
-#include "../../Graphics/Fonts/Font.h"
+#include <Core/Text/String.h>
+#include <Graphics/Fonts/Font.h>
+#include <Graphics/Geometry/Rectangle.h>
 #include "maths.h"
 
 #include "main.h"
@@ -41,11 +42,11 @@ typedef struct
 } sSSD1309_ConfigData;
 
 //==============================================================================
-//          bitOperations
+//          eBitOperations
 //
 //  CasualNoises    25/12/2024  First implementation
 //==============================================================================
-enum class bitOperations
+enum class eBitOperations
 {
 	SetBitOp,
 	ClearBitOp,
@@ -109,12 +110,11 @@ public:
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
-	HAL_StatusTypeDef clearDisplay()
+	void clearDisplay()
 	{
 		for (uint32_t y = 0; y < cDisplayHeight; ++y)
 			for (uint32_t x = 0; x < cDisplayWidth; ++x)
 				mBitMap[x][y] = 0x00;
-		return refreshDisplay();
 	}
 
 	//==============================================================================
@@ -163,26 +163,26 @@ public:
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
-	void drawPixel(int32_t x, int32_t y, bitOperations op = bitOperations::SetBitOp)
+	void drawPixel(int32_t x, int32_t y, eBitOperations op = eBitOperations::SetBitOp)
 	{
 		if ((x < 0) || (x >= cDisplayWidth) ||
 			(y < 0) || (y >= cDisplayHeight))
 			return;
-		if (op == bitOperations::SetBitOp)
+		if (op == eBitOperations::SetBitOp)
 			mBitMap[x][y] = 0xff;
-		if (op == bitOperations::ClearBitOp)
+		if (op == eBitOperations::ClearBitOp)
 			mBitMap[x][y] = 0x00;
-		if (op == bitOperations::InvertBitOp)
+		if (op == eBitOperations::InvertBitOp)
 			mBitMap[x][y] = 0xff - mBitMap[x][y];
 	}
 
 	//==============================================================================
-	//          ili9341_drawRect()
+	//          drawRect()
 	//
 	//  CasualNoises    27/12/2024  First implementation
 	//==============================================================================
 	void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h,
-			bitOperations op = bitOperations::SetBitOp)
+			eBitOperations op = eBitOperations::SetBitOp)
 	{
 	  drawLine( x,     y,     x + w, y    , op );
 	  drawLine( x,     y + h, x + w, y + h, op );
@@ -191,24 +191,46 @@ public:
 	}
 
 	//==============================================================================
+	//          drawRect()
+	//
+	//  CasualNoises    04/01/2026  First implementation
+	//==============================================================================
+	void drawRect(Rectangle<int> rect,
+			eBitOperations op = eBitOperations::SetBitOp)
+	{
+		drawRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), op);
+	}
+
+	//==============================================================================
 	//          fillRect()
 	//
 	//  CasualNoises    27/12/2024  First implementation
 	//==============================================================================
-	void fillRect(int32_t x, int32_t y, int32_t w, int32_t h,
-			bitOperations op = bitOperations::SetBitOp)
+	void fillRect ( int32_t x, int32_t y, int32_t w, int32_t h,
+			eBitOperations op = eBitOperations::SetBitOp )
 	{
 
 		// Verify we have something within screen dimensions to be drawn
-		if ( ! clipRect(&x, &y, &w, &h))
+		if ( ! clipRect ( &x, &y, &w, &h ) )
 			return;
 
 		// Fill the rectangle line by line
-		for (int32_t l = 0; l <= h; ++l)
+		for ( int32_t l = 0; l < h; ++l )
 		{
-			drawLine(x, y + l, x + w, y + l, op);
+			drawLine ( x, y + l, x + w - 1, y + l, op );
 		}
 
+	}
+
+	//==============================================================================
+	//          drawRect()
+	//
+	//  CasualNoises    04/01/2026  First implementation
+	//==============================================================================
+	void fillRect(Rectangle<int> rect,
+			eBitOperations op = eBitOperations::SetBitOp)
+	{
+		fillRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), op);
 	}
 
 	//==============================================================================
@@ -216,7 +238,7 @@ public:
 	//
 	//  CasualNoises    26/12/2024  First implementation
 	//==============================================================================
-	void drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, bitOperations op = bitOperations::SetBitOp)
+	void drawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, eBitOperations op = eBitOperations::SetBitOp)
 	{
 		float dx = x1 - x0;
 		float dy = y1 - y0;
@@ -226,7 +248,7 @@ public:
 		{
 			if (dy == 0)
 				return;
-			for (int32_t i = abs(dy); i > 0; --i)
+			for (int32_t i = abs(dy); i >= 0; --i)
 			{
 				drawPixel(x0, y0 + i, op);
 			}
@@ -238,7 +260,7 @@ public:
 		{
 			if (dx == 0)
 				return;
-			for (int32_t i = abs(dx); i > 0; --i)
+			for (int32_t i = abs(dx); i >= 0; --i)
 			{
 				drawPixel(x0 + i, y0, op);
 			}
@@ -289,7 +311,7 @@ public:
 	//
 	//  CasualNoises    27/12/2024  First implementation
 	//==============================================================================
-	void drawCircle(int16_t x, int16_t y, int16_t r, bitOperations op = bitOperations::SetBitOp)
+	void drawCircle(int16_t x, int16_t y, int16_t r, eBitOperations op = eBitOperations::SetBitOp)
 	{
 	  int16_t f = 1 - r;
 	  int16_t fx = 1;
@@ -331,7 +353,7 @@ public:
 	//  CasualNoises    27/12/2024  First implementation
 	//==============================================================================
 	void drawCharacter(int32_t x, int32_t y, unsigned char c, const sFont* fontPtr,
-							bitOperations op = bitOperations::SetBitOp)
+							eBitOperations op = eBitOperations::SetBitOp)
 	{
 		if (c < ' ')
 			c = ' ';
@@ -362,7 +384,7 @@ public:
 	//  CasualNoises    27/12/2024  First implementation
 	//==============================================================================
 	void drawText(int32_t x, int32_t y, const char* ptr, const sFont* fontPtr,
-							bitOperations op = bitOperations::SetBitOp)
+							eBitOperations op = eBitOperations::SetBitOp)
 	{
 
 		uint32_t len = strlen(ptr);
@@ -376,6 +398,26 @@ public:
 
 	}
 
+	//==============================================================================
+	//          drawString()
+	//
+	//  CasualNoises    29/12/2025  First implementation
+	//==============================================================================
+/*	void drawString(int32_t x, int32_t y, const String& string, const sFont* fontPtr,
+							eBitOperations op = eBitOperations::SetBitOp)
+	{
+
+		uint16_t len = string.length();
+		uint32_t w = fontPtr->width;
+
+		for (uint32_t i = 0; i < len; ++i)
+		{
+//			drawCharacter(x, y, string[i], fontPtr, op);
+			x += w;
+		}
+
+	}
+*/
 	//==============================================================================
 	//          drawProgressBar()
 	//
@@ -395,10 +437,10 @@ public:
 
 		// Paint inner box
 		x += 1;	y += 1;	w -= 2;	h -= 2;
-		fillRect(x, y, w, h, bitOperations::InvertBitOp);
+		fillRect(x, y, w, h, eBitOperations::InvertBitOp);
 		x += 1;	y += 1;	w -= 2; h -= 2;
 		w = (w * progress) / 100.0f;
-		fillRect(x, y, w, h, bitOperations::InvertBitOp);
+		fillRect(x, y, w, h, eBitOperations::InvertBitOp);
 
 		// Paint progress text
 		uint32_t p = progress;
@@ -410,27 +452,27 @@ public:
 		x = (cDisplayWidth / 2) - (w / 2);
 		if (p >= 100)
 		{
-			drawCharacter(x, y, '1', &CasualNoises::font_11x18, bitOperations::InvertBitOp);
+			drawCharacter(x, y, '1', &CasualNoises::font_11x18, eBitOperations::InvertBitOp);
 			x += 12;
-			drawCharacter(x, y, '0', &CasualNoises::font_11x18, bitOperations::InvertBitOp);
+			drawCharacter(x, y, '0', &CasualNoises::font_11x18, eBitOperations::InvertBitOp);
 			x += 12;
-			drawCharacter(x, y, '0', &CasualNoises::font_11x18, bitOperations::InvertBitOp);
+			drawCharacter(x, y, '0', &CasualNoises::font_11x18, eBitOperations::InvertBitOp);
 			x += 12;
 		}
 		else if (p >= 10)
 		{
 			uint32_t d = p / 10;
-			drawCharacter(x, y, '0' + d, &CasualNoises::font_11x18, bitOperations::InvertBitOp);
+			drawCharacter(x, y, '0' + d, &CasualNoises::font_11x18, eBitOperations::InvertBitOp);
 			x += 12;
-			drawCharacter(x, y, '0' + p - (d * 10), &CasualNoises::font_11x18, bitOperations::InvertBitOp);
+			drawCharacter(x, y, '0' + p - (d * 10), &CasualNoises::font_11x18, eBitOperations::InvertBitOp);
 			x += 12;
 		}
 		else
 		{
-			drawCharacter(x, y, '0' + p, &CasualNoises::font_11x18, bitOperations::InvertBitOp);
+			drawCharacter(x, y, '0' + p, &CasualNoises::font_11x18, eBitOperations::InvertBitOp);
 			x += 12;
 		}
-		drawCharacter(x, y, '%', &CasualNoises::font_11x18, bitOperations::InvertBitOp);
+		drawCharacter(x, y, '%', &CasualNoises::font_11x18, eBitOperations::InvertBitOp);
 
 	}
 

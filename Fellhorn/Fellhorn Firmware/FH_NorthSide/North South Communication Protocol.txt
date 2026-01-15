@@ -1,0 +1,23 @@
+Following is a description of the protocol used for communication between the north side mcu and the south side mcu.
+
+Data en control data is send back and forth between the two sides using SPI.
+The north side mcu is the SPI master while the south side mcu is the SPI slave.
+There are also three signal lines used to synchronise master and slave and manage the communication. 
+These lines are:
+- INTERCONN_A: Req - master->slave - request an SPI transaction
+- INTERCONN_B: Ack - slave->master - acknowledge to indicate that the slave is ready to receive data
+- INTERCONN_C: Data/Cmd - indicates what kind of data package is exchanged
+
+Data/Cmd high: data is exchanged
+Data/Cmd low : commands is exchenged
+
+Data packets holds audio sample data while command packages only hold commands and are smaller, so faster
+to exchange, than data packages.
+
+Startup:
+
+When starting up the master 'pings' the slave by toggeling the Data/Cmd line until the slave responses with
+a ping on the Ack line. Regular communication can start now.
+
+After communication is setup, the master sends a command package in order to obtain some info about the slave.
+For now this is only used to test the communication between both sides...

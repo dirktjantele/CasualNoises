@@ -11,6 +11,8 @@
   ==============================================================================
 */
 
+#ifdef CASUALNOISES_DISPLAY_DRIVER
+
 #pragma once
 
 #include <functional>
@@ -31,7 +33,7 @@ class ComboBox final : public Component
 public:
 	 ComboBox() = delete;
 	 ComboBox(String name);
-	~ComboBox();
+	virtual ~ComboBox();
 
 	void paint(Graphics& g) noexcept;
 
@@ -44,7 +46,8 @@ public:
 		if (index >= getNumItems()) return -1;
 		return mItemPtrs[index]->id;
 	}
-	uint32_t getSelectedId () const noexcept { return getItemId(mFocus); }
+	uint32_t getSelectedId () const noexcept { return getItemId (mFocus); }
+	void setFocus ( uint32_t focus ) noexcept;
 
 	bool handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) override;
 
@@ -59,3 +62,5 @@ private:
 };
 
 } // namespace CasualNoises
+
+#endif

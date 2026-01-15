@@ -20,33 +20,10 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#include "SystemConfig.h"
+#include "../../DeviceBoardEngine/UI_Definitions.h"
 
 namespace CasualNoises
 {
-
-// Multiplexer signature
-// The ADC multiplexer is controlled by 3 GPIO output pins
-typedef struct
-{
-	GPIO_TypeDef*			SO_Port;
-	uint16_t				SO_Pin;
-	GPIO_TypeDef*			S1_Port;
-	uint16_t				S1_Pin;
-	GPIO_TypeDef*			S2_Port;
-	uint16_t				S2_Pin;
-	uint8_t					mask;
-} sADC_MultiplexerSignature;
-
-// Structure of a multiplexed ADC event
-typedef struct
-{
-	eEventSourceID		eventSourceID;
-	uint16_t	 		multiplexerNo;
-	uint16_t			multiplexerChannelNo;
-	uint32_t			value;
-	int32_t				deviation;
-} sMultiplexed_ADC_Event;
 
 // Arguments expected when starting the thread
 typedef struct

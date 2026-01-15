@@ -36,6 +36,9 @@
 
 #include "maths.h"
 
+#include "Line.h"
+#include "Point.h"
+
 namespace CasualNoises
 {
 

@@ -1,0 +1,7 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:117:13:void CN_ReportFault(eErrorCodes)	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:34:21:uint32_t CasualNoises::AudioBuffer::getNumSamples() const	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:49:16:void CasualNoises::AudioBuffer::getAudioBufferPtrs(CasualNoises::sAudioBufferPtrs*)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioUtils/Players/AudioProcessorPlayer.cpp:50:6:void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef*)	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioUtils/Players/AudioProcessorPlayer.cpp:63:6:void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef*)	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioUtils/Players/AudioProcessorPlayer.cpp:89:6:void CasualNoises::AudioProcessorPlayer::runAudioProcessor(CasualNoises::AudioBuffer*, void (**)(CasualNoises::sNerveNetData*))	11

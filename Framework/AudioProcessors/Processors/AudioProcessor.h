@@ -19,7 +19,7 @@ namespace CasualNoises
 
 class AudioBuffer;
 
-class AudioProcessor final
+class AudioProcessor
 {
 public:
 

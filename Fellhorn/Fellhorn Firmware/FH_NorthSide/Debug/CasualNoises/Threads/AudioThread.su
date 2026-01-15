@@ -1,0 +1,6 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:117:13:void CN_ReportFault(eErrorCodes)	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioUtils/Players/AudioProcessorPlayer.h:41:31:static CasualNoises::AudioProcessorPlayer* CasualNoises::AudioProcessorPlayer::getAudioProcessorPlayer(CasualNoises::AudioProcessor*)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioUtils/Players/AudioProcessorPlayer.h:56:14:void CasualNoises::AudioProcessorPlayer::sethi2sHandlePtr(I2S_HandleTypeDef*)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/AudioThread.cpp:34:6:void CasualNoises::AudioThread(void*)	40	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/AudioThread.cpp:59:12:BaseType_t CasualNoises::StartAudioThread(void*)	32	static

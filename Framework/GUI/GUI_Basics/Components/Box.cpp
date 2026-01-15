@@ -11,6 +11,8 @@
   ==============================================================================
 */
 
+#ifdef CASUALNOISES_DISPLAY_DRIVER
+
 #include "Box.h"
 
 #include <Graphics/Contexts/Graphics.h>
@@ -89,3 +91,5 @@ void IndexBox::paint ( Graphics& g )
 }
 
 } // namespace CasualNoises
+
+#endif

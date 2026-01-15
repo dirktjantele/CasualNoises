@@ -13,6 +13,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "cmsis_os.h"
+
 #include "W25Qxx_Driver.h"
 
 namespace CasualNoises {
@@ -46,7 +48,6 @@ W25Qxx_Driver::W25Qxx_Driver(const sNVM_DriverInitData* initDataPtr)
 		if (res != HAL_OK) goto error;
 		res = sendDeviceCommand(i, eFlashCommandCodes::Reset, 1);
 		if (res != HAL_OK) goto error;
-//		HAL_Delay(1);					// Give the device time to reset (more than 64uSec)
 		vTaskDelay(pdMS_TO_TICKS(1));
 		res = sendDeviceCommand(i, eFlashCommandCodes::ManufactuereDeviceId, 6);
 		if ((res != HAL_OK) ||
@@ -92,21 +93,21 @@ W25Qxx_Driver::W25Qxx_Driver(const sNVM_DriverInitData* initDataPtr)
 bool W25Qxx_Driver::checkForCacheChange()
 {
 
-	if ((mPreviousWordOffset != 0xffffffff) &&
-		(mSectorCache[mPreviousWordOffset] != mPreviousValue))
+	if ( ( mPreviousWordOffset != 0xffffffff ) &&
+		 ( mSectorCache[mPreviousWordOffset] != mPreviousValue ) )
 	{
 
 		// Set corresponding dirty flags
 		mSectorCacheDirty = true;
-		uint32_t pageNo = (mPreviousWordOffset * 4) / cFlashPageSizeBytes;
-		mPageCacheDirty[pageNo] = true;
+		uint32_t pageNo = ( mPreviousWordOffset * 4 ) / cFlashPageSizeBytes;
+		mPageCacheDirty [ pageNo ] = true;
 
 		// Do we have to erase the complete sector
 		// This has to be done when a 0 bit in flash is changed to a logical 1
-		mSectorEraseRequired |= ~mPreviousValue & mSectorCache[mPreviousWordOffset];
+		mSectorEraseRequired |= ~mPreviousValue & mSectorCache [ mPreviousWordOffset ];
 
 		// Update previous value and report change
-		mPreviousValue = mSectorCache[mPreviousWordOffset];
+		mPreviousValue = mSectorCache [ mPreviousWordOffset ];
 		return true;
 
 	}
@@ -125,7 +126,7 @@ bool W25Qxx_Driver::checkForCacheChange()
 //
 //  CasualNoises    31/03/2023  First implementation
 //==============================================================================
-uint32_t& W25Qxx_Driver::operator[] (uint32_t index)
+uint32_t& W25Qxx_Driver::operator[] ( uint32_t index )
 {
 
 	// Some useful values
@@ -135,32 +136,33 @@ uint32_t& W25Qxx_Driver::operator[] (uint32_t index)
 	uint32_t wordOffset = byteOffset / 4;
 
 	// Valid index?
-	if (index >= mErrorIndex)
+	if ( index >= mErrorIndex )
 	{
 		mOutOfRangeDetected = true;
 		return mOutOfRangeWord;
 	}
 
 	// Access to the same location?
-	if ((wordOffset == mPreviousWordOffset) &&
-		(sectorNo   == mCurrentSectorNo))
+	if ( ( wordOffset == mPreviousWordOffset ) &&
+		 ( sectorNo   == mCurrentSectorNo ) )
 	{
 		return mSectorCache[wordOffset];
 	}
 
 	// Did previous location change?
-	checkForCacheChange();
+	checkForCacheChange ();
 
 	// Have to change sector?
-	if (sectorNo != mCurrentSectorNo)
+	if ( sectorNo != mCurrentSectorNo )
 	{
-		fastSectorRead(sectorNo * cFlashSectorSizeBytes);
+		flushSectorCache ();												// ToDo 12/01/2026 does this help???
+		fastSectorRead ( sectorNo * cFlashSectorSizeBytes );
 	}
 
 	// Remember this access and return reference
 	mPreviousWordOffset = wordOffset;
-	mPreviousValue 		= mSectorCache[wordOffset];
-	return mSectorCache[mPreviousWordOffset];
+	mPreviousValue 		= mSectorCache [ wordOffset ];
+	return mSectorCache [ mPreviousWordOffset ];
 
 }
 
@@ -176,7 +178,7 @@ HAL_StatusTypeDef W25Qxx_Driver::eraseAllDevices()
 
 	// Erase devices one by one
 	HAL_StatusTypeDef res;
-	for (uint16_t deviceNo = 0; deviceNo < mInitDataPtr->noOfDevices; ++deviceNo)
+	for ( uint16_t deviceNo = 0; deviceNo < mInitDataPtr->noOfDevices; ++deviceNo )
 	{
 
 		// Erase a single device
@@ -263,18 +265,17 @@ HAL_StatusTypeDef W25Qxx_Driver::readStatusRegisters(uint16_t deviceNo)
 // Wait until the busy bit in the device status register is cleared
 // Performs a busy form of waiting!
 //
-//  CasualNoises    01/04/2023  First implementation       ;)
+//  CasualNoises    01/04/2023  First implementation
 //==============================================================================
-HAL_StatusTypeDef W25Qxx_Driver::waitUntilDeviceReady(uint16_t deviceNo)
+HAL_StatusTypeDef W25Qxx_Driver::waitUntilDeviceReady ( uint16_t deviceNo )
 {
 	HAL_StatusTypeDef res = HAL_OK;
 	while (true)
 	{
-		res = readStatusRegisters(deviceNo);
-		if ((res != HAL_OK) || ((mStatusRegisters[deviceNo].sStatisBits_S7_S0 & 0x01) == 0))
+		res = readStatusRegisters ( deviceNo );
+		if ( ( res != HAL_OK ) || ( ( mStatusRegisters[deviceNo].sStatisBits_S7_S0 & 0x01 ) == 0 ) )
 			break;
-//		HAL_Delay(1);
-		vTaskDelay(pdMS_TO_TICKS(1));
+		osDelay ( pdMS_TO_TICKS ( 200 ) );
 	}
 	return res;
 }
@@ -351,7 +352,7 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 {
 
 	// Only do this when the cache is dirty
-	checkForCacheChange();
+	checkForCacheChange ();
 	if ( ! mSectorCacheDirty )
 		return HAL_OK;
 
@@ -363,35 +364,35 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 	// Erase sector if required
 	HAL_StatusTypeDef res;
 	uint16_t deviceSelectPin = 0xffff;
-	if (mSectorEraseRequired)
+	if ( mSectorEraseRequired )
 	{
 
 		// Enable write on device
-		res = sendDeviceCommand(deviceNo, eFlashCommandCodes::WriteEnable, 1);
+		res = sendDeviceCommand ( deviceNo, eFlashCommandCodes::WriteEnable, 1 );
 		if (res != HAL_OK) goto error;
 
 		// Start sector erase
 		uint32_t startAddress = sectorNo * cFlashSectorSizeBytes;
-		res = sendDeviceCommand(deviceNo, eFlashCommandCodes::SectorErase, 4,
-				startAddress >> 16, startAddress >> 8, startAddress);
+		res = sendDeviceCommand ( deviceNo, eFlashCommandCodes::SectorErase, 4,
+				startAddress >> 16, startAddress >> 8, startAddress) ;
 		if (res != HAL_OK) goto error;
 
 		// Wait until the device is ready
-		res = waitUntilDeviceReady(deviceNo);
+		res = waitUntilDeviceReady ( deviceNo );
 		if (res != HAL_OK) goto error;
 
 		// Disable write on device
-		res = sendDeviceCommand(deviceNo, eFlashCommandCodes::WriteDisable, 1);
+		res = sendDeviceCommand ( deviceNo, eFlashCommandCodes::WriteDisable, 1 );
 		if (res != HAL_OK) goto error;
 
 	}
 
 	// Write current sector to flash page after page
-	for (uint32_t pageNo = 0; pageNo < cNoOfPagesInSector; ++pageNo)
+	for ( uint32_t pageNo = 0; pageNo < cNoOfPagesInSector; ++pageNo )
 	{
 
 		// Have to write this page?
-		if (mSectorEraseRequired || mPageCacheDirty[pageNo])
+		if ( mSectorEraseRequired || mPageCacheDirty[pageNo] )
 		{
 
 			// Enable write on device
@@ -439,8 +440,8 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 	error:
 
 	// Chip select goes high to end the transaction
-	if (deviceSelectPin != 0xffff)
-		HAL_GPIO_WritePin (mInitDataPtr->deviceSelectPorts[deviceNo], deviceSelectPin, GPIO_PIN_SET);
+	if ( deviceSelectPin != 0xffff )
+		HAL_GPIO_WritePin ( mInitDataPtr->deviceSelectPorts[deviceNo], deviceSelectPin, GPIO_PIN_SET );
 
 	return res;
 

@@ -1,0 +1,37 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:143:13:void CN_ReportFault(eErrorCodes)	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH_SouthSide/SouthSideEngine/SouthSideAudioProcessor.h:42:25:static CasualNoises::AudioProcessor* CasualNoises::SouthSideAudioProcessor::getSouthSideAudioProcessor()	2
+../Core/Src/main.cpp:109:6:void displayStatus(eStatusCodes)	5
+../Core/Src/main.cpp:127:6:void toggleTimeMarker_1()	1
+../Core/Src/main.cpp:132:6:void setTimeMarker_1()	1
+../Core/Src/main.cpp:137:6:void resetTimeMarker_1()	1
+../Core/Src/main.cpp:142:6:void toggleTimeMarker_2()	1
+../Core/Src/main.cpp:147:6:void setTimeMarker_2()	1
+../Core/Src/main.cpp:152:6:void resetTimeMarker_2()	1
+../Core/Src/main.cpp:157:6:void toggleTimeMarker_3()	1
+../Core/Src/main.cpp:162:6:void setTimeMarker_3()	1
+../Core/Src/main.cpp:167:6:void resetTimeMarker_3()	1
+../Core/Src/main.cpp:172:6:void toggleTimeMarker_4()	1
+../Core/Src/main.cpp:177:6:void setTimeMarker_4()	1
+../Core/Src/main.cpp:182:6:void resetTimeMarker_4()	1
+../Core/Src/main.cpp:188:7:void* getTLV_DriverPtr()	1
+../Core/Src/main.cpp:199:5:int main()	2
+../Core/Src/main.cpp:302:6:void SystemClock_Config()	4
+../Core/Src/main.cpp:361:13:void MX_ADC3_Init()	3
+../Core/Src/main.cpp:424:13:void MX_SPI1_Init()	2
+../Core/Src/main.cpp:472:13:void MX_SPI2_Init()	2
+../Core/Src/main.cpp:519:13:void MX_SPI3_Init()	2
+../Core/Src/main.cpp:567:13:void MX_SPI5_Init()	2
+../Core/Src/main.cpp:615:13:void MX_SPI6_Init()	2
+../Core/Src/main.cpp:663:13:void MX_TIM2_Init()	4
+../Core/Src/main.cpp:708:13:void MX_TIM3_Init()	4
+../Core/Src/main.cpp:753:13:void MX_TIM5_Init()	4
+../Core/Src/main.cpp:798:13:void MX_TIM15_Init()	4
+../Core/Src/main.cpp:844:13:void MX_USB_OTG_HS_PCD_Init()	2
+../Core/Src/main.cpp:878:13:void MX_DMA_Init()	1
+../Core/Src/main.cpp:899:13:void MX_GPIO_Init()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetSlaveThread.h:39:3:CasualNoises::NerveNetSlaveThread::NerveNetSlaveThread()	1
+../Core/Src/main.cpp:1051:6:void StartDefaultTask(void*)	9
+../Core/Src/main.cpp:1156:6:void MPU_Config()	1
+../Core/Src/main.cpp:1191:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	3
+../Core/Src/main.cpp:1217:6:void Error_Handler()	1

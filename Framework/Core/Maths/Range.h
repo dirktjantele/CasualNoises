@@ -79,7 +79,7 @@ public:
     /** Returns a range with a given start and length. */
     [[nodiscard]] static Range withStartAndLength (const ValueType startValue, const ValueType length) noexcept
     {
-        jassert (length >= ValueType());
+        assert (length >= ValueType());
         return Range (startValue, startValue + length);
     }
 

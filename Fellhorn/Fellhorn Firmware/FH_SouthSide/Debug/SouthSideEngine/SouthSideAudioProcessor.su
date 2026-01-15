@@ -1,0 +1,27 @@
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/bits/std_abs.h:75:3:constexpr float std::abs(float)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:143:13:void CN_ReportFault(eErrorCodes)	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:34:21:uint32_t CasualNoises::AudioBuffer::getNumSamples() const	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:46:24:const float* CasualNoises::AudioBuffer::getReadPointer(int) const	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:47:23:float* CasualNoises::AudioBuffer::getWritePointer(int) const	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Synthesizer/Basics/ADSR.h:47:3:constexpr CasualNoises::tADSR_Settings::tADSR_Settings()	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Synthesizer/Basics/ADSR.h:62:2:CasualNoises::ADSR::ADSR(float)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Synthesizer/Basics/ADSR.h:135:7:void CasualNoises::ADSR::handleTrigger()	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Synthesizer/Basics/ADSR.h:196:7:void CasualNoises::ADSR::updateSettings(CasualNoises::tADSR_Settings*)	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/AudioProcessors/Processors/AudioProcessor.h:22:7:constexpr CasualNoises::AudioProcessor::AudioProcessor()	16	static
+../SouthSideEngine/SynthEngines/PulsarSynthEngine.h:24:3:constexpr CasualNoises::PulsarSynthEngine::PulsarSynthEngine()	16	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:47:6:virtual void CasualNoises::SouthSideAudioProcessor::prepareToPlay(float, uint32_t, void*)	64	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:77:6:virtual void CasualNoises::SouthSideAudioProcessor::releaseResources()	16	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:93:42:void __tcf_0()	8	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:101:41:void __tcf_1()	8	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:89:6:void CasualNoises::SouthSideAudioProcessor::process_ADC_data(uint16_t*)	48	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:128:6:virtual void CasualNoises::SouthSideAudioProcessor::processNerveNetData(uint32_t, uint32_t, uint8_t*)	48	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:174:6:virtual void CasualNoises::SouthSideAudioProcessor::processBlock(CasualNoises::AudioBuffer&, CasualNoises::AudioBuffer&)	56	static
+../SouthSideEngine/SouthSideAudioProcessor.cpp:203:6:void CasualNoises::SouthSideAudioProcessor::setFrequency(float)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Maths/Average.h:21:3:CasualNoises::Average<T>::Average(uint32_t) [with T = long unsigned int]	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Maths/Average.h:29:2:CasualNoises::Average<T>::~Average() [with T = long unsigned int]	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Maths/Average.h:34:4:T CasualNoises::Average<T>::nextAverage(T) [with T = long unsigned int]	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/maths.h:35:6:Type CasualNoises::cn_map(Type, Type, Type, Type, Type) [with Type = float]	32	static
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/cmath:1070:5:constexpr typename __gnu_cxx::__promote_2<_Tp, _Up>::__type std::pow(_Tp, _Up) [with _Tp = double; _Up = float]	24	static
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/cmath:1070:5:constexpr typename __gnu_cxx::__promote_2<_Tp, _Up>::__type std::pow(_Tp, _Up) [with _Tp = double; _Up = int]	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/maths.h:26:16:constexpr bool CasualNoises::approximatelyEqual(Type, Type) [with Type = float]	24	static

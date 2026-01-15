@@ -11,6 +11,8 @@
   ==============================================================================
 */
 
+#ifdef CASUALNOISES_DISPLAY_DRIVER
+
 #pragma once
 
 #include "Component.h"
@@ -21,9 +23,9 @@ namespace CasualNoises
 class Box : public Component
 {
 public:
-	 Box () = delete;
-	 Box ( String name );
-	~Box () = default;
+	 	 	  Box () = delete;
+	 	 	  Box ( String name );
+	 virtual ~Box () {};
 
 	void paint ( Graphics& g ) noexcept override;
 
@@ -36,10 +38,10 @@ private:
 class IndexBox final : public Box
 {
 public:
-	 IndexBox () = delete;
-	 IndexBox ( String name);
-	 IndexBox ( String name, uint8_t noOfTabs, uint8_t currentTab );
-	~IndexBox () = default;
+			 IndexBox () = delete;
+			 IndexBox ( String name);
+			 IndexBox ( String name, uint8_t noOfTabs, uint8_t currentTab );
+	virtual ~IndexBox () = default;
 
 	void setCurrentTab ( uint8_t tab ) noexcept { mCurrentTab = tab; };
 
@@ -52,3 +54,5 @@ private:
 };
 
 } // namespace CasualNoises
+
+#endif

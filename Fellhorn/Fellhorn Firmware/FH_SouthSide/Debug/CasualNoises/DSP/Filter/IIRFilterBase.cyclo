@@ -1,0 +1,2 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/IIRFilterBase.cpp:13:6:void CasualNoises::Filter::IIRFilterBase::updateFilterCoefficients(float, float, float, CasualNoises::Filter::IIRType)	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/IIRFilterBase.cpp:36:7:float CasualNoises::Filter::IIRFilterBase::applyFiltering(float, CasualNoises::Filter::ChannelFeed&)	1

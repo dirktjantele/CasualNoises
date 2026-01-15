@@ -1,0 +1,7 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Text/../../Utilities/ReportFault.h:91:13:void CN_ReportFault(eErrorCodes)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/TLV Driver/TLV_Driver.h:43:14:CasualNoises::NVM_Driver* CasualNoises::TLV_Driver::getNVM_DriverPtr()	16	static
+../SouthSideEngine/NorthSouthComThread.cpp:71:6:void CasualNoises::NorthSouthInterruptHandler(uint16_t)	40	static
+../SouthSideEngine/NorthSouthComThread.cpp:167:6:void CasualNoises::exchangePackage()	16	static
+../SouthSideEngine/NorthSouthComThread.cpp:198:6:void CasualNoises::addCmdPackage(tCmdPackage*)	24	static
+../SouthSideEngine/NorthSouthComThread.cpp:226:6:void CasualNoises::NorthSouthComThread(void*)	56	static
+../SouthSideEngine/NorthSouthComThread.cpp:295:12:BaseType_t CasualNoises::StartNorthSouthComThread(NorthSouthComThreadData*)	32	static

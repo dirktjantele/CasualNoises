@@ -11,6 +11,8 @@
   ==============================================================================
 */
 
+#ifdef CASUALNOISES_DISPLAY_DRIVER
+
 #include "ComboBox.h"
 
 #include <Graphics/Contexts/Graphics.h>
@@ -46,34 +48,34 @@ ComboBox::~ComboBox()
 //
 //  CasualNoises    29/12/2025  First implementation
 //==============================================================================
-void ComboBox::paint(Graphics& g)
+void ComboBox::paint ( Graphics& g )
 {
 
 	// Set to default font when no font is specified
-	if (mFontPtr == nullptr)
+	if ( mFontPtr == nullptr )
 		mFontPtr = &font_7x10;
 
 	// Calculate working stuff...
-	Rectangle<int> bounds 	= getLocalBounds();
+	Rectangle<int> bounds 	= getLocalBounds ();
 	int32_t textHeight 		= mFontPtr->height + 1;
-	int32_t visibleItems 	= bounds.getHeight() / textHeight;
-	int32_t topSpacing 		= ((bounds.getHeight() - (visibleItems * (mFontPtr->height + 1))) / 2) + 4;
+	int32_t visibleItems 	= bounds.getHeight () / textHeight;
+	int32_t topSpacing 		= ( ( bounds.getHeight() - ( visibleItems * (mFontPtr->height + 1 ) ) ) / 2 ) + 4;
 	int32_t leftIndent 		= bounds.getX() + mFontPtr->width + 1;
 	int32_t firstLineIdx	= 0;
 	int32_t cursorLine		= 0;
 
 	// Determine first line & focus position
-	if ((int32_t)mItemPtrs.size() <=  visibleItems)									// All items are on one screen
+	if ( (int32_t)mItemPtrs.size() <=  visibleItems )									// All items are on one screen
 	{
 		firstLineIdx = 0;
 		cursorLine	 = mFocus;
 		visibleItems = (int32_t)mItemPtrs.size();
 	} else
 	{
-		if (mFocus <= (visibleItems / 2))											// Move cursor up/down in top half
+		if ( mFocus <= (visibleItems / 2) )											// Move cursor up/down in top half
 		{
 			cursorLine = mFocus;
-		} else if (((int32_t)mItemPtrs.size() - mFocus) > (visibleItems / 2))		// Cursor in the middle -> move contents up/down
+		} else if ( ( (int32_t)mItemPtrs.size() - mFocus) > (visibleItems / 2) )		// Cursor in the middle -> move contents up/down
 		{
 			cursorLine 		= visibleItems / 2;
 			firstLineIdx	= (mFocus - 1) - ((visibleItems / 2) - 1);
@@ -85,15 +87,16 @@ void ComboBox::paint(Graphics& g)
 	}
 
 	// Paint ComboBox
-	g.fillRect(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), eBitOperations::ClearBitOp);
+	g.fillRect ( bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), eBitOperations::ClearBitOp );
 	SSD1309_Driver* screen = g.getScreen();
 	uint32_t y = topSpacing;
-	for (uint32_t i = 0; i < visibleItems; ++i)
+	for (int32_t i = 0; i < visibleItems; ++i)
 	{
-		screen->drawText(leftIndent, y, mItemPtrs[firstLineIdx + i]->text->getStringPtr(), mFontPtr);
+		String text ( mItemPtrs[firstLineIdx + i]->text->getStringPtr() );
+		screen->drawText ( leftIndent, y, text.getStringPtr(), mFontPtr );
 		y += textHeight;
 	}
-	screen->drawText(bounds.getX() + 1, topSpacing + (cursorLine * textHeight), (char*)">", mFontPtr);
+	screen->drawText ( bounds.getX() + 1, topSpacing + (cursorLine * textHeight), (char*)">", mFontPtr );
 
 }
 
@@ -118,6 +121,18 @@ void ComboBox::addItem(String* textPtr, uint32_t id)
 	itemPtr->text = new String(*textPtr);
 	itemPtr->id	= id;
 	mItemPtrs.push_back(itemPtr);
+}
+
+//==============================================================================
+//          setFocus()
+//
+//  CasualNoises    08/01/2026  First implementation
+//==============================================================================
+void ComboBox::setFocus ( uint32_t focus ) noexcept
+{
+	if ( focus >= mItemPtrs.size() )
+		focus = mItemPtrs.size() - 1;
+	mFocus = focus;
 }
 
 //==============================================================================
@@ -149,3 +164,5 @@ bool ComboBox::handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphi
 }
 
 } // namespace CasualNoises
+
+#endif

@@ -18,6 +18,8 @@
 
 #include "Utilities/ReportFault.h"
 
+#include "SystemConfig.h"
+
 namespace CasualNoises
 {
 
@@ -104,6 +106,19 @@ void encoderThread(void* pvParameters)
 		}
 	}
 
+	// Send initial switch bit map
+	sEncoderEvent event;
+	event.eventSourceID = eEventSourceID::encoderThreadSourceID;
+	event.eventType     = eEncoderEventType::encoderSwitch;
+	event.encoderNo     = 0;
+	event.encoderCount  = 0;
+	event.switchBitMap	= 0x00000000;
+	for ( int32_t i = noOfDevices - 1; i >= 0; --i )
+		event.switchBitMap = ( event.switchBitMap << 8 ) + currentData[i];
+	BaseType_t _res = xQueueSendToBack ( clientQueue, (void*)&event, 10 );
+	if (_res != pdPASS)
+		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
+
 	// Main thread loop
 	uint16_t loopCnt = 0;
 	for (;;)
@@ -137,12 +152,12 @@ void encoderThread(void* pvParameters)
 			uint8_t encNo = encNoTablePtr[signalNo];
 			if (flag)
 			{
-				switch (typeTablePtr[signalNo])
+				switch ( typeTablePtr [signalNo] )
 				{
 				case signalType::enc_sw:
 				{
 					// Send encoder event to the client
-					if (clientQueue != nullptr)
+					if ( clientQueue != nullptr )
 					{
 						sEncoderEvent event;
 						event.eventSourceID = eEventSourceID::encoderThreadSourceID;
@@ -150,19 +165,19 @@ void encoderThread(void* pvParameters)
 						event.encoderNo     = signatures[encNo].encoderNo;
 						event.encoderCount  = 1;
 						event.switchBitMap	= 0x00000000;
-						for (int32_t i = noOfDevices - 1; i >= 0; --i)
-							event.switchBitMap = (event.switchBitMap << 8) + newData[i];
-						BaseType_t res = xQueueSendToBack(clientQueue, (void*)&event, 10);
+						for ( int32_t i = noOfDevices - 1; i >= 0; --i )
+							event.switchBitMap = ( event.switchBitMap << 8 ) + newData[i];
+						BaseType_t res = xQueueSendToBack ( clientQueue, (void*)&event, 10 );
 						if (res != pdPASS)
-							CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+							CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
 					}
 				}
 					encIncTable[encNo] = 0;
 					break;
 				case signalType::enc_a:
 				{
-					uint32_t indx = (signatures[encNo].enc_B_DevNo << 3) + signatures[encNo].enc_B_PinNo;
-					if (newStateTable[indx])
+					uint32_t indx = ( signatures[encNo].enc_B_DevNo << 3 ) + signatures[encNo].enc_B_PinNo;
+					if ( newStateTable[indx] )
 						encIncTable[encNo] += 1;
 					else
 						encIncTable[encNo] -= 1;
@@ -172,7 +187,7 @@ void encoderThread(void* pvParameters)
 					// Ignore these signals...
 					break;
 				default:
-					CN_ReportFault(eErrorCodes::runtimeError);
+					CN_ReportFault ( eErrorCodes::runtimeError );
 				}
 			}
 
@@ -195,7 +210,16 @@ void encoderThread(void* pvParameters)
 						event.eventType     = eEncoderEventType::encoderCount;
 						event.encoderNo     = signatures[encNo].encoderNo;
 						event.encoderCount  = encIncTable[encNo];
-						BaseType_t res = xQueueSendToBack(clientQueue, (void*)&event, 10);
+						event.switchBitMap	= 0x00000000;
+						for (int32_t i = noOfDevices - 1; i >= 0; --i)
+							event.switchBitMap = (event.switchBitMap << 8) + newData[i];
+						UBaseType_t count = uxQueueSpacesAvailable ( clientQueue );
+						while (count == 0)
+						{
+							osDelay ( pdMS_TO_TICKS ( 10 ) );
+							count = uxQueueSpacesAvailable ( clientQueue );
+						}
+						BaseType_t res = xQueueSendToBack ( clientQueue, (void*)&event, 10 );
 						if (res != pdPASS)
 							CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 					}
@@ -206,7 +230,7 @@ void encoderThread(void* pvParameters)
 		}
 
 		// Scan encoders at about 1 KHz
-		vTaskDelay(pdMS_TO_TICKS(1));
+		vTaskDelay ( pdMS_TO_TICKS (1) );
 
 	}
 
@@ -224,7 +248,7 @@ BaseType_t startEncoderThread(void *argument, TaskHandle_t* xHandlePtr)
 
 	// Create the thread to scan the encoders
 	BaseType_t res = xTaskCreate(encoderThread, "EncoderThread", DEFAULT_STACK_SIZE / 2, argument,
-			UI_THREAD_PRIORITY,	xHandlePtr);
+			ENCODER_THREAD_PRIORITY, xHandlePtr);
 	return res;
 
 }

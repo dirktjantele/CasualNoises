@@ -238,13 +238,13 @@ void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 
 	// Global pointer to be used by the HAL_GPIO_EXTI_Callback()
-	gNerveNetMasterThreadPtr[nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetThreadNo] = this;
+	gNerveNetMasterThreadPtr [ nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetThreadNo ] = this;
 
 	// Create Tx and Rx buffers
-	for (uint32_t i = 0; i < cNoOfTxMessageBuffers; ++i)
+	for ( uint32_t i = 0; i < cNoOfTxMessageBuffers; ++i )
 	{
 		mTxMessageBuffers[i] = new sNerveNetMessage;
-		memset(mTxMessageBuffers[i], 0, sizeof(sNerveNetMessage));
+		memset( mTxMessageBuffers[i], 0, sizeof ( sNerveNetMessage ) );
 		mTxMessageBuffers[i]->header.messageSourceID = eNerveNetSourceId::eFellhornNortSide;
 		mTxMessageBuffers[i]->header.messageNumber = 0;
 	}
@@ -265,9 +265,9 @@ void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
 	// Reset NerveNet slave
 	while (mThreadState == eNerveNetMasterThreadState::resetSlave)
 	{
-		HAL_GPIO_WritePin(mNerveNet_RESET_Port, mNerveNet_RESET_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(mNerveNet_RESET_Port, mNerveNet_RESET_Pin, GPIO_PIN_RESET);
-		vTaskDelay(pdMS_TO_TICKS(1));
+		HAL_GPIO_WritePin ( mNerveNet_RESET_Port, mNerveNet_RESET_Pin, GPIO_PIN_SET );
+		HAL_GPIO_WritePin ( mNerveNet_RESET_Port, mNerveNet_RESET_Pin, GPIO_PIN_RESET );
+		vTaskDelay ( pdMS_TO_TICKS (1) );
 	}
 
 	// ToDo: create a queue for incoming message data

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <limits>
+
 namespace CasualNoises
 {
 
@@ -46,5 +48,35 @@ Type cn_limit (Type sourceValue, Type rangeMin, Type rangeMax)
 		sourceValue = rangeMax;
 	return sourceValue;
 }
+
+/** Equivalent to operator== */
+template <typename Type>
+constexpr bool exactlyEqual (Type a, Type b)
+{
+//    JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wfloat-equal")
+    return a == b;
+//    JUCE_END_IGNORE_WARNINGS_GCC_LIKE
+}
+
+/** The isfinite() method seems to vary between platforms, so this is a
+    platform-independent function for it.
+*/
+/*
+template <typename NumericType>
+bool isfinite (NumericType value) noexcept
+{
+    if constexpr (std::numeric_limits<NumericType>::has_infinity
+                  || std::numeric_limits<NumericType>::has_quiet_NaN
+                  || std::numeric_limits<NumericType>::has_signaling_NaN)
+    {
+        return std::isfinite (value);
+    }
+    else
+    {
+        UNUSED(value);
+        return true;
+    }
+}
+*/
 
 } // namespace CasualNoises

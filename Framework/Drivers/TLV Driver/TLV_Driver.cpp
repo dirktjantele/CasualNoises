@@ -42,10 +42,10 @@ TLV_Driver::TLV_Driver(NVM_Driver* inNVM_DriverPtr) :
 	}
 
 	// NVM space ends here
-	mNVM_AfterEndIndex = mNVM_DriverPtr->getTotalCapacity() / 4;
+	mNVM_AfterEndIndex = mNVM_DriverPtr->getTotalCapacity () / 4;
 
 	// Find first empty TLV
-	mFreeTLV_Index = TLV_Driver::findNextTLV (cFreeTLV_Tag, 0);
+	mFreeTLV_Index = TLV_Driver::findNextTLV ( cFreeTLV_Tag, 0 );
 
 }
 
@@ -56,13 +56,15 @@ TLV_Driver::TLV_Driver(NVM_Driver* inNVM_DriverPtr) :
 //
 //  CasualNoises    02/04/2023  First implementation
 //==============================================================================
-void TLV_Driver::deleteAllTLVs()
+void TLV_Driver::deleteAllTLVs ( bool flushFlag )
 {
+
 	// Replace the first tag with a FREE tag
-	uint32_t freeSpace = (mNVM_DriverPtr->getTotalCapacity() / 4) - 1;
+	uint32_t freeSpace = ( mNVM_DriverPtr->getTotalCapacity() / 4 ) - 1;
 	(*mNVM_DriverPtr)[1] = cFreeTLV_Tag;
 	(*mNVM_DriverPtr)[2] = freeSpace;
-	mNVM_DriverPtr->flushSectorCache();
+	if ( flushFlag )
+		mNVM_DriverPtr->flushSectorCache ();
 
 }
 
@@ -84,11 +86,11 @@ uint32_t TLV_Driver::findNextTLV (uint32_t tag, uint32_t index)
 		index += getLength(index);
 
 	// Find TLV until end of NVM space
-	while ((index < mNVM_AfterEndIndex) &&
-			(getTag(index) != tag))
+	while ( ( index < mNVM_AfterEndIndex ) &&
+			( getTag ( index ) != tag ) )
 	{
-		uint32_t step = getLength(index);
-		if (step ==0)
+		uint32_t step = getLength ( index );
+		if ( step == 0 )
 			return 0;
 		index += step;
 	}
@@ -112,40 +114,41 @@ uint32_t TLV_Driver::findNextTLV (uint32_t tag, uint32_t index)
 //
 //  CasualNoises    30/10/2023  First implementation
 //  CasualNoises    24/12/2025	Bug fix
-//
 //==============================================================================
-bool TLV_Driver::addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
+bool TLV_Driver::addTLV ( uint32_t tag, uint32_t length, void* valuePtr, bool flushFlag )
 {
+	uint32_t* _valuePtr = static_cast<uint32_t*> ( valuePtr );
 
 	// Find free TLV that is large enough
-	uint32_t index = findNextTLV (cFreeTLV_Tag, 0);
+	uint32_t index = findNextTLV ( cFreeTLV_Tag, 0 );
 	while (index != 0)
 	{
-		if (getLength(index) >= length + 2)
+		if (getLength ( index ) >= length + 2 )
 			break;
-		index = findNextTLV (cFreeTLV_Tag, index);
+		index = findNextTLV ( cFreeTLV_Tag, index );
 	}
-	if (index == 0)
+	if ( index == 0 )
 		return false;
 
 	// Create a new free TLV after this one
-	if (getLength(index) > (length + 8))
+	if ( getLength (index ) > ( length + 8 ) )
 	{
 		uint32_t newIndex = index + length + 2;
-		setTag(newIndex, cFreeTLV_Tag);
-		setLength(newIndex, getLength(index) - length - 2);
+		setTag ( newIndex, cFreeTLV_Tag );
+		setLength ( newIndex, getLength ( index ) - length - 2 );
 	}
 
 	// Create new tag
-	setTag(index, tag);
-	setLength(index, length + 2);
+	setTag( index, tag );
+	setLength( index, length + 2 );
 	for (uint32_t i = 0; i < length; ++i)
 	{
-		setValue(index + i, valuePtr[i]);
+		setValue ( index + i, _valuePtr[i] );
 	}
 
 	// Save changes into the flash devices
-	mNVM_DriverPtr->flushSectorCache();
+	if ( flushFlag )
+		mNVM_DriverPtr->flushSectorCache ();
 
 	// Mission successful
 	return true;
@@ -161,14 +164,42 @@ bool TLV_Driver::addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr)
 //
 //  CasualNoises    23/12/2024  First implementation
 //==============================================================================
-uint32_t TLV_Driver::readTLV(uint32_t index, uint32_t length, uint32_t* valuePtr)
+uint32_t TLV_Driver::readTLV(uint32_t index, uint32_t length, void* valuePtr)
 {
+	uint32_t* _valuePtr = static_cast<uint32_t*> ( valuePtr );
+
 	uint32_t tlvLength = getLength(index) - 2;
 	if (tlvLength > length)
 		tlvLength = length;
 	for (uint32_t i = 0; i < tlvLength; ++i)
 	{
-		valuePtr[i] = getValue(index + i);
+		_valuePtr[i] = getValue(index + i);
+	}
+	return tlvLength;
+}
+
+//==============================================================================
+//          readTLV_Tag()
+//
+// Read a first TLV with given tag from flash into memory
+// length: TLV length in words
+// Return: no of words read
+//
+//  CasualNoises    23/12/2024  First implementation
+//==============================================================================
+uint32_t TLV_Driver::readTLV_Tag(uint32_t tag, uint32_t length, void* valuePtr)
+{
+	uint32_t* _valuePtr = static_cast<uint32_t*> ( valuePtr );
+
+	uint32_t index = findNextTLV(tag, 0);
+	if ( index == 0 )
+		return 0;
+	uint32_t tlvLength = getLength ( index ) - 2;
+	if ( tlvLength > length )
+		tlvLength = length;
+	for ( uint32_t i = 0; i < tlvLength; ++i )
+	{
+		_valuePtr[i] = getValue(index + i);
 	}
 	return tlvLength;
 }
@@ -182,22 +213,23 @@ uint32_t TLV_Driver::readTLV(uint32_t index, uint32_t length, uint32_t* valuePtr
 //
 //  CasualNoises    31/10/2023  First implementation
 //==============================================================================
-void TLV_Driver::deleteTLV(uint32_t tag, bool deleteAll)
+void TLV_Driver::deleteTLV ( uint32_t tag, bool deleteAll, bool flushFlag )
 {
 
 	bool proceed = true;
 	uint32_t index = findNextTLV (tag, 0);
-	while ((index != 0) && proceed)
+	while ( ( index != 0 ) && proceed )
 	{
-		setTag(index, cFreeTLV_Tag);
-		index = findNextTLV (tag, index);
+		setTag ( index, cFreeTLV_Tag );
+		index = findNextTLV ( tag, index );
 		proceed = deleteAll;
 	}
 
 	// ToDo join with next free tlv if there is one
 
 	// Save changes into the flash devices
-	mNVM_DriverPtr->flushSectorCache();
+	if ( flushFlag )
+		mNVM_DriverPtr->flushSectorCache ();
 
 }
 
@@ -211,11 +243,28 @@ void TLV_Driver::deleteTLV(uint32_t tag, bool deleteAll)
 //
 //  CasualNoises    24/12/2025  First implementation
 //==============================================================================
-bool TLV_Driver::updateTLV(uint32_t index, uint32_t length, uint32_t* valuePtr)
+bool TLV_Driver::updateTLV ( uint32_t index, uint32_t length, void* valuePtr, bool flushFlag )
 {
-	uint32_t tag = getTag(index);
-	setTag(index, cFreeTLV_Tag);
-	bool res = addTLV(tag, length, valuePtr);
+	uint32_t tag = getTag ( index );
+	setTag ( index, cFreeTLV_Tag );
+	bool res = addTLV ( tag, length, valuePtr, flushFlag );
+	return res;
+}
+
+//==============================================================================
+//          updateTLV_Tag()
+//
+// Update a TLV with a given tag in the flash
+// If the TLV does not already exists, create one
+// If the TLV exists, but differs in size, delete it and create a new one
+// 	otherwise, update the TLV in location
+//
+//  CasualNoises    08/01/2026 First implementation
+//==============================================================================
+bool TLV_Driver::updateTLV_Tag(uint32_t tag, uint32_t length, void* valuePtr, bool flushFlag)
+{
+	deleteTLV ( tag, true, flushFlag );
+	bool res = addTLV ( tag, length, valuePtr, flushFlag );
 	return res;
 }
 
@@ -266,19 +315,19 @@ uint32_t TLV_Driver::getTotalNoOfTLV_FreeBlocks()
 //
 //  CasualNoises    23/12/2025  First implementation
 //==============================================================================
-uint32_t TLV_Driver::getTotalNoOfTLVs()
+uint32_t TLV_Driver::getTotalNoOfTLVs ()
 {
 	uint32_t index = 1;
 	uint32_t count = 0;
-	while (index <  mNVM_AfterEndIndex)
+	while ( index <  mNVM_AfterEndIndex )
 	{
 		count += 1;
-		uint32_t step = getLength(index);
+		uint32_t step = getLength ( index );
 		if (step == 0)
 			return 0;
 		index += step;
 	}
-	if (index > (mNVM_AfterEndIndex + 1))
+	if ( index > ( mNVM_AfterEndIndex + 1 ) )
 		return 0;
 	return count;
 }

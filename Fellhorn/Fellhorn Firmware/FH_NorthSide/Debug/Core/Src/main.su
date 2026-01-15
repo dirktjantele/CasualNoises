@@ -1,0 +1,46 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:117:13:void CN_ReportFault(eErrorCodes)	24	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/Codec/CS4270_Driver.h:45:23:static CasualNoises::Codec_Driver& CasualNoises::CS4270_Driver::CreateDriver(CasualNoises::CS4270_DriverParams&)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/Codec/CS4270_Driver.h:51:28:virtual HAL_StatusTypeDef CasualNoises::CS4270_Driver::initializeCodec()	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/Codec/Codec_Driver.h:16:3:constexpr CasualNoises::Codec_Driver::Codec_Driver()	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/Codec/CS4270_Driver.h:110:3:CasualNoises::CS4270_Driver::CS4270_Driver(CasualNoises::CS4270_DriverParams&)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/Codec/CS4270_Driver.h:115:8:void CasualNoises::CS4270_Driver::resetCodec()	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/Codec/CS4270_Driver.h:125:21:HAL_StatusTypeDef CasualNoises::CS4270_Driver::CS4270_RegWrite(uint8_t, uint8_t)	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/Codec/CS4270_Driver.h:130:21:HAL_StatusTypeDef CasualNoises::CS4270_Driver::CS4270_RegRead(uint8_t, uint8_t*)	40	static
+../Core/Src/main.cpp:129:6:void displayStatus(eStatusCodes)	24	static
+../Core/Src/main.cpp:147:6:void toggleTimeMarker_1()	8	static
+../Core/Src/main.cpp:152:6:void setTimeMarker_1()	8	static
+../Core/Src/main.cpp:157:6:void resetTimeMarker_1()	8	static
+../Core/Src/main.cpp:162:6:void toggleTimeMarker_2()	8	static
+../Core/Src/main.cpp:167:6:void setTimeMarker_2()	8	static
+../Core/Src/main.cpp:172:6:void resetTimeMarker_2()	8	static
+../Core/Src/main.cpp:177:6:void toggleTimeMarker_3()	8	static
+../Core/Src/main.cpp:182:6:void setTimeMarker_3()	8	static
+../Core/Src/main.cpp:187:6:void resetTimeMarker_3()	8	static
+../Core/Src/main.cpp:192:6:void toggleTimeMarker_4()	8	static
+../Core/Src/main.cpp:197:6:void setTimeMarker_4()	8	static
+../Core/Src/main.cpp:202:6:void resetTimeMarker_4()	8	static
+../Core/Src/main.cpp:213:5:int main()	8	static
+../Core/Src/main.cpp:313:6:void SystemClock_Config()	120	static
+../Core/Src/main.cpp:371:6:void PeriphCommonClock_Config()	200	static
+../Core/Src/main.cpp:398:13:void MX_ADC1_Init()	48	static
+../Core/Src/main.cpp:494:13:void MX_ADC2_Init()	40	static
+../Core/Src/main.cpp:581:13:void MX_I2C4_Init()	8	static
+../Core/Src/main.cpp:629:13:void MX_I2S1_Init()	8	static
+../Core/Src/main.cpp:665:13:void MX_SPI2_Init()	8	static
+../Core/Src/main.cpp:713:13:void MX_SPI3_Init()	8	static
+../Core/Src/main.cpp:761:13:void MX_SPI4_Init()	8	static
+../Core/Src/main.cpp:808:13:void MX_SPI5_Init()	8	static
+../Core/Src/main.cpp:856:13:void MX_SPI6_Init()	8	static
+../Core/Src/main.cpp:904:13:void MX_TIM2_Init()	40	static
+../Core/Src/main.cpp:949:13:void MX_TIM8_Init()	40	static
+../Core/Src/main.cpp:996:13:void MX_TIM15_Init()	40	static
+../Core/Src/main.cpp:1042:13:void MX_USB_OTG_FS_PCD_Init()	8	static
+../Core/Src/main.cpp:1076:13:void MX_BDMA_Init()	16	static
+../Core/Src/main.cpp:1092:13:void MX_DMA_Init()	16	static
+../Core/Src/main.cpp:1125:13:void MX_GPIO_Init()	64	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.h:42:3:CasualNoises::NerveNetMasterThread::NerveNetMasterThread()	16	static
+../Core/Src/main.cpp:1287:6:void StartDefaultTask(void*)	72	static
+../Core/Src/main.cpp:1452:6:void MPU_Config()	24	static
+../Core/Src/main.cpp:1487:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:1510:6:void Error_Handler()	4	static,ignoring_inline_asm

@@ -1,0 +1,7 @@
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/cmath:177:3:constexpr float std::cos(float)	1
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/cmath:400:3:constexpr float std::sin(float)	1
+/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.macos64_1.0.0.202411102158/tools/arm-none-eabi/include/c++/13.3.1/cmath:457:3:constexpr float std::tan(float)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/GenericFilter.cpp:16:6:virtual void CasualNoises::Filter::GenericFilter::calculateLPF()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/GenericFilter.cpp:30:6:virtual void CasualNoises::Filter::GenericFilter::calculateHPF()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/GenericFilter.cpp:44:6:virtual void CasualNoises::Filter::GenericFilter::calculateBPF()	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/DSP/Filter/GenericFilter.cpp:58:6:virtual void CasualNoises::Filter::GenericFilter::calculateBSF()	1

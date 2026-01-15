@@ -1,0 +1,55 @@
+ToDo: add noise to the wave table lfo
+
+Device allocation:
+------------------
+
+ADC1 potentiometer inputs
+ADC2 1V/OCT & CV inputs
+
+SPI5 north-south communication
+SPI6 led shift register
+
+TIM1 SysTick
+TIM2 ADC1 trigger (1 KHz)
+		TIM2 counter is also used in NerveNetMasterThread for performance meassurment - counter runs at 1MHz
+TIM8 ADC2 trigger
+TIM15 used as internal synth clock (reset ADSR, retrigger arpeggiater, ...) (100Hz)
+
+Using BDMA on SPI6
+------------------
+
+SPI 6 resides in power domain 3 and can only be used with B(asic)DMA. The BDMA controller in D3 domain can has only access to memory in the same domain, so for the STM32H743 this is SRAM4 which is called RAM_D3 in the linker script.
+
+When using BDMA, the buffers used for Tx and Rx have to be located in RAM_D3 iso RAM_D1.
+
+To do this, some adjustments have to be made to the linker script, the “.ld” file in the project.
+
+Make sure that the script contains following text:
+
+MEMORY
+{
+  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 2048K
+  DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
+  RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
+  RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
+  RAM_D3 (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
+  ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 64K
+}
+
+Next add following to the script:
+
+.RAM_D3 (NOLOAD) :
+{
+  . = ALIGN(4);
+  *(.RAM_D3)
+  *(.RAM_D3*)
+  . = ALIGN(4);
+} >RAM_D3
+
+Tip: Use NOLOAD if you don’t want the startup code to initialize the section (e.g. for buffers).
+
+When allocating memory for the buffer you have to specify that it should be placed in RAM_D3, ex:
+
+constexpr uint32_t stateDepth = 10;
+__attribute__((section(".RAM_D3"))) uint32_t state[stateDepth];
+

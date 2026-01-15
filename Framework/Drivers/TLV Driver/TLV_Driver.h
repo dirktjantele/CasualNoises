@@ -18,7 +18,7 @@
 
 namespace CasualNoises {
 
-const uint32_t			cMagicCode 		= 0x23122025;
+const uint32_t			cMagicCode 		= 0x23122031;
 const uint32_t			cFreeTLV_Tag 	= 0x65657246;		// "Free"
 
 /*
@@ -32,26 +32,43 @@ public:
 
 	bool isDriverReady() { return mNVM_DriverPtr->isDriverReady(); }
 
-	void		deleteAllTLVs();
-	uint32_t	findNextTLV (uint32_t tag, uint32_t index);
-	bool		addTLV(uint32_t tag, uint32_t length, uint32_t* valuePtr);				// Length in words
-	bool		addTLV_Bytes(uint32_t tag, uint32_t length, uint32_t* valuePtr)			// Length in bytes
+	void		flushCache ()		{ mNVM_DriverPtr->flushSectorCache (); };
+
+	void		deleteAllTLVs ( bool flushFlag = true );
+
+	uint32_t	findNextTLV ( uint32_t tag, uint32_t index );
+
+	bool		addTLV ( uint32_t tag, uint32_t length, void* valuePtr, bool flushFlag = true );			// Length in words
+	bool		addTLV_Bytes(uint32_t tag, uint32_t length, void* valuePtr, bool flushFlag = true)			// Length in bytes
 									{
-										bool flag = addTLV(tag, (length + 3) / 4, valuePtr);
+										bool flag = addTLV ( tag, (length + 3) / 4, valuePtr, flushFlag );
 										return flag;
 									}
-	uint32_t	readTLV(uint32_t index, uint32_t length, uint32_t* valuePtr);			// Length in words
-	uint32_t	readTLV_Bytes(uint32_t index, uint32_t length, uint32_t* valuePtr)		// Length in bytes
+	uint32_t	readTLV(uint32_t index, uint32_t length, void* valuePtr);									// Length in words
+	uint32_t	readTLV_Bytes(uint32_t index, uint32_t length, void* valuePtr)								// Length in bytes
 									{
 										uint32_t cnt = readTLV(index, (length + 3) / 4, valuePtr);
 										return cnt;
 									}
-	bool		updateTLV(uint32_t index, uint32_t length, uint32_t* valuePtr);
-	bool		updateTLV_Bytes(uint32_t index, uint32_t length, uint32_t* valuePtr)
+	uint32_t	readTLV_Tag(uint32_t tag, uint32_t length, void* valuePtr);									// Length in words
+	uint32_t	readTLV_TagBytes(uint32_t tag, uint32_t length, void* valuePtr)								// Length in bytes
 									{
-										return updateTLV(index, (length + 3) / 4, valuePtr);
+										uint32_t cnt = readTLV_Tag(tag, (length + 3) / 4, valuePtr);
+										return cnt;
 									}
-	void		deleteTLV(uint32_t tag, bool deleteAll);
+	bool		updateTLV ( uint32_t index, uint32_t length, void* valuePtr, bool flushFlag = true);		// Length in words
+	bool		updateTLV_Bytes(uint32_t index, uint32_t length, void* valuePtr, bool flushFlag = true)		// Length in bytes
+									{
+										return updateTLV ( index, (length + 3) / 4, valuePtr, flushFlag);
+									}
+	bool		updateTLV_Tag(uint32_t tag, uint32_t length, void* valuePtr, bool flushFlag = true);		// Length in words
+	bool		updateTLV_TagBytes(uint32_t tag, uint32_t length, void* valuePtr, bool flushFlag = true)	// Length in bytes
+									{
+										return updateTLV_Tag ( tag, (length + 3) / 4, valuePtr, flushFlag );
+									}
+
+	void		deleteTLV ( uint32_t tag, bool deleteAll,  bool flushFlag = true );
+
 	uint32_t	getTLV_Length(uint32_t index)			{ return  (getLength(index)) - 2; }
 	uint32_t	getTLV_LengthBytes(uint32_t index)		{ return ((getLength(index)) - 2) * 4; }
 
