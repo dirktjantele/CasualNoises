@@ -86,7 +86,6 @@
 									<listOptionValue builtIn="false" value="CASUALNOISES_TxCplt_CALLBACKS"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_TxRxCplt_CALLBACKS"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_TIMER_CALLBACKS"/>
-									<listOptionValue builtIn="false" value="ADC_NERVENET_SUPPORT"/>
 									<listOptionValue builtIn="false" value="FELLHORN_NORTH_SIDE"/>
 									<listOptionValue builtIn="false" value="USE_CS4270_Driver"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_NVM_DRIVER_SUPPORT"/>
@@ -104,7 +103,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/CasualNoises}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/NorthSideEngine}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/_Current Projects/OpFour/Firmware/Common Sources&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/FH_CommonSources}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.input.cpp.1673944771" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.input.cpp"/>

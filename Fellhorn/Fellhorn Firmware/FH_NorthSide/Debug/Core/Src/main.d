@@ -94,8 +94,10 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetConfig.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveThread.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveProcessor.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/ADSR.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/LFO.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/PulsarSynth.h \
@@ -113,6 +115,7 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/YellowPages.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/NorthSideEngine.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/NorthSideAudioProcessor.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/DeviceBoardConnection.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/EventHandlerThread.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineParams.h
 ../Core/Inc/main.h:
@@ -212,8 +215,10 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetConfig.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveThread.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveProcessor.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/ADSR.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/LFO.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/PulsarSynth.h:
@@ -231,5 +236,6 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/YellowPages.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/NorthSideEngine.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/NorthSideAudioProcessor.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/DeviceBoardConnection.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_NorthSide/NorthSideEngine/EventHandlerThread.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineParams.h:

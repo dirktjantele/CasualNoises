@@ -88,6 +88,9 @@
 									<listOptionValue builtIn="false" value="CASUALNOISES_MULT_ADC_THREAD"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_ADC_CALLBACKS"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_DISPLAY_DRIVER"/>
+									<listOptionValue builtIn="false" value="CASUALNOISES_NERVENET_THREAD"/>
+									<listOptionValue builtIn="false" value="CASUALNOISES_TLV_DRIVER_THREAD_SUPPORT"/>
+									<listOptionValue builtIn="false" value="CASUALNOISES_EXTI_CALLBACKS"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths.1483128390" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Core/Inc"/>

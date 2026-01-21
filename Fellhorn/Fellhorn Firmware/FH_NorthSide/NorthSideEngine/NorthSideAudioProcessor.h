@@ -52,12 +52,12 @@ public:
 			return nullptr;
 		}
 
-		void 	prepareToPlay (float sampleRate, uint32_t maximumExpectedSamplesPerBlock, void* synthParams) override;
-		void 	releaseResources() override;
-		void 	processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) override;
-		void 	processBlock (AudioBuffer &buffer, AudioBuffer& NN_buffer) override;
+		void 	prepareToPlay (float sampleRate, uint32_t maximumExpectedSamplesPerBlock, void* synthParams) 	override;
+		void 	releaseResources () override;
+		void 	processNerveNetData ( uint32_t threadNo, uint32_t size, uint8_t* ptr ) 							override;
+		void 	processBlock ( AudioBuffer &buffer, AudioBuffer& NN_buffer ) 									override;
 
-		void 	handle_ADC_Data(uint32_t noOfEntries, uint16_t* adcDataPtr);
+		void 	handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr );
 
 private:
 

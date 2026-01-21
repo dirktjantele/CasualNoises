@@ -1,0 +1,3 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:117:13:void CN_ReportFault(eErrorCodes)	5
+../NorthSideEngine/DeviceBoardConnection.cpp:33:6:virtual void CasualNoises::DeviceBoardConnection::processNerveNetData(uint32_t, uint32_t, uint8_t*)	5

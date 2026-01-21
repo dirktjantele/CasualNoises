@@ -27,13 +27,18 @@ typedef struct
 
 	// Info about the engine thread master thread
 	TaskHandle_t 	gEngineThreadTaskHandle;
-	QueueHandle_t	gEngineMasterThreadQueueHandle;
+	QueueHandle_t	gEngineThreadQueueHandle;
 	bool			gEngineThreadRunning = false;
 
 	// Info about the NerveNet master thread
 	TaskHandle_t 	gNerveNetMasterThreadTaskHandle;
 	QueueHandle_t	gNerveNetMasterThreadQueueHandle;
 	bool			gNetMasterThreadRunning = false;
+
+	// Info about the NerveNet slave thread
+	TaskHandle_t 	gNerveNetSlaveThreadTaskHandle;
+	QueueHandle_t	gNerveNetSlaveThreadQueueHandle;
+	bool			gNetSlaveThreadRunning = false;
 
 	// Info about the event handler thread
 	TaskHandle_t 	gEventHandlerThreadTaskHandle;

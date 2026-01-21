@@ -1,7 +1,7 @@
 Device allocation:
 ------------------
 
-ADC3 1V/OCT & CV inputs
+ADC1 1V/OCT & CV inputs
 
 SPI2 NerveNet North Side <-> South Side
 

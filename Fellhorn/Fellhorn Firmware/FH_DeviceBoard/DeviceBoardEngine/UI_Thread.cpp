@@ -16,33 +16,32 @@
 #include <UI_Handlers/PageManager.h>
 #include <UI_Handlers/RootPage.h>
 #include <Threads/TLV_DriverThread.h>
+#include <NerveNet/NerveNetMessage.h>
+#include <NerveNet/NerveNetMasterThread.h>
 
 #include "UI_Handlers/MainPage.h"
 #include "SystemConfig.h"
 
 #include "YellowPages.h"
 
+#include <SynthEngineMessage.h>
+
 namespace CasualNoises
 {
 
-// Pointer to the current display page handler
-//static DisplayHandlerRoot* gCurrentDisplayHandlerPtr	{ nullptr };
-
 //==============================================================================
-//          handleNerveNetCallBacks()
+//          handleNerveNetCallBacks ()
 //
 // Handle incoming data from NerveNet
 //
 //  CasualNoises    20/07/2025  First implementation
 //==============================================================================
-/*
-void handleNerveNetCallBacks(CasualNoises::sNerveNetData* ptr)
+void handleNerveNetCallBacks ( uint32_t size, uint8_t* ptr )
 {
 	// ToDo implement GUI
 //	uint32_t size 	 = ptr->size;
 //	uint8_t* dataPtr = ptr->data;
 }
-*/
 
 //==============================================================================
 //          createInitialTLVs ()
@@ -83,8 +82,6 @@ void createInitialTLVs ( QueueHandle_t TLV_DriverQueue )
 
 	}
 
-
-
 }
 
 //==============================================================================
@@ -101,10 +98,10 @@ void UI_Thread(void* pvParameters)
 
 	// Get parameters
 	UI_ThreadData* params = (UI_ThreadData*)pvParameters;
-//	void (*funcPtr)(CasualNoises::sNerveNetData* ptr) = &handleNerveNetCallBacks;
-//	params->nerveNetCallBackPtr = &funcPtr;
+	void ( *funcPtr ) ( uint32_t size, uint8_t* ptr ) = &handleNerveNetCallBacks;
+	params->nerveNetCallBackPtr = &funcPtr;
 
-	// Create an oled driver
+	// Create an OLED driver
 	CasualNoises::sSSD1309_ConfigData* ssd1309_DataPtr = &params->oledConfigData;
 	CasualNoises::SSD1309_Driver* oledDriverPtr = new CasualNoises::SSD1309_Driver(ssd1309_DataPtr);
 
@@ -126,7 +123,7 @@ void UI_Thread(void* pvParameters)
 	CasualNoises::W25Qxx_Driver* NVM_DriverPtr = new CasualNoises::W25Qxx_Driver(NVM_DataPtr);
 
 	// Create a thread to manage TLV's in flash memory
-	sTLV_DriverThreadParams _sTLV_DriverThreadParams;											// *************************
+	sTLV_DriverThreadParams _sTLV_DriverThreadParams;
 	TaskHandle_t xTLV_DriverThreadHandle;
 	_sTLV_DriverThreadParams.NVM_DriverPtr 	= NVM_DriverPtr;
 	_sTLV_DriverThreadParams.runningFlagPtr	= &gYellowPages.gTLV_DriverThreadThreadRunning;
@@ -252,38 +249,33 @@ void UI_Thread(void* pvParameters)
 	// Create a multiplexed ADC thread to handle potentiometers and sliders
 	TaskHandle_t xMultiplexed_ADC_ThreadHandle;
 	params->ADC_MultiplexerThreadData.clientQueue = xUI_ThreadQueue;
-	res = startMultiplexed_ADC_Thread((void *)&params->ADC_MultiplexerThreadData, &xMultiplexed_ADC_ThreadHandle);
+	res = startMultiplexed_ADC_Thread ( (void *)&params->ADC_MultiplexerThreadData, &xMultiplexed_ADC_ThreadHandle );
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::UI_ThreadError);
 
 	// Report UI thread ready for duty
 	gYellowPages.gUI_ThreadRunning = true;
-/*
-	// Wait for the NerveNet thread to become online
-	while ( ! gYellowPages.gNetMasterThreadRunning)
-		vTaskDelay(pdMS_TO_TICKS(1));
 
-	// Send init synth engine message to the SouthSide
+	// Wait for the NerveNet thread to become online
+	while ( ! gYellowPages.gNetMasterThreadRunning )
+		vTaskDelay ( pdMS_TO_TICKS ( 1 )  );
+
+	// Send initial messages to the North Side
 	tInitMessage initMessage;
-	initMessage.header.messageTag 	 = (uint32_t)eSynthEngineMessageType::initSynthEngine;
-	initMessage.header.messageLength = sizeof(tInitMessage);
+	initMessage.header.messageTag 	 = (uint32_t) eSynthEngineMessageType::initSynthEngine;
+	initMessage.header.messageLength = sizeof ( tInitMessage );
 	initMessage.initMessage			 = eSynthEngineInitType::hardInit;
-	bool success = gNerveNetMasterThreadPtr[0]->sendMessage(&initMessage, sizeof(tInitMessage));
+	bool success = gNerveNetMasterThreadPtr[0]->sendMessage ( &initMessage, sizeof ( tInitMessage ) );
 	if ( ! success)
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 
 	// Send setup info request
 	tRequestSetupInfoMessageData setupMessage;
-	setupMessage.header.messageTag 	 = (uint32_t)eSynthEngineMessageType::requestSetupInfo;
-	setupMessage.header.messageLength = sizeof(tRequestSetupInfoMessageData);
-	success = gNerveNetMasterThreadPtr[0]->sendMessage(&setupMessage, sizeof(tRequestSetupInfoMessageData));
+	setupMessage.header.messageTag 	 = (uint32_t) eSynthEngineMessageType::requestSetupInfo;
+	setupMessage.header.messageLength = sizeof ( tRequestSetupInfoMessageData );
+	success = gNerveNetMasterThreadPtr[0]->sendMessage ( &setupMessage, sizeof(tRequestSetupInfoMessageData) );
 	if ( ! success )
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
-
-	// Enter main display
-	gCurrentDisplayHandlerPtr = new MainDisplayHandler();
-	gCurrentDisplayHandlerPtr->openDisplayPage(oledDriverPtr);
-*/
 
 	// Display start-up screen
 	osDelay ( 500 );
@@ -318,8 +310,10 @@ void UI_Thread(void* pvParameters)
 	// Enter last saved display page
 	PageManager* pageManagerPtr = new PageManager ( oledDriverPtr, driverQueueHandle );
 
+	// ToDo: move this code to a better place
 	size_t xFreeHeapSize = xPortGetFreeHeapSize();
 	uint32_t used = getInitFreeHeapSize() - xFreeHeapSize;
+	UNUSED ( used );
 
 	UBaseType_t numTasks = uxTaskGetNumberOfTasks();
 	TaskStatus_t *taskArray = (TaskStatus_t *)pvPortMalloc(numTasks * sizeof(TaskStatus_t));
@@ -328,11 +322,21 @@ void UI_Thread(void* pvParameters)
 	for (UBaseType_t i = 0; i < numTasks; i++)
 	{
 		const char* name = taskArray[i].pcTaskName;
+		UNUSED ( name );
 		eTaskState state = taskArray[i].eCurrentState;
+		UNUSED ( state );
 		UBaseType_t prio = taskArray[i].uxCurrentPriority;
+		UNUSED ( prio );
 		vTaskDelay ( pdMS_TO_TICKS ( 1 ) );
 	}
 	vPortFree(taskArray);
+
+	// Wait for NerveNet master thread to become idle
+	while ( ( gNerveNetMasterThreadPtr[0] == nullptr ) ||
+			( ! gNerveNetMasterThreadPtr[0]->isThreadRunning () ) )
+	{
+		vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
+	}
 
 	// Main thread loop
 	for (;;)
@@ -340,10 +344,15 @@ void UI_Thread(void* pvParameters)
 		vTaskDelay ( pdMS_TO_TICKS ( 1 ) );
 
 		// Handle incoming events
-		res = xQueueReceive ( xUI_ThreadQueue, (void *)&event, 1000 );
+		res = xQueueReceive ( xUI_ThreadQueue, (void *)&event, 20 );
 		if (res == pdPASS)
 		{
 			pageManagerPtr->handleUI_event ( &event );
+		}
+		else
+		{
+
+			gNerveNetMasterThreadPtr[0]->startNewDataExchange ();
 		}
 
 	}

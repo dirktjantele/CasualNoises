@@ -61,6 +61,7 @@ CasualNoises/AudioUtils/Players/AudioProcessorPlayer.o: \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/AudioUtils/Players/AudioProcessorPlayer.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Utilities/ReportFault.h:
@@ -124,4 +125,5 @@ CasualNoises/AudioUtils/Players/AudioProcessorPlayer.o: \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/AudioBasics/Buffers/AudioBuffer.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h:

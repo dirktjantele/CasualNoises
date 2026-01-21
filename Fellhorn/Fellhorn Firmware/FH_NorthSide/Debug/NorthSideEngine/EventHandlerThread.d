@@ -63,6 +63,7 @@ NorthSideEngine/EventHandlerThread.o: \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineMessage.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessage.h
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
@@ -128,4 +129,5 @@ NorthSideEngine/EventHandlerThread.o: \
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineMessage.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessage.h:

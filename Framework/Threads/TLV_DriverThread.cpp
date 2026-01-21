@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#ifdef CASUALNOISES_NVM_DRIVER_SUPPORT
+#ifdef CASUALNOISES_TLV_DRIVER_THREAD_SUPPORT
 
 #include "TLV_DriverThread.h"
 
@@ -329,9 +329,16 @@ void TLV_DriverThread ( void* pvParameters )
 		gTLV_MessageBuffer[i].eventData.valuePtr		= nullptr;
 	}
 
+	// Age counter
+	uint32_t age = 0;
+	TLV_DriverPtr->readTLV_TagBytes ( (uint32_t)eTLV_Tag::AgeCounter, sizeof ( age ), &age );
+	age += 1;
+	TLV_DriverPtr->updateTLV_TagBytes ( (uint32_t)eTLV_Tag::AgeCounter, sizeof ( age ), &age, false );
+
 	// Main thread loop
 	*( paramsPtr->runningFlagPtr ) = true;
 	gRunningFlag				   = true;
+	uint32_t cycles				   = 0;
 	for (;;)
 	{
 
@@ -402,7 +409,19 @@ void TLV_DriverThread ( void* pvParameters )
 				vPortFree ( event.valuePtr );
 
 		} else {										// Time to flush the cache
+
+			// Flush the cache
 			TLV_DriverPtr->flushCache ();
+
+			// Update age counter in flash
+			cycles += 1;
+			if ( cycles > 60 )
+			{
+				age += 1;
+				cycles = 0;
+				TLV_DriverPtr->updateTLV_TagBytes ( (uint32_t)eTLV_Tag::AgeCounter, sizeof ( age ), &age, false );
+			}
+
 		}
 
 	}

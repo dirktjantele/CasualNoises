@@ -54,17 +54,19 @@ NorthSideEngine/NorthSideEngine.o: ../NorthSideEngine/NorthSideEngine.cpp \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessage.h \
  ../Core/Inc/main.h ../Core/Inc/SystemConfig.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/CommonDefinitions.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/ADC_Thread.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../NorthSideEngine/EventHandlerThread.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineParams.h \
- /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Utilities/ReportFault.h \
- ../NorthSideEngine/YellowPages.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
- /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineMessage.h \
- /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Utilities/ReportFault.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h \
+ ../NorthSideEngine/YellowPages.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineMessage.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Drivers/NVM\ Drivers/W25Q64\ Driver/W25Qxx_Driver.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Drivers/TLV\ Driver/TLV_Driver.h
 ../NorthSideEngine/NorthSideEngine.h:
@@ -123,16 +125,18 @@ NorthSideEngine/NorthSideEngine.o: ../NorthSideEngine/NorthSideEngine.cpp \
 ../Core/Inc/main.h:
 ../Core/Inc/SystemConfig.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/CommonDefinitions.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/ADC_Thread.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
 ../NorthSideEngine/EventHandlerThread.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineParams.h:
-/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Utilities/ReportFault.h:
-../NorthSideEngine/YellowPages.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h:
-/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineMessage.h:
-/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Utilities/ReportFault.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h:
+../NorthSideEngine/YellowPages.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_CommonSources/SynthEngineMessage.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Drivers/NVM\ Drivers/W25Q64\ Driver/W25Qxx_Driver.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Drivers/TLV\ Driver/TLV_Driver.h:

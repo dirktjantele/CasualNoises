@@ -93,7 +93,11 @@ DeviceBoardEngine/UI_Handlers/RootPage.o: \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/GUI/GUI_Utilities/WaveView.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetConfig.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessage.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveThread.h \
+ /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveProcessor.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/ADSR.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/LFO.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/PulsarSynth.h \
@@ -106,7 +110,6 @@ DeviceBoardEngine/UI_Handlers/RootPage.o: \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/PotentiometerThread.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/TriggerThread.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Utilities/CallbackHandlers.h \
- /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessage.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/TLV_DriverThread.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_DeviceBoard/DeviceBoardEngine/YellowPages.h \
  /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/GUI/GUI_Basics/Components/ComboBox.h \
@@ -207,7 +210,11 @@ DeviceBoardEngine/UI_Handlers/RootPage.o: \
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/GUI/GUI_Utilities/WaveView.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetConfig.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterThread.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMasterProcessor.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessage.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessageHeader.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveThread.h:
+/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetSlaveProcessor.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/ADSR.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/LFO.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Synthesizer/Basics/PulsarSynth.h:
@@ -220,7 +227,6 @@ DeviceBoardEngine/UI_Handlers/RootPage.o: \
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/PotentiometerThread.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/TriggerThread.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Utilities/CallbackHandlers.h:
-/Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/NerveNet/NerveNetMessage.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/Threads/TLV_DriverThread.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/_Current\ Projects/Fellhorn\ rev\ 2/Fellhorn\ Firmware/FH_DeviceBoard/DeviceBoardEngine/YellowPages.h:
 /Users/dirktjantele/Desktop/Hardware\ Projects/Hardware\ Synth/CasualNoises\ Framework/CasualNoises/GUI/GUI_Basics/Components/ComboBox.h:

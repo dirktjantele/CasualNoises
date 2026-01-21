@@ -27,10 +27,11 @@
 
 #include "main.h"
 
-CasualNoises::NerveNetSlaveThread* gNerveNetSlaveThreadPtr[MAX_NO_OF_NERVENET_SLAVE_THREADS];
+CasualNoises::NerveNetSlaveThread* gNerveNetSlaveThreadPtr [ MAX_NO_OF_NERVENET_SLAVE_THREADS ];
 
 namespace CasualNoises
 {
+
 
 struct sRunNerveNetSlaveThreadParams
 {
@@ -47,13 +48,13 @@ struct sRunNerveNetSlaveThreadParams
 //  CasualNoises    18/07/2025  First implementation
 //  CasualNoises	25/07/2025	Made function thread save
 //==============================================================================
-bool NerveNetSlaveThread::sendMessage(const void* messagePtr, uint32_t size)
+bool NerveNetSlaveThread::sendMessage ( const void* messagePtr, uint32_t size)
 {
 
 	// Block if another thread is using this function
-	BaseType_t rtosRes = xSemaphoreTake(mSyncSemaphoreHandle, portMAX_DELAY);
-	if (rtosRes != pdTRUE)
-		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+	BaseType_t rtosRes = xSemaphoreTake ( mSyncSemaphoreHandle, portMAX_DELAY );
+	if ( rtosRes != pdTRUE )
+		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
 
 	// Enough remaining buffer space?
 	if (mRemainingSpace < size)
@@ -73,9 +74,9 @@ bool NerveNetSlaveThread::sendMessage(const void* messagePtr, uint32_t size)
 	mConstructionBufferBusy = false;
 
 	// Release function for other threads
-	rtosRes = xSemaphoreGive(mSyncSemaphoreHandle);
+	rtosRes = xSemaphoreGive ( mSyncSemaphoreHandle );
 	if (rtosRes != pdTRUE)
-		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
 
 	return true;
 
@@ -88,53 +89,59 @@ bool NerveNetSlaveThread::sendMessage(const void* messagePtr, uint32_t size)
 //
 //  CasualNoises    11/07/2025  First implementation
 //==============================================================================
-bool NerveNetSlaveThread::GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+bool NerveNetSlaveThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 {
 
-	// Reset signal?
-	if (GPIO_Pin == mNerveNet_RESET_Pin)
+	// Have to ignore interrupts, thread is not ready?
+	if ( mIgnoreInterrupts )
 	{
-		if (mThreadReady)
+		return false;
+	}
+
+	// Reset signal?
+	if ( GPIO_Pin == mNerveNet_RESET_Pin )
+	{
+		if ( mThreadReady )
 		{
-			HAL_GPIO_WritePin(mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_SET );
+			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_RESET );
 			mThreadState = eNerveNetSlaveThreadState::idle;
 		}
 		return true;
 	}
 
 	// REQ signal
-	if (GPIO_Pin == mNerveNet_REQ_Pin)
+	if ( GPIO_Pin == mNerveNet_REQ_Pin )
 	{
-		GPIO_PinState state = HAL_GPIO_ReadPin(mNerveNet_REQ_Port, GPIO_Pin);
-		if (state == GPIO_PIN_SET)
+		GPIO_PinState state = HAL_GPIO_ReadPin ( mNerveNet_REQ_Port, GPIO_Pin );
+		if ( state == GPIO_PIN_SET )
 		{
 
 			// Start next cycle
 			BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-			xSemaphoreGiveFromISR(mStartCycleSemaphore, &xHigherPriorityTaskWoken);
+			xSemaphoreGiveFromISR ( mStartCycleSemaphore, &xHigherPriorityTaskWoken );
 
 		} else
 		{
 
 			// Rotate Tx and Rx buffers
 			uint32_t temp = mTxToBeSentBufferIndex;
-			mTxToBeSentBufferIndex = mTxWaitingBufferIndex;
-			mTxWaitingBufferIndex  = mTxFillingBufferIndex;
-			mTxFillingBufferIndex  = temp;
+			mTxToBeSentBufferIndex 	 = mTxWaitingBufferIndex;
+			mTxWaitingBufferIndex  	 = mTxFillingBufferIndex;
+			mTxFillingBufferIndex  	 = temp;
 			temp = mRxReceivingBufferIndex;
 			mRxReceivingBufferIndex  = mRxProcessingBufferIndex;
 			mRxProcessingBufferIndex = temp;
 
 			// End of NerveNet cycle, the thread should be awaitingMessage here
-			if (mThreadState != eNerveNetSlaveThreadState::awaitingMessage)
-				CN_ReportFault(eErrorCodes::NerveNetThread_Error);
+			if ( mThreadState != eNerveNetSlaveThreadState::awaitingMessage )
+				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 
 			// We are ready for a new cycle
 			mThreadState = eNerveNetSlaveThreadState::idle;
 
 			// Set ACK line low
-			HAL_GPIO_WritePin(mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_RESET );
 
 		}
 
@@ -156,7 +163,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 {
 
 	// Get parameters
-	sRunNerveNetSlaveThreadParams* nerveNetThreadDataPtr = (sRunNerveNetSlaveThreadParams*)pvParameters;
+	sRunNerveNetSlaveThreadParams* nerveNetThreadDataPtr = (sRunNerveNetSlaveThreadParams*) pvParameters;
 	mNerveNet_REQ_Port		 	= nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNet_REQ_Port;
 	mNerveNet_REQ_Pin		 	= nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNet_REQ_Pin;
 	mNerveNet_ACK_Port		 	= nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNet_ACK_Port;
@@ -169,9 +176,9 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	mPerformanceResultPtr		= nerveNetThreadDataPtr->nerveNetThreadDataPtr->PerformanceResultPtr;
 
 	// Create sendMessage() blocking semaphore
-	vSemaphoreCreateBinary(mSyncSemaphoreHandle);
+	mSyncSemaphoreHandle = xSemaphoreCreateBinary ();
 	if (mSyncSemaphoreHandle == nullptr)
-		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
 
 	// Global pointer to be used by the HAL_GPIO_EXTI_Callback()
 	mTheadNumber = nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetThreadNo;
@@ -200,21 +207,19 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	mConstructionBufferBusy 	 = false;
 
 	// Create a binary semaphore for task/interrupt synchronization
-	mStartCycleSemaphore = xSemaphoreCreateBinary();
-	if (mStartCycleSemaphore == nullptr)
-		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+	mStartCycleSemaphore = xSemaphoreCreateBinary ();
+	if ( mStartCycleSemaphore == nullptr )
+		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
 
 	// Audio buffers to be used in AudioProcessor::processBlock() call
-#ifdef USE_AUDIO_BUFFER
+#ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
 	AudioBuffer* inBufferPtr  = new AudioBuffer();
 	AudioBuffer* outBufferPtr = new AudioBuffer();
-#else
-	AudioBuffer* inBufferPtr  = nullptr;
-	AudioBuffer* outBufferPtr = nullptr;
 #endif
 
 	// Thread is ready
-	mThreadReady = true;
+	mThreadReady 	  = true;
+	mIgnoreInterrupts = false;
 
 	// Start performance timer, if any
 	if ( mPerformanceTestTimerPtr != nullptr )
@@ -237,24 +242,24 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	{
 
 		// Have to start an SPI txRx cycle?
-		BaseType_t res = xSemaphoreTake(mStartCycleSemaphore, 0);
+		BaseType_t res = xSemaphoreTake ( mStartCycleSemaphore, 1000 );
 		if (res == pdPASS)
 		{
 
 			// Start of cycle time
 			uint32_t startCycleTime = 0;
-			if (mPerformanceTestTimerPtr != nullptr)
+			if ( mPerformanceTestTimerPtr != nullptr )
 			{
 				startCycleTime = mPerformanceTestTimerPtr->Instance->CNT;
 			}
 
 			// Start of NerveNet cycle, the thread should be idle here
-			if (mThreadState != eNerveNetSlaveThreadState::idle)
-				CN_ReportFault(eErrorCodes::NerveNetThread_Error);
+			if ( mThreadState != eNerveNetSlaveThreadState::idle )
+				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 
-			// If there is any data in the construction buffer, added it to current Tx message
+			// If there is any data in the construction buffer, add it to current Tx message
 			mTxMessageBuffers[mTxToBeSentBufferIndex]->data.size = 0;
-			if (( ! mConstructionBufferBusy) && (*mConstructionBufferSizePtr > 0))
+			if ( ( ! mConstructionBufferBusy ) && ( *mConstructionBufferSizePtr > 0) )
 			{
 				memcpy(&mTxMessageBuffers[mTxToBeSentBufferIndex]->data, mConstructionBufferPtr, *mConstructionBufferSizePtr + sizeof(uint32_t));
 				*mConstructionBufferSizePtr  = 0;
@@ -263,19 +268,20 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 			}
 
 			// Start SPI DMA in slave mode
-			uint32_t size = sizeof(sNerveNetMessage);
+			uint32_t size = sizeof ( sNerveNetMessage );
 			mTxMessageBuffers[mTxToBeSentBufferIndex]->header.messageNumber = ++mTxMessageNumber;
-			HAL_StatusTypeDef res = HAL_SPI_TransmitReceive_DMA(mNerveNet_SPI_Ptr,
-					(uint8_t *)mTxMessageBuffers[mTxToBeSentBufferIndex],
-					(uint8_t *)mRxMessageBuffers[mRxReceivingBufferIndex],
-					size);
+			HAL_StatusTypeDef res = HAL_SPI_TransmitReceive_DMA (
+					mNerveNet_SPI_Ptr,
+					(uint8_t *) mTxMessageBuffers[mTxToBeSentBufferIndex],
+					(uint8_t *) mRxMessageBuffers[mRxReceivingBufferIndex],
+					size );
 			if (res != HAL_OK)
-				CN_ReportFault(eErrorCodes::NerveNetThread_Error);
+				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 
-			// Start of AudioProcessor::processBlock() call
+			// Start of AudioProcessor::processBlock () call
 			uint32_t startOfProcessBlockTime = 0;
 			UNUSED(startOfProcessBlockTime);
-			if (mPerformanceTestTimerPtr != nullptr)
+			if ( mPerformanceTestTimerPtr != nullptr )
 			{
 				startOfProcessBlockTime = mPerformanceTestTimerPtr->Instance->CNT;
 			}
@@ -283,19 +289,29 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 			setTimeMarker_2();
 
 			// Process any NerveNet data
-			if (mRxMessageBuffers[mRxProcessingBufferIndex]->data.size > 0)
+			if ( mRxMessageBuffers[mRxProcessingBufferIndex]->data.size > 0 )								// ToDo uniform NerveNet message handler
 			{
-				mSouthSideAudioProcessorPtr->processNerveNetData(
+				if ( mSouthSideAudioProcessorPtr != nullptr )
+				{
+				mSouthSideAudioProcessorPtr->processNerveNetData (
 						mTheadNumber,
 						mRxMessageBuffers[mRxProcessingBufferIndex]->data.size,
-						&mRxMessageBuffers[mRxProcessingBufferIndex]->data.data[0]);
+						&mRxMessageBuffers[mRxProcessingBufferIndex]->data.data[0] );
+				}
+				if ( mNerveNetSlaveProcessorPtr != nullptr )
+				{
+					mNerveNetSlaveProcessorPtr->processNerveNetData (
+					mTheadNumber,
+					mRxMessageBuffers[mRxProcessingBufferIndex]->data.size,
+					&mRxMessageBuffers[mRxProcessingBufferIndex]->data.data[0] );
+				}
 			}
 
 			// Generate new audio in the current filling buffer using audio from the current processing buffer
-#ifdef USE_AUDIO_BUFFER
-			inBufferPtr->importAudio(mRxMessageBuffers[mRxProcessingBufferIndex]->audio.audioData);
-			mSouthSideAudioProcessorPtr->processBlock(*inBufferPtr, *outBufferPtr);
-			outBufferPtr->exportAudio(mTxMessageBuffers[mTxFillingBufferIndex]->audio.audioData);
+#ifdef CASUALNOISES_NERVENET_AUDIO_SUPPORT
+			inBufferPtr->importAudio ( mRxMessageBuffers[mRxProcessingBufferIndex]->audio.audioData );
+			mSouthSideAudioProcessorPtr->processBlock ( *inBufferPtr, *outBufferPtr );
+			outBufferPtr->exportAudio ( mTxMessageBuffers[mTxFillingBufferIndex]->audio.audioData );
 #endif
 
 			resetTimeMarker_2();
@@ -312,7 +328,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 			mThreadState = eNerveNetSlaveThreadState::awaitingMessage;
 
 			// Set ACK line high
-			HAL_GPIO_WritePin(mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_SET );
 
 			// end of cycle time
 			uint32_t endCycleTime = 0;
@@ -321,14 +337,11 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 				endCycleTime = mPerformanceTestTimerPtr->Instance->CNT;
 			}
 
-			// Calculate cpu load
+			// Calculate CPU load
 			int32_t elapsedlCycleTime = endCycleTime - startCycleTime;
-			if (elapsedlCycleTime > 0)
-				*mPerformanceResultPtr = jmap(elapsedlCycleTime, (int32_t)0, cycleTime, (int32_t)0, (int32_t)100);
+			if (( elapsedlCycleTime > 0 ) && ( cycleTime != 0 ))
+				*mPerformanceResultPtr = jmap ( elapsedlCycleTime, (int32_t)0, cycleTime, (int32_t)0, (int32_t)100 );
 
-		} else
-		{
-			vTaskDelay(pdMS_TO_TICKS(1));
 		}
 
 	}
@@ -363,7 +376,7 @@ BaseType_t startNerveNetSlaveThread(CasualNoises::NerveNetSlaveThread* threadPtr
 
 	// Create the thread to scan the ADC convertions
 	BaseType_t res = xTaskCreate(runNerveNetSlaveThread, "NerveNetSlaveThread", DEFAULT_STACK_SIZE / 2, &params,
-			NERVENET_THRAD_PRIORITY, xHandlePtr);
+			NERVENET_THREAD_PRIORITY, xHandlePtr);
 	return res;
 
 }

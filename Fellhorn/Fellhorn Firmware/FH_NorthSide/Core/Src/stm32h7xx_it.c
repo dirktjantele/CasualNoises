@@ -56,14 +56,14 @@
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
-extern DMA_HandleTypeDef hdma_adc2;
-extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc2;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
+extern DMA_HandleTypeDef hdma_spi4_rx;
+extern DMA_HandleTypeDef hdma_spi4_tx;
 extern DMA_HandleTypeDef hdma_spi5_rx;
 extern DMA_HandleTypeDef hdma_spi5_tx;
 extern DMA_HandleTypeDef hdma_spi6_tx;
+extern SPI_HandleTypeDef hspi4;
 extern SPI_HandleTypeDef hspi5;
 extern SPI_HandleTypeDef hspi6;
 extern TIM_HandleTypeDef htim8;
@@ -264,25 +264,24 @@ void DMA1_Stream5_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
 
   /* USER CODE END DMA1_Stream5_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_adc2);
+  HAL_DMA_IRQHandler(&hdma_spi4_rx);
   /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
 
   /* USER CODE END DMA1_Stream5_IRQn 1 */
 }
 
 /**
-  * @brief This function handles ADC1 and ADC2 global interrupts.
+  * @brief This function handles DMA1 stream6 global interrupt.
   */
-void ADC_IRQHandler(void)
+void DMA1_Stream6_IRQHandler(void)
 {
-  /* USER CODE BEGIN ADC_IRQn 0 */
+  /* USER CODE BEGIN DMA1_Stream6_IRQn 0 */
 
-  /* USER CODE END ADC_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc1);
-  HAL_ADC_IRQHandler(&hadc2);
-  /* USER CODE BEGIN ADC_IRQn 1 */
+  /* USER CODE END DMA1_Stream6_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_spi4_tx);
+  /* USER CODE BEGIN DMA1_Stream6_IRQn 1 */
 
-  /* USER CODE END ADC_IRQn 1 */
+  /* USER CODE END DMA1_Stream6_IRQn 1 */
 }
 
 /**
@@ -300,6 +299,21 @@ void TIM1_UP_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(NERVE_NET_RESET_Pin);
+  HAL_GPIO_EXTI_IRQHandler(NERVE_NET_REQ_Pin);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+
+  /* USER CODE END EXTI15_10_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM8 break interrupt and TIM12 global interrupt.
   */
 void TIM8_BRK_TIM12_IRQHandler(void)
@@ -311,6 +325,20 @@ void TIM8_BRK_TIM12_IRQHandler(void)
   /* USER CODE BEGIN TIM8_BRK_TIM12_IRQn 1 */
 
   /* USER CODE END TIM8_BRK_TIM12_IRQn 1 */
+}
+
+/**
+  * @brief This function handles SPI4 global interrupt.
+  */
+void SPI4_IRQHandler(void)
+{
+  /* USER CODE BEGIN SPI4_IRQn 0 */
+
+  /* USER CODE END SPI4_IRQn 0 */
+  HAL_SPI_IRQHandler(&hspi4);
+  /* USER CODE BEGIN SPI4_IRQn 1 */
+
+  /* USER CODE END SPI4_IRQn 1 */
 }
 
 /**

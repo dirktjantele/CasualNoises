@@ -86,10 +86,10 @@ void SouthSideAudioProcessor::releaseResources()
 //
 //  CasualNoises    27/07/2025  First implementation
 //==============================================================================
-void SouthSideAudioProcessor::process_ADC_data(uint16_t* ptr)
+void SouthSideAudioProcessor::process_ADC_data ( uint16_t* ptr )
 {
 
-	// Update picth
+	// Update pitch
 	static Average<uint32_t> pitchAverage(10);
 	uint32_t pitch = (uint32_t)ptr[0];
 	uint32_t pa = pitchAverage.nextAverage(pitch);
@@ -130,6 +130,7 @@ void SouthSideAudioProcessor::processNerveNetData(uint32_t threadNo, uint32_t si
 
 //	CasualNoises::NerveNetSlaveThread* threadPtr = gNerveNetSlaveThreadPtr[threadNo];
 
+
 	// Handle all events
 	while (size > 0)
 	{
@@ -138,20 +139,20 @@ void SouthSideAudioProcessor::processNerveNetData(uint32_t threadNo, uint32_t si
 		eSynthEngineMessageType messageType   = (eSynthEngineMessageType)headerPtr->messageTag;
 		uint32_t				messageLength = headerPtr->messageLength;
 
-		switch (messageType)
+		switch ( messageType )
 		{
 		case eSynthEngineMessageType::initSynthEngine:		// Ignore initSynthEngine messages
 			break;
 		case eSynthEngineMessageType::requestSetupInfo:		// Set-up info request
 		case eSynthEngineMessageType::setFrequency:			// Set oscillator frequency
 		case eSynthEngineMessageType::potentiometerValue:	// Update potentiometer values
-			mPulsarSynthEnginePtr->processNerveNetData(threadNo, messageLength, ptr);
+			mPulsarSynthEnginePtr->processNerveNetData ( threadNo, messageLength, ptr );
 			break;
 		case eSynthEngineMessageType::ADC_Value:			// ADC values
-			process_ADC_data((uint16_t*)((uint32_t)ptr + sizeof(tNerveNetMessageHeader)));
+			process_ADC_data( (uint16_t*)( (uint32_t)ptr + sizeof(tNerveNetMessageHeader) ) );
 			break;
 		case eSynthEngineMessageType::triggerEvent:
-//			mADSR_Ptr->handleTrigger();									ToDo: remove comment
+			mADSR_Ptr->handleTrigger();
 			break;
 		default:
 			CN_ReportFault(eErrorCodes::NerveNetThread_Error);

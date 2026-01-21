@@ -1,6 +1,7 @@
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/TLV Driver/TLV_Driver.h:35:8:void CasualNoises::TLV_Driver::flushCache()	16	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/TLV Driver/TLV_Driver.h:42:8:bool CasualNoises::TLV_Driver::addTLV_Bytes(uint32_t, uint32_t, void*, bool)	40	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/TLV Driver/TLV_Driver.h:54:11:uint32_t CasualNoises::TLV_Driver::readTLV_TagBytes(uint32_t, uint32_t, void*)	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/TLV Driver/TLV_Driver.h:65:8:bool CasualNoises::TLV_Driver::updateTLV_TagBytes(uint32_t, uint32_t, void*, bool)	32	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/TLV Driver/TLV_Driver.h:73:11:uint32_t CasualNoises::TLV_Driver::getTLV_LengthBytes(uint32_t)	16	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/TLV Driver/TLV_Driver.h:88:20:uint32_t CasualNoises::TLV_Driver::getLength(uint32_t) const	16	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
@@ -14,5 +15,5 @@
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/TLV_DriverThread.cpp:231:6:bool CasualNoises::addTLV_Bytes(QueueHandle_t, uint32_t, uint32_t, uint32_t*)	64	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/TLV_DriverThread.cpp:267:6:bool CasualNoises::updateTLV_Bytes(QueueHandle_t, uint32_t, uint32_t, uint32_t*)	24	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/TLV_DriverThread.cpp:281:10:uint32_t CasualNoises::readTLV_TagBytes(QueueHandle_t, uint32_t, uint32_t, uint32_t*)	64	static
-/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/TLV_DriverThread.cpp:305:6:void CasualNoises::TLV_DriverThread(void*)	128	static
-/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/TLV_DriverThread.cpp:419:12:BaseType_t CasualNoises::startTLV_DriverThread(void*, tskTaskControlBlock**)	32	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/TLV_DriverThread.cpp:305:6:void CasualNoises::TLV_DriverThread(void*)	136	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/TLV_DriverThread.cpp:438:12:BaseType_t CasualNoises::startTLV_DriverThread(void*, tskTaskControlBlock**)	32	static

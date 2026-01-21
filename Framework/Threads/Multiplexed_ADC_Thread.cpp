@@ -150,7 +150,7 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 //
 //  CasualNoises    17/12/2025  First implementation
 //==============================================================================
-void multiplexed_ADC_Thread(void* pvParameters)
+void multiplexed_ADC_Thread ( void* pvParameters )
 {
 
 	// Get arguments
@@ -165,7 +165,7 @@ void multiplexed_ADC_Thread(void* pvParameters)
 	vTaskDelay(pdMS_TO_TICKS(10));
 
 	// Select first input for all multiplexers
-	for (int32_t i = 0; i < gNoOfMultiplexers; ++i)
+	for ( int32_t i = 0; i < gNoOfMultiplexers; ++i )
 	{
 		HAL_GPIO_WritePin(gSignatures[i].SO_Port, gSignatures[i].SO_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(gSignatures[i].S1_Port, gSignatures[i].S1_Pin, GPIO_PIN_RESET);
@@ -173,13 +173,13 @@ void multiplexed_ADC_Thread(void* pvParameters)
 	}
 
 	// Create a binary semaphore to awake thread when new data is available
-	gSemaphoreHandle = xSemaphoreCreateBinary();
-	if (gSemaphoreHandle == nullptr)
-		CN_ReportFault(eErrorCodes::adcThreadError);
+	gSemaphoreHandle = xSemaphoreCreateBinary ();
+	if ( gSemaphoreHandle == nullptr )
+		CN_ReportFault ( eErrorCodes::adcThreadError );
 
 	// Calibrate the ADC converter used and start in DMA mode then start the timer to trigger conversions
 	HAL_StatusTypeDef res;
-	res = HAL_ADCEx_Calibration_Start(gMultiplexed_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
+	res = HAL_ADCEx_Calibration_Start ( gMultiplexed_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED );
 	if (res != HAL_OK)
 		CN_ReportFault(eErrorCodes::adcThreadError);
 	res = HAL_ADC_Start_DMA(gMultiplexed_adc, (uint32_t *)gRawAdcData, gNoOfMultiplexers);
@@ -208,14 +208,14 @@ void multiplexed_ADC_Thread(void* pvParameters)
 			CN_ReportFault(eErrorCodes::adcThreadError);
 
 		// Compare new averages with previous ones
-		for ( uint32_t i = 0; i < gNoOfMultiplexers; ++i )
+		for ( int32_t i = 0; i < gNoOfMultiplexers; ++i )
 		{
 			uint8_t mask = gSignatures[i].mask;
 			for ( uint32_t j= 0; j < cNoOfMultiplexerInputs; ++j )
 			{
 				int32_t dev = (int32_t) gAverageAdcData[i][j] - (int32_t) gPreviousAdcData[i][j];
 				bool send = ( ( dev > treschp ) || ( dev < treschn )  ||
-							  ( gPreviousDev[i][j] > treschp ) || ( gPreviousDev[i][j] < treschn ));
+							  ( gPreviousDev[i][j] > treschp ) || ( gPreviousDev[i][j] < treschn ) );
 				if ( send && ( mask & 0x01 ) )
 				{
 

@@ -28,6 +28,7 @@
 "./CasualNoises/Threads/PotentiometerThread.o"
 "./CasualNoises/Threads/SPI_EncoderThread.o"
 "./CasualNoises/Threads/SPI_LED_Thread.o"
+"./CasualNoises/Threads/TLV_DriverThread.o"
 "./CasualNoises/Threads/TriggerThread.o"
 "./CasualNoises/Utilities/CallbackHandlers.o"
 "./CasualNoises/xml/XmlElement.o"

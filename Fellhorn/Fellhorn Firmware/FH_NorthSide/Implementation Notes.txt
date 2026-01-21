@@ -6,13 +6,16 @@ Device allocation:
 ADC1 potentiometer inputs
 ADC2 1V/OCT & CV inputs
 
-SPI5 north-south communication
-SPI6 led shift register
+SPI1 I2S to/from codec
+SPI2 Flash memory
+SPI3 NC
+SPI4 NerveNet to Device Board
+SPI5 NerveNet to South Side
+SPI6 NC
 
 TIM1 SysTick
-TIM2 ADC1 trigger (1 KHz)
-		TIM2 counter is also used in NerveNetMasterThread for performance meassurment - counter runs at 1MHz
-TIM8 ADC2 trigger
+TIM2 Counter is used in NerveNetMasterThread for performance meassurment - counter runs at 1MHz
+TIM8 ADC1 trigger (50 KHz)
 TIM15 used as internal synth clock (reset ADSR, retrigger arpeggiater, ...) (100Hz)
 
 Using BDMA on SPI6

@@ -22,17 +22,17 @@ constexpr uint32_t 	FULL_AUDIO_BUFFER_SIZE				= NUM_SAMPLES * NUM_CHANNELS * 2;
 constexpr uint32_t	DISPLY_WIDTH						= 128;
 constexpr uint32_t	DISPLAY_HEIGHT						= 64;
 
-constexpr uint32_t	DEFAULT_STACK_SIZE 					= 256;
+constexpr uint32_t	DEFAULT_STACK_SIZE 					= 512;
 
 constexpr uint32_t	AUDIO_THREAD_PRIORITY				= configMAX_PRIORITIES - 1;
-constexpr uint32_t	NERVENET_THRAD_PRIORITY				= AUDIO_THREAD_PRIORITY - 10;
+constexpr uint32_t	NERVENET_THREAD_PRIORITY			= AUDIO_THREAD_PRIORITY - 10;
 constexpr uint32_t	ENGINE_THREAD_PRIORITY				= AUDIO_THREAD_PRIORITY - 20;
 constexpr uint32_t	EVENT_THREAD_PRIORITY				= AUDIO_THREAD_PRIORITY - 20;
 constexpr uint32_t	CV_IN_THREAD_PRIORITY				= ENGINE_THREAD_PRIORITY;
 constexpr uint32_t	TRIGGER_THREAD_PRIORITY				= 1;
 
 constexpr uint32_t	MAX_NO_OF_NERVENET_MASTER_THREADS 	= 1;			// Only 1 master thread is supported
-constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  	= 0;
+constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  	= 1;			// 1 slave for the Device Board
 constexpr uint32_t	AUDIO_NERVENET_THREAD_NO		  	= 0;
 constexpr uint32_t	NERVENET_DATA_SIZE				  	= 1024;
 

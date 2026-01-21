@@ -1,0 +1,9 @@
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:91:13:void CN_ReportFault(eErrorCodes)	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.cpp:47:6:bool CasualNoises::NerveNetMasterThread::sendMessage(const void*, uint32_t)	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.cpp:90:19:CasualNoises::sNerveNetMessage* CasualNoises::NerveNetMasterThread::startNewDataExchange()	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.cpp:132:6:bool CasualNoises::NerveNetMasterThread::GPIO_EXTI_Callback(uint16_t)	9
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.cpp:207:6:bool CasualNoises::NerveNetMasterThread::SPI_TxRxCpltCallback(SPI_HandleTypeDef*)	3
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.cpp:237:6:void CasualNoises::NerveNetMasterThread::mainNerveNetMasterThread(void*)	7
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.cpp:316:6:void CasualNoises::runNerveNetMasterThread(void*)	1
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.cpp:329:12:BaseType_t CasualNoises::startNerveNetMasterThread(NerveNetMasterThread*, void*, tskTaskControlBlock**)	1

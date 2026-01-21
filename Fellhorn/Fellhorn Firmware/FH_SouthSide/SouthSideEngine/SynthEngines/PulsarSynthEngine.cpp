@@ -141,7 +141,7 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 //
 //  CasualNoises    24/07/2025  First implementation
 //==============================================================================
-void PulsarSynthEngine::processBlock (AudioBuffer& buffer, AudioBuffer& NN_buffer)
+void PulsarSynthEngine::processBlock ( AudioBuffer& buffer, AudioBuffer& NN_buffer )
 {
 
 	float* lwptr = NN_buffer.getWritePointer(0);
@@ -149,13 +149,14 @@ void PulsarSynthEngine::processBlock (AudioBuffer& buffer, AudioBuffer& NN_buffe
 
 	uint32_t noSamples = NN_buffer.getNumSamples();
 
-	for (uint32_t i = 0; i < noSamples; ++i)
+	for ( uint32_t i = 0; i < noSamples; ++i )
 	{
 		float gain = 1.0f;
-		float sample_1 = mPulsarSynthPtr->nextSample() * gain;
+		float sample_1 = mPulsarSynthPtr->nextSample () * gain;
 		*lwptr++ = sample_1;
-		float sample_2 = mWavetable_LFOPtr->nextSample() * gain;
-		*rwptr++ = sample_2;
+		*rwptr++ = sample_1;
+//		float sample_2 = mWavetable_LFOPtr->nextSample () * gain;
+//		*rwptr++ = sample_2;
 	}
 
 }

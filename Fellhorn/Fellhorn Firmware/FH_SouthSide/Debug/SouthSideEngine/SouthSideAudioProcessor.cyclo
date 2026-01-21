@@ -15,9 +15,9 @@
 ../SouthSideEngine/SouthSideAudioProcessor.cpp:93:42:void __tcf_0()	1
 ../SouthSideEngine/SouthSideAudioProcessor.cpp:101:41:void __tcf_1()	1
 ../SouthSideEngine/SouthSideAudioProcessor.cpp:89:6:void CasualNoises::SouthSideAudioProcessor::process_ADC_data(uint16_t*)	9
-../SouthSideEngine/SouthSideAudioProcessor.cpp:128:6:virtual void CasualNoises::SouthSideAudioProcessor::processNerveNetData(uint32_t, uint32_t, uint8_t*)	5
-../SouthSideEngine/SouthSideAudioProcessor.cpp:174:6:virtual void CasualNoises::SouthSideAudioProcessor::processBlock(CasualNoises::AudioBuffer&, CasualNoises::AudioBuffer&)	2
-../SouthSideEngine/SouthSideAudioProcessor.cpp:203:6:void CasualNoises::SouthSideAudioProcessor::setFrequency(float)	1
+../SouthSideEngine/SouthSideAudioProcessor.cpp:128:6:virtual void CasualNoises::SouthSideAudioProcessor::processNerveNetData(uint32_t, uint32_t, uint8_t*)	6
+../SouthSideEngine/SouthSideAudioProcessor.cpp:175:6:virtual void CasualNoises::SouthSideAudioProcessor::processBlock(CasualNoises::AudioBuffer&, CasualNoises::AudioBuffer&)	2
+../SouthSideEngine/SouthSideAudioProcessor.cpp:204:6:void CasualNoises::SouthSideAudioProcessor::setFrequency(float)	1
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Maths/Average.h:21:3:CasualNoises::Average<T>::Average(uint32_t) [with T = long unsigned int]	3
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Maths/Average.h:29:2:CasualNoises::Average<T>::~Average() [with T = long unsigned int]	2
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Core/Maths/Average.h:34:4:T CasualNoises::Average<T>::nextAverage(T) [with T = long unsigned int]	2

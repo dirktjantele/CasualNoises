@@ -138,25 +138,25 @@ void ComboBox::setFocus ( uint32_t focus ) noexcept
 //==============================================================================
 //          handleUI_event()
 //
-//  CasualNoises    02/0/2026  First implementation
+//  CasualNoises    02/01/2026  First implementation
 //==============================================================================
-bool ComboBox::handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g)
+bool ComboBox::handleUI_event ( sIncommingUI_Event* uiEvent, bool altState, Graphics& g )
 {
-	if (uiEvent->encoderEvent.encoderNo == (uint16_t)eEncoderNums::MAIN_ENCODER)
+	if ( uiEvent->encoderEvent.encoderNo == (uint16_t)eEncoderNums::MAIN_ENCODER )
 	{
-		if (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderSwitch)
+		if ( uiEvent->encoderEvent.eventType == eEncoderEventType::encoderSwitch )
 		{
-			onChange();
-		} else if (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderCount)
+			onChange ();
+		} else if ( uiEvent->encoderEvent.eventType == eEncoderEventType::encoderCount )
 		{
 			int32_t focus = mFocus + uiEvent->encoderEvent.encoderCount;
-			if (focus < 0)
+			if ( focus < 0 )
 				focus = 0;
-			if (focus >= (int32_t)mItemPtrs.size())
-				focus = (int32_t)mItemPtrs.size() - 1;
+			if ( focus >= (int32_t)mItemPtrs.size() )
+				focus = (int32_t)mItemPtrs.size () - 1;
 			mFocus = focus;
 			paint(g);
-			g.refreshDisplay();
+			g.refreshDisplay ();
 		}
 		return true;
 	}

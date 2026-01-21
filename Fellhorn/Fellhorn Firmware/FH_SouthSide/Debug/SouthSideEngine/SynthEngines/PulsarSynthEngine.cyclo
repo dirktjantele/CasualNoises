@@ -31,7 +31,7 @@
 ../SouthSideEngine/SynthEngines/PulsarSynthEngine.cpp:65:6:virtual void CasualNoises::PulsarSynthEngine::releaseResources()	1
 ../SouthSideEngine/SynthEngines/PulsarSynthEngine.cpp:77:6:virtual void CasualNoises::PulsarSynthEngine::processNerveNetData(uint32_t, uint32_t, uint8_t*)	10
 ../SouthSideEngine/SynthEngines/PulsarSynthEngine.cpp:144:6:virtual void CasualNoises::PulsarSynthEngine::processBlock(CasualNoises::AudioBuffer&, CasualNoises::AudioBuffer&)	2
-../SouthSideEngine/SynthEngines/PulsarSynthEngine.cpp:170:6:void CasualNoises::PulsarSynthEngine::setFrequency(float)	1
+../SouthSideEngine/SynthEngines/PulsarSynthEngine.cpp:171:6:void CasualNoises::PulsarSynthEngine::setFrequency(float)	1
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/maths.h:43:6:Type CasualNoises::cn_limit(Type, Type, Type) [with Type = float]	3
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/maths.h:35:6:Type CasualNoises::cn_map(Type, Type, Type, Type, Type) [with Type = float]	1
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/maths.h:26:16:constexpr bool CasualNoises::approximatelyEqual(Type, Type) [with Type = float]	1

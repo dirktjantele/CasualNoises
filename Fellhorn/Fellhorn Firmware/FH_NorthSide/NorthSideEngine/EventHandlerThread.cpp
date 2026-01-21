@@ -74,7 +74,7 @@ void EventHandlerThread(void* pvParameters)
 	sEventHandlerThreadData* threadParamsPtr = (sEventHandlerThreadData*)pvParameters;
 	tSynthEngineParams*		 engineParamsPtr = threadParamsPtr->SynthEngineParamsPtr;
 
-	// Create synchronisation semaphore and perform a take on it so it will block in the loop
+	// Create synchronization semaphore and perform a take on it so it will block in the loop
 	vSemaphoreCreateBinary(gEventHandlerSemaphoreHandle);
 	if (gEventHandlerSemaphoreHandle == nullptr)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
@@ -111,9 +111,12 @@ void EventHandlerThread(void* pvParameters)
 			triggerMessage.header.messageTag	= (uint32_t)eSynthEngineMessageType::triggerEvent;
 			triggerMessage.header.messageLength	= sizeof(tTriggerMessage);
 			triggerMessage.beatNo				= g_bpm_beatNo;
-			bool success = gNerveNetMasterThreadPtr[0]->sendMessage(&triggerMessage, sizeof(tTriggerMessage));
-			if ( ! success)
-				CN_ReportFault(eErrorCodes::NerveNetThread_Error);
+			if ( gNerveNetMasterThreadPtr[0] != nullptr )
+			{
+				bool success = gNerveNetMasterThreadPtr[0]->sendMessage ( &triggerMessage, sizeof ( tTriggerMessage ) );
+				if ( ! success)
+					CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+			}
 
 		}
 

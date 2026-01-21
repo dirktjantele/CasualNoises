@@ -1,5 +1,6 @@
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	3
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:91:13:void CN_ReportFault(eErrorCodes)	5
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/NerveNet/NerveNetMasterThread.h:52:7:bool CasualNoises::NerveNetMasterThread::isThreadRunning()	1
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:72:2:CasualNoises::SSD1309_Driver::SSD1309_Driver(CasualNoises::sSSD1309_ConfigData*)	1
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:85:7:void CasualNoises::SSD1309_Driver::resetDisplay()	1
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:97:20:HAL_StatusTypeDef CasualNoises::SSD1309_Driver::displayOn()	3
@@ -14,6 +15,7 @@
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:606:10:int32_t CasualNoises::SSD1309_Driver::abs(int32_t)	2
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:619:20:HAL_StatusTypeDef CasualNoises::SSD1309_Driver::sendCommand(uint8_t)	1
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Drivers/OLED/SSD1309_Driver.h:635:20:HAL_StatusTypeDef CasualNoises::SSD1309_Driver::sendCommand(uint8_t, uint8_t)	1
-../DeviceBoardEngine/UI_Thread.cpp:52:6:void CasualNoises::createInitialTLVs(QueueHandle_t)	5
-../DeviceBoardEngine/UI_Thread.cpp:99:6:void CasualNoises::UI_Thread(void*)	25
-../DeviceBoardEngine/UI_Thread.cpp:360:12:BaseType_t CasualNoises::Start_UI_Thread(UI_ThreadData*)	1
+../DeviceBoardEngine/UI_Thread.cpp:39:6:void CasualNoises::handleNerveNetCallBacks(uint32_t, uint8_t*)	1
+../DeviceBoardEngine/UI_Thread.cpp:51:6:void CasualNoises::createInitialTLVs(QueueHandle_t)	5
+../DeviceBoardEngine/UI_Thread.cpp:96:6:void CasualNoises::UI_Thread(void*)	31
+../DeviceBoardEngine/UI_Thread.cpp:369:12:BaseType_t CasualNoises::Start_UI_Thread(UI_ThreadData*)	1

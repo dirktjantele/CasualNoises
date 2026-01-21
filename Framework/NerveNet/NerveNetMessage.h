@@ -21,8 +21,10 @@ constexpr uint32_t cNoOfRxMessageBuffers = 2;
 
 enum class eNerveNetSourceId
 {
-	eFellhornNortSide = 1,
+	eAwaitingId,
+	eFellhornNortSide,
 	eFellhornSouthSide,
+	eFellhornDeviceBoard,
 };
 
 typedef struct
@@ -33,7 +35,7 @@ typedef struct
 
 typedef struct
 {
-	float	audioData[NUM_SAMPLES * NUM_CHANNELS];
+	float				audioData [ NUM_SAMPLES * NUM_CHANNELS ];
 } sNerveNetAudio;
 
 typedef struct
@@ -45,7 +47,9 @@ typedef struct
 typedef struct
 {
 	sNerveNetHeader	header;
+#ifdef CASUALNOISES_NERVENET_AUDIO_SUPPORT
 	sNerveNetAudio	audio;
+#endif
 	sNerveNetData	data;
 } sNerveNetMessage;
 

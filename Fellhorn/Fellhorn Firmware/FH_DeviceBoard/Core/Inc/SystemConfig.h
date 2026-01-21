@@ -126,6 +126,7 @@ enum class eTLV_Tag
 	UI_PageStackPtr		= 0x74707370,			// 'pspt'
 	UI_MainPageState	= 0x7473706d,			// 'mpst'
 	CalibrationValues	= 0x766c6370,			// 'pclv'
+	AgeCounter			= 0x6567615f,			// '_age'
 };
 
 

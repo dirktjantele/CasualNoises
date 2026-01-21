@@ -19,6 +19,8 @@
 #include "task.h"
 #include "semphr.h"
 
+#include "NerveNetMasterProcessor.h"
+
 #include "NerveNetMessage.h"
 #include "NerveNetMessageHeader.h"
 
@@ -44,18 +46,22 @@ public:
 
 	void mainNerveNetMasterThread(void* pvParameters);
 
-	bool GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-	bool SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi);
+	bool GPIO_EXTI_Callback ( uint16_t GPIO_Pin);
+	bool SPI_TxRxCpltCallback ( SPI_HandleTypeDef *hspi );
+
+	bool isThreadRunning ()		{ return mNerveNetMasterReady; };
 
 	bool sendMessage(const void* messagePtr, uint32_t size) noexcept;
 
-	sNerveNetMessage* startNewDataExchange() noexcept;
+	sNerveNetMessage* startNewDataExchange () noexcept;
+
+	void setNerveNetMasterProcessorPtr ( NerveNetMasterProcessor* ptr ) noexcept { mNerveNetMasterProcessorPtr = ptr; };
 
 private:
 
 	// Tx and Rx buffers & indexes
-	sNerveNetMessage* 		mTxMessageBuffers[cNoOfTxMessageBuffers];		// Tx buffers
-	sNerveNetMessage* 		mRxMessageBuffers[cNoOfRxMessageBuffers];		// Rx buffers
+	sNerveNetMessage* 		mTxMessageBuffers [cNoOfTxMessageBuffers];		// Tx buffers
+	sNerveNetMessage* 		mRxMessageBuffers [cNoOfRxMessageBuffers];		// Rx buffers
 	uint32_t	 			mTxToBeSentBufferIndex		{ 0 };				// Indexes to Tx & Rx buffers
 	uint32_t				mTxWaitingBufferIndex		{ 1 };
 	uint32_t				mTxFillingBufferIndex		{ 2 };
@@ -83,6 +89,9 @@ private:
 
 	// Current thread state
 	eNerveNetMasterThreadState	mThreadState			{ eNerveNetMasterThreadState::resetSlave };
+	bool					mNerveNetMasterReady		{ false };
+
+	NerveNetMasterProcessor* mNerveNetMasterProcessorPtr { nullptr };
 
 	// Semaphore used to make sendMessage() thread save
 	SemaphoreHandle_t		mSyncSemaphoreHandle		{ nullptr };
@@ -90,10 +99,10 @@ private:
 };
 
 // Start thread function
-BaseType_t startNerveNetMasterThread(CasualNoises::NerveNetMasterThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr) noexcept;
+BaseType_t startNerveNetMasterThread ( CasualNoises::NerveNetMasterThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr ) noexcept;
 
 } // namespace CasualNoises
 
-extern CasualNoises::NerveNetMasterThread* gNerveNetMasterThreadPtr[MAX_NO_OF_NERVENET_MASTER_THREADS];
+extern CasualNoises::NerveNetMasterThread* gNerveNetMasterThreadPtr [ MAX_NO_OF_NERVENET_MASTER_THREADS ];
 
 #endif

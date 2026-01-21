@@ -44,6 +44,7 @@ void AudioThread(void* pvParameters)
 //	player->setSynthesiserParamsPtr(params->synthesizerParamsPtr);
 	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = params->nerveNetCallBackPtr;
 	player->runAudioProcessor(audioBufferPtr, nerveNetCallBackPtr);
+
 	// We should never come here
 	CN_ReportFault(eErrorCodes::AudioThreadError);
 

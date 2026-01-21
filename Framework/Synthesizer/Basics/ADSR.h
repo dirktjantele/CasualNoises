@@ -136,18 +136,18 @@ public:
 	{
 
 		// When waiting, just start...
-		if (mADSR_State == eADSR_State::waiting)
+		if ( mADSR_State == eADSR_State::waiting )
 		{
 			mResetCycle = true;
 			return;
 		}
 
 		// Else, act according the envelop type
-		switch (mADSR_Type)
+		switch ( mADSR_Type )
 		{
 		case eADSR_Type::cyclic:
 		case eADSR_Type::oneShot:
-			if (mADSR_State == eADSR_State::waiting)
+			if ( mADSR_State == eADSR_State::waiting )
 			{
 				mADSR_State		= mStateTable[0];
 				mValueIncrement = mValueIncrementTable[0];

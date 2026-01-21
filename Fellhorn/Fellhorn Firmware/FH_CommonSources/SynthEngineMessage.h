@@ -44,14 +44,14 @@ enum class eSynthEngineInitType
 /***************************************** tInitMessageData *******************************/
 typedef struct
 {
-//	tNerveNetMessageHeader		header;
+	tNerveNetMessageHeader		header;
 	eSynthEngineInitType		initMessage;
 } tInitMessage;
 
 /***************************************** tRequestSetupInfoMessageData *******************************/
 typedef struct
 {
-//	tNerveNetMessageHeader		header;
+	tNerveNetMessageHeader		header;
 } tRequestSetupInfoMessageData;
 
 /***************************************** tSetupInfoReplyMessageData *******************************/
@@ -64,14 +64,14 @@ typedef struct
 /***************************************** tSetFrequencyMessage *******************************/
 typedef struct
 {
-//	tNerveNetMessageHeader		header;
+	tNerveNetMessageHeader		header;
 	float						frequency;
 } tSetFrequencyMessage;
 
 /***************************************** tPotValueMessage *******************************/
 typedef struct
 {
-//	tNerveNetMessageHeader		header;
+	tNerveNetMessageHeader		header;
 	uint32_t					potId;
 	float						potValue;
 } tPotValueMessage;

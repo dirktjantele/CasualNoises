@@ -106,14 +106,14 @@ Rectangle< int > RootPage::getBounds () const
 //
 //  CasualNoises    26/12/2025  First implementation
 //==============================================================================
-bool RootPage::handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g)
+bool RootPage::handleUI_event ( sIncommingUI_Event* uiEvent, bool altState, Graphics& g )
 {
-	bool success = handleLocalUI_event(uiEvent, altState, g);
+	bool success = handleLocalUI_event ( uiEvent, altState, g );
 	if ( ! success )
 	{
-		for (auto child : mChildren)
+		for ( auto child : mChildren )
 		{
-			if (child->handleUI_event(uiEvent, altState, g))
+			if ( child->handleUI_event ( uiEvent, altState, g ) )
 				return true;
 		}
 		return false;

@@ -38,7 +38,7 @@ uint16_t 			gADC_Data[NUM_CV_INPUTS];			// Raw ADC data from DMA
 // Handler for adc data
 ADC_DataHandler*	gADC_DataHandlerPtr		= nullptr;
 
-#ifdef ADC_NERVENET_SUPPORT
+#ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
 
 SemaphoreHandle_t	gADC_SemaphoreHandle 	= nullptr;
 
@@ -61,7 +61,7 @@ bool ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 		if (gADC_DataHandlerPtr != nullptr)
 			gADC_DataHandlerPtr->handle_ADC_Data(NUM_CV_INPUTS, gADC_Data);
 
-#ifdef ADC_NERVENET_SUPPORT
+#ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
 
 		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 		if (gADC_SemaphoreHandle != nullptr)
@@ -86,7 +86,7 @@ bool ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 //  CasualNoises    18/04/2025  First implementation
 //  CasualNoises    23/07/2025  Using semaphores to synchronise events
 //==============================================================================
-void ADC_Thread(void* pvParameters)
+void ADC_Thread ( void* pvParameters )
 {
 
 	// Get arguments
@@ -96,21 +96,21 @@ void ADC_Thread(void* pvParameters)
 	gADC_DataHandlerPtr					= arguments->ADC_DataHandlerPtr;
 
 	// Register a callback for the potentiometer adc
-	add_ADC_ConvCpltCallback(ADC_ConvCpltCallback);
-	vTaskDelay(pdMS_TO_TICKS(10));
+	add_ADC_ConvCpltCallback (ADC_ConvCpltCallback) ;
+	vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
 
 	// Calibrate the ADC converter used and start in DMA mode then start the timer to trigger conversions
-	HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start(gADC_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
-	if (res != HAL_OK)
-		CN_ReportFault(eErrorCodes::adcThreadError);
-	res = HAL_ADC_Start_DMA(gADC_adc, (uint32_t *)gADC_Data, NUM_CV_INPUTS);
-	if (res != HAL_OK)
-		CN_ReportFault(eErrorCodes::adcThreadError);
-	res = HAL_TIM_Base_Start(htim);
+	HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start ( gADC_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED );
+	if ( res != HAL_OK )
+		CN_ReportFault ( eErrorCodes::adcThreadError );
+	res = HAL_ADC_Start_DMA ( gADC_adc, (uint32_t *)gADC_Data, NUM_CV_INPUTS );
+	if ( res != HAL_OK )
+		CN_ReportFault ( eErrorCodes::adcThreadError );
+	res = HAL_TIM_Base_Start ( htim );
 	if (res != HAL_OK) // support
-		CN_ReportFault(eErrorCodes::adcThreadError);
+		CN_ReportFault ( eErrorCodes::adcThreadError );
 
-#ifdef ADC_NERVENET_SUPPORT
+#ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
 
 	// Create a binary semaphore to awake thread when new data is available
 	gADC_SemaphoreHandle = xSemaphoreCreateBinary();
@@ -152,7 +152,7 @@ void ADC_Thread(void* pvParameters)
 
 #endif
 
-	// We should never reache this
+	// We should never reach this point
 	CN_ReportFault(eErrorCodes::runtimeError);
 
 }

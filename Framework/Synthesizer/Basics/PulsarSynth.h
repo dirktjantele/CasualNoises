@@ -70,8 +70,8 @@ public:
 
 		// Calculate next sample
 		float sample = 0.0f;
-		int32_t idx = static_cast<int32_t>(mPulsarWaveIndex);
-		if (mPulsarCurvePtr[idx] >= 0.0f)
+		int32_t idx = static_cast<int32_t>( mPulsarWaveIndex );
+		if ( mPulsarCurvePtr[idx] >= 0.0f )
 		{
 			CachedWavetable_LFO::mWaveIndex = mPulsarCurvePtr[idx];
 			sample = CachedWavetable_LFO::nextSample();
@@ -81,11 +81,11 @@ public:
 		// Increase index, on next cycle update morph amount to avoid clicks
 		//      also update pulsar curve
 		mPulsarWaveIndex += mPulsarStep;
-		if (mPulsarWaveIndex >= mWaveLength)
+		if ( mPulsarWaveIndex >= mWaveLength )
 		{
 			setTimeMarker_1();												// ToDo remove this
 			mPulsarWaveIndex -= mWaveLength;
-			CachedWavetable_LFO::setMorphFactor(mMorph);
+			CachedWavetable_LFO::setMorphFactor ( mMorph );
 			refresh();
 			resetTimeMarker_1();											// ToDo remove this
 		}

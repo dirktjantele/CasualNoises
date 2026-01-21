@@ -30,16 +30,8 @@ typedef struct
 	sSPI_LED_ThreadData			spi_LED_ThreadData;
 	sSSD1309_ConfigData			oledConfigData;
 	sADC_MultiplexerThreadData	ADC_MultiplexerThreadData;
-	void ( **nerveNetCallBackPtr ) ( CasualNoises::sNerveNetData* );
+	void ( **nerveNetCallBackPtr ) ( uint32_t size, uint8_t* ptr );
 } UI_ThreadData;
-
-// Structure of incoming messages
-/*typedef union
-{
-	sEncoderEvent				encoderEvent;
-	sMultiplexed_ADC_Event		multiplexed_ADC_Event;
-} sIncommingUI_Event;
-*/
 
 typedef struct
 {

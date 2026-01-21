@@ -91,11 +91,11 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-  if(hadc->Instance==ADC3)
+  if(hadc->Instance==ADC1)
   {
-    /* USER CODE BEGIN ADC3_MspInit 0 */
+    /* USER CODE BEGIN ADC1_MspInit 0 */
 
-    /* USER CODE END ADC3_MspInit 0 */
+    /* USER CODE END ADC1_MspInit 0 */
 
   /** Initializes the peripherals clock
   */
@@ -115,29 +115,47 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     }
 
     /* Peripheral clock enable */
-    __HAL_RCC_ADC3_CLK_ENABLE();
+    __HAL_RCC_ADC12_CLK_ENABLE();
 
-    __HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
-    /**ADC3 GPIO Configuration
-    PF3     ------> ADC3_INP5
-    PF5     ------> ADC3_INP4
-    PC0     ------> ADC3_INP10
-    PC1     ------> ADC3_INP11
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOF_CLK_ENABLE();
+    /**ADC1 GPIO Configuration
+    PC1     ------> ADC1_INP11
+    PA0     ------> ADC1_INP16
+    PA2     ------> ADC1_INP14
+    PA3     ------> ADC1_INP15
+    PA4     ------> ADC1_INP18
+    PB0     ------> ADC1_INN5
+    PB0     ------> ADC1_INP9
+    PB1     ------> ADC1_INP5
+    PF11     ------> ADC1_INP2
+    PF12     ------> ADC1_INP6
     */
-    GPIO_InitStruct.Pin = IN_CV_3_Pin|IN_CV_2_Pin;
+    GPIO_InitStruct.Pin = CV_IN_4_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(CV_IN_4_GPIO_Port, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = CV_IN_6_Pin|CV_IN_5_Pin|CV_IN_3_Pin|_1V_OCT_1_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = _1V_OCT_2_Pin|CV_IN_2_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = CV_IN_1_Pin|CV_IN_7_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = IN_CV_1_Pin|IN_1V_OCT_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    /* USER CODE BEGIN ADC1_MspInit 1 */
 
-    /* USER CODE BEGIN ADC3_MspInit 1 */
-
-    /* USER CODE END ADC3_MspInit 1 */
+    /* USER CODE END ADC1_MspInit 1 */
 
   }
 
@@ -151,27 +169,37 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
   */
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 {
-  if(hadc->Instance==ADC3)
+  if(hadc->Instance==ADC1)
   {
-    /* USER CODE BEGIN ADC3_MspDeInit 0 */
+    /* USER CODE BEGIN ADC1_MspDeInit 0 */
 
-    /* USER CODE END ADC3_MspDeInit 0 */
+    /* USER CODE END ADC1_MspDeInit 0 */
     /* Peripheral clock disable */
-    __HAL_RCC_ADC3_CLK_DISABLE();
+    __HAL_RCC_ADC12_CLK_DISABLE();
 
-    /**ADC3 GPIO Configuration
-    PF3     ------> ADC3_INP5
-    PF5     ------> ADC3_INP4
-    PC0     ------> ADC3_INP10
-    PC1     ------> ADC3_INP11
+    /**ADC1 GPIO Configuration
+    PC1     ------> ADC1_INP11
+    PA0     ------> ADC1_INP16
+    PA2     ------> ADC1_INP14
+    PA3     ------> ADC1_INP15
+    PA4     ------> ADC1_INP18
+    PB0     ------> ADC1_INN5
+    PB0     ------> ADC1_INP9
+    PB1     ------> ADC1_INP5
+    PF11     ------> ADC1_INP2
+    PF12     ------> ADC1_INP6
     */
-    HAL_GPIO_DeInit(GPIOF, IN_CV_3_Pin|IN_CV_2_Pin);
+    HAL_GPIO_DeInit(CV_IN_4_GPIO_Port, CV_IN_4_Pin);
 
-    HAL_GPIO_DeInit(GPIOC, IN_CV_1_Pin|IN_1V_OCT_Pin);
+    HAL_GPIO_DeInit(GPIOA, CV_IN_6_Pin|CV_IN_5_Pin|CV_IN_3_Pin|_1V_OCT_1_Pin);
 
-    /* USER CODE BEGIN ADC3_MspDeInit 1 */
+    HAL_GPIO_DeInit(GPIOB, _1V_OCT_2_Pin|CV_IN_2_Pin);
 
-    /* USER CODE END ADC3_MspDeInit 1 */
+    HAL_GPIO_DeInit(GPIOF, CV_IN_1_Pin|CV_IN_7_Pin);
+
+    /* USER CODE BEGIN ADC1_MspDeInit 1 */
+
+    /* USER CODE END ADC1_MspDeInit 1 */
   }
 
 }

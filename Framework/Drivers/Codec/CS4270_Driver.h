@@ -42,33 +42,33 @@ class CS4270_Driver final : private Codec_Driver
 public:
 	~CS4270_Driver() = default;
 
-	static Codec_Driver& CreateDriver(CS4270_DriverParams& params)
+	static Codec_Driver& CreateDriver ( CS4270_DriverParams& params )
 	{
-		static CS4270_Driver instance(params);
+		static CS4270_Driver instance ( params);
 		return instance;
 	}
 
-	virtual HAL_StatusTypeDef initializeCodec()
+	virtual HAL_StatusTypeDef initializeCodec ()
 	{
 		HAL_StatusTypeDef res = HAL_OK;
 
 		// Reset the codec
-		resetCodec();
+		resetCodec ();
 
 		// Put codec in power down mode before adjusting configuration params
-		res = CS4270_RegWrite(CS4270_REG_POWERCONTROL, 0xA3);
-		if (res != HAL_OK)
-			CN_ReportFault(eErrorCodes::runtimeError);
+		res = CS4270_RegWrite ( CS4270_REG_POWERCONTROL, 0xA3 );
+		if ( res != HAL_OK )
+			CN_ReportFault ( eErrorCodes::runtimeError );
 		uint8_t regData;
-		res = CS4270_RegRead(CS4270_REG_POWERCONTROL, &regData);
-		if (res != HAL_OK || (regData != 0xA3))
-			CN_ReportFault(eErrorCodes::runtimeError);
+		res = CS4270_RegRead ( CS4270_REG_POWERCONTROL, &regData );
+		if ( res != HAL_OK || (regData != 0xA3) )
+			CN_ReportFault (eErrorCodes::runtimeError );
 
 		// Verify the device id
 		uint8_t deviceId = 0x00;
-		res = CS4270_RegRead(CS4270_REG_DEVICEID, &deviceId);
-		if ((res  != HAL_OK) || ((deviceId & 0xF0) != CS4270_DEVICEID))
-			CN_ReportFault(eErrorCodes::runtimeError);
+		res = CS4270_RegRead ( CS4270_REG_DEVICEID, &deviceId );
+		if ( (res  != HAL_OK) || ((deviceId & 0xF0) != CS4270_DEVICEID) )
+			CN_ReportFault ( eErrorCodes::runtimeError );
 
 		// Default configuration register settings in reversed order
 		uint8_t confgSettings[8] =
@@ -85,19 +85,19 @@ public:
 		//confgSettings[3] |= 0x20;		// Enable digital loop back
 
 		// Update control registers (read-back and verify)
-		for (int8_t regIndex = CS4270_REG_DACBVOLCONTROL; regIndex >= CS4270_REG_POWERCONTROL; --regIndex)
+		for ( int8_t regIndex = CS4270_REG_DACBVOLCONTROL; regIndex >= CS4270_REG_POWERCONTROL; --regIndex )
 		{
 
 			// Write 'default' value to register
-			res = CS4270_RegWrite(regIndex, confgSettings[regIndex - 1]);
+			res = CS4270_RegWrite ( regIndex, confgSettings[regIndex - 1] );
 			if (res != HAL_OK)
-				CN_ReportFault(eErrorCodes::runtimeError);
+				CN_ReportFault ( eErrorCodes::runtimeError );
 
 			// Read-back register value
 			uint8_t regData;
-			res = CS4270_RegRead(regIndex, &regData);
-			if ((res != HAL_OK) || (regData != confgSettings[regIndex - 1]))
-				CN_ReportFault(eErrorCodes::runtimeError);
+			res = CS4270_RegRead ( regIndex, &regData );
+			if ( (res != HAL_OK) || (regData != confgSettings[regIndex - 1]) )
+				CN_ReportFault ( eErrorCodes::runtimeError );
 
 		}
 

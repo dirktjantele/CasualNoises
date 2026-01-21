@@ -1,5 +1,5 @@
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:37:13:void CN_Delay()	24	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:117:13:void CN_ReportFault(eErrorCodes)	24	static
-/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/ADC_Thread.cpp:55:6:bool CasualNoises::ADC_ConvCpltCallback(ADC_HandleTypeDef*)	24	static
-/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/ADC_Thread.cpp:89:6:void CasualNoises::ADC_Thread(void*)	56	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/ADC_Thread.cpp:55:6:bool CasualNoises::ADC_ConvCpltCallback(ADC_HandleTypeDef*)	16	static
+/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/ADC_Thread.cpp:89:6:void CasualNoises::ADC_Thread(void*)	32	static
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Threads/ADC_Thread.cpp:167:12:BaseType_t CasualNoises::startADC_Thread(void*, tskTaskControlBlock**)	32	static

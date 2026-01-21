@@ -57,8 +57,8 @@ CasualNoises/Utilities \
 CasualNoises/xml \
 Core/Src \
 Core/Startup \
-DeviceBoardEngine/UI_Handlers \
 DeviceBoardEngine \
+DeviceBoardEngine/UI_Handlers \
 Drivers/STM32H7xx_HAL_Driver/Src \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 Middlewares/Third_Party/FreeRTOS/Source \

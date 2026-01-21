@@ -13,7 +13,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#ifdef CASUALNOISES_NVM_DRIVER_SUPPORT
+#ifdef CASUALNOISES_TLV_DRIVER_THREAD_SUPPORT
 
 namespace CasualNoises
 {

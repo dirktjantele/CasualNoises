@@ -2,4 +2,4 @@
 /Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/CasualNoises Framework/CasualNoises/Utilities/ReportFault.h:117:13:void CN_ReportFault(eErrorCodes)	24	static
 ../NorthSideEngine/EventHandlerThread.cpp:49:6:void CasualNoises::EventHandlerThread::eventHandlerTimerInterrupts()	16	static
 ../NorthSideEngine/EventHandlerThread.cpp:70:6:void CasualNoises::EventHandlerThread::EventHandlerThread(void*)	48	static
-../NorthSideEngine/EventHandlerThread.cpp:131:12:BaseType_t CasualNoises::EventHandlerThread::StartEventHandlerThread(sEventHandlerThreadData*)	32	static
+../NorthSideEngine/EventHandlerThread.cpp:134:12:BaseType_t CasualNoises::EventHandlerThread::StartEventHandlerThread(sEventHandlerThreadData*)	32	static

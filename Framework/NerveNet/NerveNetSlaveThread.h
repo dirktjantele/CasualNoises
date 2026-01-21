@@ -19,6 +19,7 @@
 #include "semphr.h"
 
 #include "NerveNetMessage.h"
+#include "NerveNetSlaveProcessor.h"
 
 namespace CasualNoises
 {
@@ -36,16 +37,21 @@ class NerveNetSlaveThread final
 {
 public:
 
-	 NerveNetSlaveThread() = default;
-	~NerveNetSlaveThread() = default;
+	 NerveNetSlaveThread () = default;
+	~NerveNetSlaveThread () = default;
 
-	void mainNerveNetSlaveThread(void* pvParameters);
+	void mainNerveNetSlaveThread ( void* pvParameters );
 
-	bool sendMessage(const void* messagePtr, uint32_t size) noexcept;
+	bool sendMessage ( const void* messagePtr, uint32_t size ) noexcept;
 
-	bool GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+	bool GPIO_EXTI_Callback ( uint16_t GPIO_Pin );
+
+	void setNerveNetSlaveProcessorPtr ( NerveNetSlaveProcessor* ptr ) noexcept { mNerveNetSlaveProcessorPtr = ptr; };
 
 private:
+
+	// Ignore all interrupts until the thread is ready
+	bool					mIgnoreInterrupts			{ true };
 
 	// Tx and Rx buffers & indexes
 	sNerveNetMessage* 		mTxMessageBuffers[cNoOfTxMessageBuffers];		// Tx buffers
@@ -66,7 +72,7 @@ private:
 	uint32_t				mRemainingSpace				{ 0 };
 	bool					mConstructionBufferBusy		{ false };
 
-	// Flag used to indicate that the threa is ready, thread will not respond to reset signels if not ready
+	// Flag used to indicate that the thread is ready, thread will not respond to reset signals if not ready
 	bool					mThreadReady				{ false };
 
 	// Devices to be used
@@ -77,12 +83,13 @@ private:
 	GPIO_TypeDef*			mNerveNet_RESET_Port		{ nullptr };
 	uint16_t				mNerveNet_RESET_Pin			{ 0 };
 	SPI_HandleTypeDef*		mNerveNet_SPI_Ptr			{ nullptr };
-	AudioProcessor* 		mSouthSideAudioProcessorPtr	{ nullptr };
+	AudioProcessor* 		mSouthSideAudioProcessorPtr	{ nullptr };				// ToDo uniform NerveNet message handler
+	NerveNetSlaveProcessor* mNerveNetSlaveProcessorPtr	{ nullptr };
 	TIM_HandleTypeDef*		mPerformanceTestTimerPtr	{ nullptr };
 	uint32_t*				mPerformanceResultPtr		{ nullptr };
 
-	// Thead number
-	uint32_t				mTheadNumber				{ 99 };
+	// Thread number
+	uint32_t				mTheadNumber				{ 0xffffffff };
 
 	// Current thread state
 	eNerveNetSlaveThreadState	mThreadState			{ eNerveNetSlaveThreadState::awaitingReset };

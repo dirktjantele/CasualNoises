@@ -205,35 +205,35 @@ void add_EXTI_ConvCpltCallback(GPIO_EXTI_Callback callback)
 	EXTI_ConvCpltCallbacks.push_back(callback);
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void HAL_GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 {
 	bool flag = false;
 
 	// Handle NerveNet threads first
 #ifdef CASUALNOISES_NERVENET_THREAD
-	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_MASTER_THREADS; ++i)
+	for ( uint32_t i = 0; i < MAX_NO_OF_NERVENET_MASTER_THREADS; ++i )
 	{
-		if (gNerveNetMasterThreadPtr[i] != nullptr)
-			flag = gNerveNetMasterThreadPtr[0]->GPIO_EXTI_Callback(GPIO_Pin);
-		if (flag)
+		if ( gNerveNetMasterThreadPtr[i] != nullptr )
+			flag = gNerveNetMasterThreadPtr[0]->GPIO_EXTI_Callback ( GPIO_Pin );
+		if ( flag )
 			return;
 	}
-	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_SLAVE_THREADS; ++i)
+	for ( uint32_t i = 0; i < MAX_NO_OF_NERVENET_SLAVE_THREADS; ++i )
 	{
-		if (gNerveNetSlaveThreadPtr[i] != nullptr)
-			flag = gNerveNetSlaveThreadPtr[0]->GPIO_EXTI_Callback(GPIO_Pin);
-		if (flag)
+		if ( gNerveNetSlaveThreadPtr[i] != nullptr )
+			flag = gNerveNetSlaveThreadPtr[0]->GPIO_EXTI_Callback ( GPIO_Pin );
+		if ( flag )
 			return;
 	}
 #endif
 
 	// Scan registered callback's
-	if ( ! flag)
+	if ( ! flag )
 	{
-		for (auto callback : EXTI_ConvCpltCallbacks)
+		for ( auto callback : EXTI_ConvCpltCallbacks )
 		{
-			flag = callback(GPIO_Pin);
-			if (flag)
+			flag = callback ( GPIO_Pin );
+			if ( flag )
 				return;
 		}
 	}

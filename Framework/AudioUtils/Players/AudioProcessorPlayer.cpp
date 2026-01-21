@@ -84,7 +84,7 @@ namespace CasualNoises
 // This is the main audio processor loop, this method never return
 //
 //  CasualNoises    24/07/2023  First implementation
-// 	CasualNoises    10/11/2024  Resuscitated
+// 	CasualNoises    10/11/2024  resuscitated
 //==============================================================================
 void AudioProcessorPlayer::runAudioProcessor(
 		AudioBuffer* audioBufferPtr,
@@ -128,6 +128,12 @@ void AudioProcessorPlayer::runAudioProcessor(
 	// Prepare the audio processor
 	mAudioProcessorPtr->prepareToPlay(SAMPLE_FREQUENCY, numSamples, mSynthesiserParamsPtr);
 
+	while ( ( gNerveNetMasterThreadPtr [AUDIO_NERVENET_THREAD_NO] == nullptr ) ||
+			( ! gNerveNetMasterThreadPtr [AUDIO_NERVENET_THREAD_NO]->isThreadRunning() ) )
+	{
+		vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
+	}
+
 	// Process incoming audio data block when a DMA interrupt is received
 	float scale = static_cast<float>(0x7fffff00);
 	for (;;)
@@ -146,10 +152,10 @@ void AudioProcessorPlayer::runAudioProcessor(
 
 #ifdef CASUALNOISES_NERVENET_THREAD
 		// Start a new NerveNet data exchange
-		sNerveNetMessage* nerveNetMessagePtr = gNerveNetMasterThreadPtr[AUDIO_NERVENET_THREAD_NO]->startNewDataExchange();
+		sNerveNetMessage* nerveNetMessagePtr = gNerveNetMasterThreadPtr[AUDIO_NERVENET_THREAD_NO]->startNewDataExchange ();
 
 		// Handle NerveNet message
-		if ((nerveNetMessagePtr != nullptr) && (nerveNetMessagePtr->header.messageNumber != 0))
+		if ( ( nerveNetMessagePtr != nullptr ) && ( nerveNetMessagePtr->header.messageNumber != 0 ) )
 		{
 
 			// Do we have a call back pointer to handle the incoming NerveNet data?
@@ -158,6 +164,7 @@ void AudioProcessorPlayer::runAudioProcessor(
 				(**nerveNetCallBackPtr)(&nerveNetMessagePtr->data);
 			}
 
+#ifdef CASUALNOISES_NERVENET_AUDIO_SUPPORT
 			// Fill NerveNet audio buffer with incoming audio
 			float* ptr = nerveNetMessagePtr->audio.audioData;
 			for (uint32_t i = 0; i < numSamples; ++i)
@@ -165,12 +172,13 @@ void AudioProcessorPlayer::runAudioProcessor(
 				NN_audioInPointers.audioBuffer1[i] = *ptr++;
 				NN_audioInPointers.audioBuffer2[i] = *ptr++;
 			}
+#endif
 
 		}
 #endif
 
 		// Convert incoming audio data to float format and fill the AudioBuffer
-		for (uint32_t i = 0, j = 0; i < (numSamples * 2); i += 2, ++j)
+		for ( uint32_t i = 0, j = 0; i < (numSamples * 2); i += 2, ++j )
 		{
 			float fsample = static_cast<float>(rx_audioDataPtr[i]);
 			fsample /= scale;

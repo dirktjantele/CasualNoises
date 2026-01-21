@@ -23,17 +23,17 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "../../DeviceBoardEngine/UI_Definitions.h"
+#include <UI_Definitions.h>
+#include <YellowPages.h>
 
 #include "CasualNoises.h"
 #include "SystemConfig.h"
 
-//#include "YellowPages.h"
-
 #include "UI_Thread.h"
-//#include "EventHandlerThread.h"
 
-#include "../CasualNoises/NerveNet/NerveNetMessage.h"
+//#include <NerveNet/NerveNetMessage.h
+
+#include "NorthSideConnection.h"
 
 /* USER CODE END Includes */
 
@@ -62,6 +62,8 @@ SPI_HandleTypeDef hspi3;
 SPI_HandleTypeDef hspi4;
 SPI_HandleTypeDef hspi5;
 DMA_HandleTypeDef hdma_spi2_tx;
+DMA_HandleTypeDef hdma_spi4_rx;
+DMA_HandleTypeDef hdma_spi4_tx;
 
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim6;
@@ -535,7 +537,7 @@ static void MX_SPI3_Init(void)
   hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi3.Init.NSS = SPI_NSS_SOFT;
-  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -801,6 +803,12 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+  /* DMA1_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+  /* DMA1_Stream3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
 
 }
 
@@ -904,7 +912,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : NERVE_NET_ACK_Pin */
   GPIO_InitStruct.Pin = NERVE_NET_ACK_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(NERVE_NET_ACK_GPIO_Port, &GPIO_InitStruct);
 
@@ -937,6 +945,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(NERVE_NET_ACK_EXTI_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(NERVE_NET_ACK_EXTI_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -1072,7 +1084,7 @@ void StartDefaultTask(void *argument)
 	// Encoder #1 (Value)
 	// Create a UI thread and run it
 	// Note, part of the UI_ThreadData is filled in by the UI thread when starting up
-	void ( *nerveNetCallBackPtr ) ( CasualNoises::sNerveNetData* ) = nullptr;
+	void ( *nerveNetCallBackPtr ) ( uint32_t size, uint8_t* ptr ) = nullptr;
 	static CasualNoises::UI_ThreadData uiData;
 	// ... NVM Driver settings
 	uiData.nvmDriverInitData.noOfDevices				= 2;
@@ -1103,28 +1115,56 @@ void StartDefaultTask(void *argument)
 	uiData.oledConfigData.NRST_PORT						= GPIOD;
 	// ...
 	uiData.ADC_MultiplexerThreadData.hadc				= &hadc2;
-//	uiData.ADC_MultiplexerThreadData.htim				= &htim2;
 	uiData.ADC_MultiplexerThreadData.noOfMultiplexers	= 2;
 	uiData.ADC_MultiplexerThreadData.multiplexerSignatureArray = sADC_MultiplexerSignatures;
 
+	// Start UI thread
 	uiData.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
-	res = CasualNoises::Start_UI_Thread(&uiData);
+	res = CasualNoises::Start_UI_Thread ( &uiData );
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 
-    /* Infinite loop */
+	// There are no NerveNet threads running
+	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_MASTER_THREADS; ++i)
+		gNerveNetMasterThreadPtr[i] = nullptr;
+	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_SLAVE_THREADS; ++i)
+		gNerveNetSlaveThreadPtr[i] = nullptr;
+
+	// Start NerveNet master thread
+	static CasualNoises::sNerveNetThreadData nerveNetThreadData;
+	memset(&nerveNetThreadData, 0x00, sizeof(CasualNoises::sNerveNetThreadData));
+	nerveNetThreadData.NerveNetThreadNo			= 0;
+	nerveNetThreadData.NerveNet_REQ_Port		= NERVE_NET_REQ_GPIO_Port;
+	nerveNetThreadData.NerveNet_REQ_Pin			= NERVE_NET_REQ_Pin;
+	nerveNetThreadData.NerveNet_ACK_Port		= NERVE_NET_ACK_GPIO_Port;
+	nerveNetThreadData.NerveNet_ACK_Pin			= NERVE_NET_ACK_Pin;
+	nerveNetThreadData.NerveNet_RESET_Port		= NERVE_NET_RESET_GPIO_Port;
+	nerveNetThreadData.NerveNet_RESET_Pin		= NERVE_NET_RESET_Pin;
+	nerveNetThreadData.NerveNet_SPI_Ptr			= &hspi4;
+	nerveNetThreadData.NerveNetThreadQueue		= &CasualNoises::gYellowPages.gNerveNetMasterThreadQueueHandle;
+	nerveNetThreadData.NerveNetRunningFlagPtr	= &CasualNoises::gYellowPages.gNetMasterThreadRunning;
+	static TaskHandle_t xHandlePtr;
+	static CasualNoises::NerveNetMasterThread nerveNetMasterThread;
+	res = CasualNoises::startNerveNetMasterThread ( &nerveNetMasterThread, &nerveNetThreadData, &xHandlePtr );
+	if (res != pdPASS)
+		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
+	CasualNoises::gYellowPages.gNerveNetMasterThreadTaskHandle 	= xHandlePtr;
+	CasualNoises::NorthSideConnection connection;
+	nerveNetMasterThread.setNerveNetMasterProcessorPtr ( &connection );
+
+   /* Infinite loop */
 	osDelay(200);
 	displayStatus(scRunning);
 	for(;;)
 	{
-		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET);
-		osDelay(pdMS_TO_TICKS(100));
-		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET);
-		osDelay(pdMS_TO_TICKS(100));
-		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET);
-		osDelay(pdMS_TO_TICKS(100));
-		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET);
-		osDelay(pdMS_TO_TICKS(700));
+		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET );
+		osDelay (pdMS_TO_TICKS ( 100 ) );
+		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
+		osDelay (pdMS_TO_TICKS ( 100) );
+		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET );
+		osDelay ( pdMS_TO_TICKS (100) );
+		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
+		osDelay( pdMS_TO_TICKS ( 700) );
 	}
 
   /* USER CODE END 5 */

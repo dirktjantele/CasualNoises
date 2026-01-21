@@ -23,10 +23,10 @@ class AudioProcessor
 {
 public:
 
-		  virtual void prepareToPlay(float sampleRate, uint32_t maximumExpectedSamplesPerBlock, void* synthParams) 	= 0;
-		  virtual void releaseResources() 																			= 0;
-		  virtual void processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) 							= 0;
-		  virtual void processBlock (AudioBuffer &buffer, AudioBuffer &NN_buffer) 									= 0;
+		  virtual void prepareToPlay ( float sampleRate, uint32_t maximumExpectedSamplesPerBlock, void* synthParams ) 	= 0;
+		  virtual void releaseResources () 																				= 0;
+		  virtual void processNerveNetData ( uint32_t threadNo, uint32_t size, uint8_t* ptr ) 							= 0;
+		  virtual void processBlock ( AudioBuffer &buffer, AudioBuffer &NN_buffer ) 									= 0;
 
 };
 

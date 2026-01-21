@@ -471,7 +471,7 @@ bool CalibrationPage::handleLocalUI_event(sIncommingUI_Event* uiEvent, bool altS
 			mProgressBarPtr->setVisible ( false );
 			mContLabelPtr->setVisible ( false );
 			mCompletionLabelPtr->setVisible ( true );
-			mState = eCalibrationPageState::ProcessingMaxs;
+//			mState = eCalibrationPageState::ProcessingMaxs;
 			return true;
 		}
 	}
