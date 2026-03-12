@@ -28,10 +28,10 @@ enum class eSynthEngineMessageType
 	initSynthEngine = 1,
 	requestSetupInfo,
 	setupInfoReply,
-	setFrequency,
 	potentiometerValue,
-	ADC_Value,
+	ADC_DataRequest,
 	triggerEvent,
+	setFrequency,
 };
 
 /***************************************** eSynthEngineInitType *******************************/
@@ -54,6 +54,41 @@ typedef struct
 	tNerveNetMessageHeader		header;
 } tRequestSetupInfoMessageData;
 
+typedef struct
+{
+	tNerveNetMessageHeader		header;
+	uint32_t					version;
+} tRequestSetupInfoReplyData;
+
+/***************************************** tPotValueMessage *******************************/
+typedef struct
+{
+	tNerveNetMessageHeader		header;
+	uint16_t					multiplexerNo;
+	uint16_t					multiplexerChannelNo;
+	float						potValue;
+	float 						deviation;
+} tPotValueMessage;
+
+/***************************************** tRequestADC_Data *******************************/
+typedef struct
+{
+	tNerveNetMessageHeader		header;
+} tRequestADC_Data;
+
+typedef struct
+{
+	tNerveNetMessageHeader		header;
+	float						data [ TOTAL_NUM_CV_INPUTS ];
+} tRequestADC_ReplyData;
+
+/***************************************** tTriggerMessageData *******************************/
+typedef struct
+{
+	tNerveNetMessageHeader		header;
+	uint32_t					beatNo;
+} tTriggerMessage;
+
 /***************************************** tSetupInfoReplyMessageData *******************************/
 typedef struct
 {
@@ -67,27 +102,5 @@ typedef struct
 	tNerveNetMessageHeader		header;
 	float						frequency;
 } tSetFrequencyMessage;
-
-/***************************************** tPotValueMessage *******************************/
-typedef struct
-{
-	tNerveNetMessageHeader		header;
-	uint32_t					potId;
-	float						potValue;
-} tPotValueMessage;
-
-/***************************************** tADC_ValueMessage *******************************/
-typedef struct
-{
-	tNerveNetMessageHeader		header;
-	uint16_t 					data[NUM_CV_INPUTS];
-} tADC_ValueMessage;
-
-/***************************************** tTriggerMessageData *******************************/
-typedef struct
-{
-	tNerveNetMessageHeader		header;
-	uint32_t					beatNo;
-} tTriggerMessage;
 
 }	// namespace CasualNoises
