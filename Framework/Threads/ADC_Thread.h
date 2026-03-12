@@ -41,7 +41,6 @@ private:
 typedef struct
 {
 	ADC_HandleTypeDef* 	hadc;					// Handle to the ADC to be used
-	TIM_HandleTypeDef*	htim;					// Timer used to trigger ADC conversions
 	ADC_DataHandler*	ADC_DataHandlerPtr;		// Pointer to an object that handles adc data
 } sADC_ThreadData;
 

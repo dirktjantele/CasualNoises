@@ -132,7 +132,7 @@ public:
 	//
 	//  CasualNoises    25/07/2025  First implementation
 	//==============================================================================
-	void handleTrigger() noexcept
+	void handleTrigger () noexcept
 	{
 
 		// When waiting, just start...

@@ -29,7 +29,9 @@ public:
 
 	void paint ( Graphics& g ) noexcept override;
 
-	bool handleUI_event ( sIncommingUI_Event* uiEvent, bool altState, Graphics& g ) override { return false; }
+	bool handleUI_event ( sIncommingUI_Event* uiEvent,
+						  bool altState, Graphics& g ) override
+		{ return false; }
 
 private:
 

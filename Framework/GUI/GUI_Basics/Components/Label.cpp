@@ -108,7 +108,6 @@ void Label::paint ( Graphics& g )
 			ptr[strlen(ptr)] = 0x0a;
 	}
 
-
 }
 
 } // namespace CasualNoises

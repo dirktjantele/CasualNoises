@@ -95,11 +95,11 @@ public:
 
 			// Limit morph amount
 			mMorphAmount = morph;
-			mMorphAmount = cn_limit(mMorphAmount, 0.0f, 1.0f);
+			mMorphAmount = cn_limit ( mMorphAmount, 0.0f, 1.0f );
 
 			// Get wave index into the wave table
 			float indx = mMorphAmount * (mWavetableCount - 1);
-			mIndexTable1 = static_cast<uint32_t>(std::floor(indx));
+			mIndexTable1 = static_cast<uint32_t> ( std::floor ( indx ) );
 			mIndexTable2 = mIndexTable1 + 1;
 			if (mIndexTable2 >= mWavetableCount)
 			{
@@ -107,7 +107,7 @@ public:
 			}
 
 			// Calculate scaling for both waves
-			float fac = fmod(indx, 1.0f);
+			float fac = fmod ( indx, 1.0f );
 			mScale1 = 1.0f - fac;
 			mScale2 = fac;
 
@@ -168,7 +168,7 @@ public:
 	//
 	//  CasualNoises    28/02/2025  First implementation
 	//==============================================================================
-	void fillAudioBuffer(AudioBuffer& audioBuffer) noexcept
+	void fillAudioBuffer ( AudioBuffer& audioBuffer ) noexcept
 	{
 
 		// Save current state
@@ -177,13 +177,13 @@ public:
 		float curStep		= mStep;
 		float waveIndex     = mWaveIndex;
 
-		mSampleRate = (float)audioBuffer.getNumSamples();
-		setFrequency(1.0f);
+		mSampleRate = (float) audioBuffer.getNumSamples ();
+		setFrequency ( 1.0f );
 		float* wptr1 = audioBuffer.getWritePointer(0);
 		float* wptr2 = nullptr;
 		if (audioBuffer.getNumChannels() > 1)
 			wptr2 = audioBuffer.getWritePointer(1);
-		for (uint32_t i = 0; i < mSampleRate; ++i)
+		for ( uint32_t i = 0; i < mSampleRate; ++i )
 		{
 			float sample = Wavetable_LFO::nextSample();
 			*wptr1++ = sample;
@@ -348,13 +348,13 @@ public:
 	//
 	//  CasualNoises    21/07/2025  First implementation
 	//==============================================================================
-	CachedWavetable_LFO(float sampleRate, float frequency)
-	: Wavetable_LFO(sampleRate, frequency)
+	CachedWavetable_LFO ( float sampleRate, float frequency )
+	: Wavetable_LFO ( sampleRate, frequency )
 	{
 		mWavetablePtr = new float[mWaveLength];
 		reset();
-		AudioBuffer audioBuffer = AudioBuffer(mWaveLength, 1);
-		fillAudioBuffer(audioBuffer);
+		AudioBuffer audioBuffer = AudioBuffer ( mWaveLength, 1 );
+		fillAudioBuffer ( audioBuffer );
 		const float* rptr = audioBuffer.getReadPointer(0);
 		for (uint32_t i = 0; i < mWaveLength; ++i)
 		{
@@ -371,22 +371,22 @@ public:
 	//  CasualNoises    21/07/2025  First implementation
 	//==============================================================================
 	// note: takes around 1.6msec on an 550MHz STM32H723
-	virtual void setMorphFactor(float morph) noexcept override
+	virtual void setMorphFactor ( float morph ) noexcept override
 	{
 
-		if (morph != getMorphFactor())
+		if ( morph != getMorphFactor () )
 		{
 
-			// Update wave table morpfh factor
-			Wavetable_LFO::setMorphFactor(morph);
+			// Update wave table morph factor
+			Wavetable_LFO::setMorphFactor ( morph );
 
 			// Fill wave table buffer
 			float max = -1.0f;
 			float min =  1.0f;
-			AudioBuffer audioBuffer = AudioBuffer(mWaveLength, 1);
-			fillAudioBuffer(audioBuffer);
-			const float* rptr = audioBuffer.getReadPointer(0);
-			for (uint32_t i = 0; i < mWaveLength; ++i)
+			AudioBuffer audioBuffer = AudioBuffer ( mWaveLength, 1 );
+			fillAudioBuffer ( audioBuffer );
+			const float* rptr = audioBuffer.getReadPointer ( 0 );
+			for ( uint32_t i = 0; i < mWaveLength; ++i )
 			{
 				float sample = *rptr++;
 				if (sample > max)
@@ -405,14 +405,14 @@ public:
 	//
 	//  CasualNoises    21/07/2025  First implementation
 	//==============================================================================
-	float nextSample() noexcept override
+	float nextSample () noexcept override
 	{
 
 		float nextWaveIndex = mWaveIndex + mStep;
-		if (nextWaveIndex >= mWaveLength)
+		if ( nextWaveIndex >= mWaveLength )
 			nextWaveIndex -= mWaveLength;
 
-		float sample = mWavetablePtr[static_cast<uint32_t>(mWaveIndex)];
+		float sample = mWavetablePtr [ static_cast<uint32_t>( mWaveIndex ) ];
 
 		mWaveIndex = nextWaveIndex;
 

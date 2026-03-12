@@ -44,17 +44,21 @@ struct sRunNerveNetMasterThreadParams
 //  CasualNoises    18/07/2025  First implementation
 //  CasualNoises	25/07/2025	Made function thread save
 //==============================================================================
-bool NerveNetMasterThread::sendMessage(const void* messagePtr, uint32_t size)
+bool NerveNetMasterThread::sendMessage( const void* messagePtr, uint32_t size, bool waitForSpace )
 {
+
+	// Enough remaining buffer space?
+	while ( waitForSpace && ( mRemainingSpace < size ) )
+	{
+		vTaskDelay ( pdMS_TO_TICKS ( 1 ) );
+	}
+	if ( mRemainingSpace < size )
+		return false;
 
 	// Block if another thread is using this function
 	BaseType_t rtosRes = xSemaphoreTake( mSyncSemaphoreHandle, portMAX_DELAY );
 	if (rtosRes != pdTRUE)
 		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
-
-	// Enough remaining buffer space?
-	if ( mRemainingSpace < size )
-		return false;
 
 	// Mark construction buffer busy
 	mConstructionBufferBusy = true;
@@ -108,6 +112,7 @@ sNerveNetMessage* NerveNetMasterThread::startNewDataExchange ()
 		   mNerveNetMasterProcessorPtr != nullptr )
 	{
 		mNerveNetMasterProcessorPtr->processNerveNetData (
+				mRxMessageBuffers [ mRxProcessingBufferIndex ]->header.messageNumber,
 				mRxMessageBuffers [ mRxProcessingBufferIndex ]->data.size,
 				mRxMessageBuffers [ mRxProcessingBufferIndex ]->data.data );
 		mRxMessageBuffers [ mRxProcessingBufferIndex ]->data.size = 0;
@@ -131,7 +136,7 @@ sNerveNetMessage* NerveNetMasterThread::startNewDataExchange ()
 //==============================================================================
 bool NerveNetMasterThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 {
-	if (GPIO_Pin == mNerveNet_ACK_Pin)
+	if ( GPIO_Pin == mNerveNet_ACK_Pin )
 	{
 		switch ( mThreadState )
 		{
@@ -167,10 +172,10 @@ bool NerveNetMasterThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 			// Start data exchange
 			uint32_t size = sizeof ( sNerveNetMessage ) ;
 			mTxMessageBuffers[mTxToBeSentBufferIndex]->header.messageNumber = ++mTxMessageNumber;
-			HAL_StatusTypeDef res = HAL_SPI_TransmitReceive_DMA(
+			HAL_StatusTypeDef res = HAL_SPI_TransmitReceive_DMA (
 					mNerveNet_SPI_Ptr,
-					(uint8_t *)mTxMessageBuffers[mTxToBeSentBufferIndex],
-					(uint8_t *)mRxMessageBuffers[mRxReceivingBufferIndex],
+					(uint8_t *) mTxMessageBuffers [mTxToBeSentBufferIndex],
+					(uint8_t *) mRxMessageBuffers [mRxReceivingBufferIndex],
 					size );
 			if ( res != HAL_OK )
 				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
@@ -200,7 +205,7 @@ bool NerveNetMasterThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 //==============================================================================
 //          SPI_TxRxCpltCallback()
 //
-// Handle SPI TxRx complete callbacks
+// Handle SPI TxRx complete call backs
 //
 //  CasualNoises    12/07/2025  First implementation
 //==============================================================================
@@ -255,16 +260,18 @@ void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
 	// Create Tx and Rx buffers
 	for ( uint32_t i = 0; i < cNoOfTxMessageBuffers; ++i )
 	{
-		mTxMessageBuffers[i] = new sNerveNetMessage;
+		mTxMessageBuffers [i] = new sNerveNetMessage;
 		memset( mTxMessageBuffers[i], 0, sizeof ( sNerveNetMessage ) );
-		mTxMessageBuffers[i]->header.messageSourceID = eNerveNetSourceId::eFellhornDeviceBoard;
-		mTxMessageBuffers[i]->header.messageNumber = 0;
+		mTxMessageBuffers [i]->header.messageSourceID = eNerveNetSourceId::eFellhornDeviceBoard;
+		mTxMessageBuffers [i]->header.messageNumber = 0;
+		mTxMessageBuffers [i]->data.size			= 0;
 	}
 	for (uint32_t i = 0; i < cNoOfRxMessageBuffers; ++i)
 	{
-		mRxMessageBuffers[i] = new sNerveNetMessage;
-		mRxMessageBuffers[i]->header.messageSourceID = eNerveNetSourceId::eAwaitingId;
-		mRxMessageBuffers[i]->header.messageNumber = 0;
+		mRxMessageBuffers [i] = new sNerveNetMessage;
+		mRxMessageBuffers [i]->header.messageSourceID = eNerveNetSourceId::eAwaitingId;
+		mRxMessageBuffers [i]->header.messageNumber = 0;
+		mRxMessageBuffers [i]->data.size			= 0;
 	}
 
 	// Buffer used to build up data to be send on next exchange
@@ -292,11 +299,15 @@ void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
 	mNerveNetMasterReady = true;
 
 	// Reset NerveNet slave
+	uint32_t retryCnt = 0;
 	while ( mThreadState == eNerveNetMasterThreadState::resetSlave )
 	{
 		HAL_GPIO_WritePin ( mNerveNet_RESET_Port, mNerveNet_RESET_Pin, GPIO_PIN_SET );
 		HAL_GPIO_WritePin ( mNerveNet_RESET_Port, mNerveNet_RESET_Pin, GPIO_PIN_RESET );
 		vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
+		retryCnt += 1;
+		if ( retryCnt >= 1000 ) // Fail if no connection is made after 10 sec
+			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 	}
 
 	for (;;)

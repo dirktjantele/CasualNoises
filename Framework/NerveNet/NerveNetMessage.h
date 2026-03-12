@@ -41,15 +41,15 @@ typedef struct
 typedef struct
 {
 	uint32_t			size;
-	uint8_t				data[NERVENET_DATA_SIZE];
+	uint8_t				data [ NERVENET_DATA_SIZE ];
 } sNerveNetData;
 
 typedef struct
 {
 	sNerveNetHeader	header;
-#ifdef CASUALNOISES_NERVENET_AUDIO_SUPPORT
+//#ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
 	sNerveNetAudio	audio;
-#endif
+//#endif
 	sNerveNetData	data;
 } sNerveNetMessage;
 

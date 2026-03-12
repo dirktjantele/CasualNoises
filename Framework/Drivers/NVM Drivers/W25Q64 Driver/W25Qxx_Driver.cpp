@@ -27,20 +27,19 @@ static uint32_t	mSectorCache[cFlashSectorSizeBytes / 4];
 //
 //  CasualNoises    31/03/2023  First implementation
 //==============================================================================
-W25Qxx_Driver::W25Qxx_Driver(const sNVM_DriverInitData* initDataPtr)
-: mInitDataPtr(initDataPtr)
+W25Qxx_Driver::W25Qxx_Driver ( const sNVM_DriverInitData* initDataPtr )
+	: mInitDataPtr ( initDataPtr )
 {
 
 	// Disable all devices
-	for (uint16_t i = 0; i < mInitDataPtr->noOfDevices; ++i)
+	for ( uint16_t i = 0; i < mInitDataPtr->noOfDevices; ++i )
 	{
-		HAL_GPIO_WritePin(mInitDataPtr->deviceSelectPorts[i], mInitDataPtr->deviceSelectPins[i], GPIO_PIN_SET);
+		HAL_GPIO_WritePin ( mInitDataPtr->deviceSelectPorts[i], mInitDataPtr->deviceSelectPins[i], GPIO_PIN_SET );
 	}
 
-	// Enable SPI and initialise the flash devices
-	__HAL_SPI_ENABLE(mInitDataPtr->hspix_ptr);
+	// Initialize the flash devices
 	HAL_StatusTypeDef res;
-	for (uint16_t i = 0; i < mInitDataPtr->noOfDevices; ++i)
+	for ( uint16_t i = 0; i < mInitDataPtr->noOfDevices; ++i )
 	{
 		res = sendDeviceCommand(i, eFlashCommandCodes::ReleasePowerDown, 5);
 		if (res != HAL_OK) goto error;

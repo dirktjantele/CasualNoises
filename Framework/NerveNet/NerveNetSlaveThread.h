@@ -103,11 +103,11 @@ private:
 };
 
 // Start thread function
-BaseType_t startNerveNetSlaveThread(CasualNoises::NerveNetSlaveThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr) noexcept;
+BaseType_t startNerveNetSlaveThread ( CasualNoises::NerveNetSlaveThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr ) noexcept;
 
 } // namespace CasualNoises
 
-extern CasualNoises::NerveNetSlaveThread* gNerveNetSlaveThreadPtr[MAX_NO_OF_NERVENET_SLAVE_THREADS];
+extern CasualNoises::NerveNetSlaveThread* gNerveNetSlaveThreadPtr [MAX_NO_OF_NERVENET_SLAVE_THREADS];
 
 // Pointers to slave threads
 

@@ -119,10 +119,10 @@ void AudioProcessorPlayer::runAudioProcessor(
 	AudioBuffer* 		NN_audioBufferPtr  = nullptr;
 #ifdef CASUALNOISES_NERVENET_THREAD
 	// Create an audio buffer to hold audio coming through NerveNet
-	NN_audioBufferPtr = new AudioBuffer();
-	NN_audioBufferPtr->clearAudioBuffer();
-	sAudioBufferPtrs 	NN_audioInPointers;
-	NN_audioBufferPtr->getAudioBufferPtrs(&NN_audioInPointers);
+	NN_audioBufferPtr = new AudioBuffer ();
+	NN_audioBufferPtr->clearAudioBuffer ();
+	sAudioBufferPtrs NN_audioInPointers;
+	NN_audioBufferPtr->getAudioBufferPtrs ( &NN_audioInPointers );
 #endif
 
 	// Prepare the audio processor
@@ -164,7 +164,7 @@ void AudioProcessorPlayer::runAudioProcessor(
 				(**nerveNetCallBackPtr)(&nerveNetMessagePtr->data);
 			}
 
-#ifdef CASUALNOISES_NERVENET_AUDIO_SUPPORT
+//#ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
 			// Fill NerveNet audio buffer with incoming audio
 			float* ptr = nerveNetMessagePtr->audio.audioData;
 			for (uint32_t i = 0; i < numSamples; ++i)
@@ -172,7 +172,7 @@ void AudioProcessorPlayer::runAudioProcessor(
 				NN_audioInPointers.audioBuffer1[i] = *ptr++;
 				NN_audioInPointers.audioBuffer2[i] = *ptr++;
 			}
-#endif
+//#endif
 
 		}
 #endif
@@ -186,7 +186,7 @@ void AudioProcessorPlayer::runAudioProcessor(
 			audioInPointers.audioBuffer2[j] = (float)rx_audioDataPtr[i + 1] / scale;
 		}
 
-		// Process the incoming audio data and generate new audio to send to the codec
+		// Process the incoming audio data and generate new audio to send to the CODEC
 		mAudioProcessorPtr->processBlock(*audioBufferPtr, *NN_audioBufferPtr);
 
 		// Convert generated audio data back to int32_t format

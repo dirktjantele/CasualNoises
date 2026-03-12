@@ -37,8 +37,7 @@ public:
 	eJustificationFlags getJustification () 		   { return mJustification; };
 	void setJustification ( eJustificationFlags just ) { mJustification = just; };
 
-	void paint(Graphics& g) noexcept override;
-	virtual bool handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) { return false;};
+	void paint ( Graphics& g ) noexcept override;
 
 private:
 	String 					mLabelText;

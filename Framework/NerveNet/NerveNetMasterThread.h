@@ -51,7 +51,7 @@ public:
 
 	bool isThreadRunning ()		{ return mNerveNetMasterReady; };
 
-	bool sendMessage(const void* messagePtr, uint32_t size) noexcept;
+	bool sendMessage ( const void* messagePtr, uint32_t size, bool waitForSpace = true ) noexcept;
 
 	sNerveNetMessage* startNewDataExchange () noexcept;
 

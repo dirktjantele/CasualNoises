@@ -26,7 +26,7 @@ public:
 	 NerveNetMasterProcessor() = default;
 	~NerveNetMasterProcessor() = default;
 
-	virtual void processNerveNetData ( uint32_t size, uint8_t* ptr ) = 0;
+	virtual void processNerveNetData ( uint32_t count, uint32_t size, uint8_t* ptr ) = 0;
 
 };
 

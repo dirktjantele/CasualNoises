@@ -30,8 +30,8 @@ void AudioBuffer::createBuffer()
 	 // Buffers used to hold the float representation of the audio data for processing
 	 for (uint8_t i = 0; i < mNumChannels; ++i)
 	 {
-		 mAudioBuffer[i] = (float*)pvPortMalloc(mNumSamples * sizeof(float));
-		 if (mAudioBuffer[i] == nullptr) CN_ReportFault(eErrorCodes::audioBufferError);
+		 mAudioBuffer[i] = (float*)pvPortMalloc ( mNumSamples * sizeof(float) );
+		 if (mAudioBuffer[i] == nullptr) CN_ReportFault ( eErrorCodes::audioBufferError );
 	 }
 
 	 // Clear audio data buffers

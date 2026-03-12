@@ -31,15 +31,17 @@ public:
 	 Component(String name);
 	~Component() = default;
 
-	virtual void paint(Graphics& g) noexcept 			= 0;
-	void setBounds(uint32_t x, uint32_t y, uint32_t w, uint32_t h) noexcept;
-	void setBounds(Rectangle<int>& bounds) noexcept;
-	Rectangle<int>& getLocalBounds() noexcept			{ return mLocalBounds; }
+	virtual void paint ( Graphics& g ) noexcept 			= 0;
+	void setBounds ( uint32_t x, uint32_t y, uint32_t w, uint32_t h ) noexcept;
+	void setBounds ( Rectangle<int>& bounds ) noexcept;
+	Rectangle<int>& getLocalBounds () noexcept			{ return mLocalBounds; }
 
-	void setVisible(bool shouldBeVisible) noexcept		{ mIsVisible = shouldBeVisible; }
-	bool isVisible() const noexcept						{ return mIsVisible; }
+	void setVisible ( bool shouldBeVisible ) noexcept	{ mIsVisible = shouldBeVisible; }
+	bool isVisible () const noexcept					{ return mIsVisible; }
 
-	virtual bool handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) { return false; };
+	virtual bool handleUI_event ( sIncommingUI_Event* uiEvent,
+								  bool altState,
+								  Graphics& g ) { return false; };
 
 private:
 	String 					mComponentName;

@@ -140,7 +140,8 @@ void ComboBox::setFocus ( uint32_t focus ) noexcept
 //
 //  CasualNoises    02/01/2026  First implementation
 //==============================================================================
-bool ComboBox::handleUI_event ( sIncommingUI_Event* uiEvent, bool altState, Graphics& g )
+bool ComboBox::handleUI_event ( sIncommingUI_Event* uiEvent,
+								bool altState, Graphics& g )
 {
 	if ( uiEvent->encoderEvent.encoderNo == (uint16_t)eEncoderNums::MAIN_ENCODER )
 	{

@@ -43,13 +43,14 @@ public:
 	uint32_t getNumItems	()				 const noexcept { return mItemPtrs.size(); }
 	int32_t  getItemId 		(uint32_t index) const noexcept
 	{
-		if (index >= getNumItems()) return -1;
+		if ( index >= getNumItems() ) return -1;
 		return mItemPtrs[index]->id;
 	}
 	uint32_t getSelectedId () const noexcept { return getItemId (mFocus); }
 	void setFocus ( uint32_t focus ) noexcept;
 
-	bool handleUI_event(sIncommingUI_Event* uiEvent, bool altState, Graphics& g) override;
+	bool handleUI_event ( sIncommingUI_Event* uiEvent,
+						  bool altState, Graphics& g ) override;
 
 	std::function<void()> onChange;
 
