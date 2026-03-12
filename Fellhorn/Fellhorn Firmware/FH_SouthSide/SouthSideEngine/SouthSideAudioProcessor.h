@@ -10,8 +10,9 @@
 
 #pragma once
 
-#include "AudioProcessors/Processors/AudioProcessor.h"
-#include "Utilities/ReportFault.h"
+#include <AudioProcessors/Processors/AudioProcessor.h>
+#include <Threads/ADC_Thread.h>
+#include <Utilities/ReportFault.h>
 
 namespace CasualNoises
 {
@@ -21,9 +22,9 @@ typedef struct
 	float 		frequency;
 } sSynthesiserParams;
 
-class PulsarSynthEngine;
+class AbstractSynthEngine;
 class ADSR;
-class SouthSideAudioProcessor : public AudioProcessor
+class SouthSideAudioProcessor : public AudioProcessor, public ADC_DataHandler
 {
 public:
 	 SouthSideAudioProcessor() = default;
@@ -39,7 +40,7 @@ public:
 	//  CasualNoises    13/07/2025  First implementation for Fellhorn
 	//==============================================================================
 	// Prevent multiple users accessing this object, only the AudioThread should use it
-	static AudioProcessor* getSouthSideAudioProcessor()
+	static SouthSideAudioProcessor* getSouthSideAudioProcessor()
 	{
 		if ( ! mIsAllocated )
 		{
@@ -57,6 +58,7 @@ public:
 	void 	processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) override;
 	void 	processBlock (AudioBuffer &buffer, AudioBuffer& NN_buffer) override;
 
+	void 	handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr );
 
 private:
 
@@ -65,11 +67,8 @@ private:
 	static bool						mIsAllocated;
 
 	// Pointer to synth engine
-	PulsarSynthEngine*				mPulsarSynthEnginePtr	{ nullptr };
-	ADSR*							mADSR_Ptr				{ nullptr };
-
-	void process_ADC_data(uint16_t* ptr) noexcept;
-	void setFrequency(float frequency) noexcept;
+	AbstractSynthEngine*			mAbstractSynthEnginePtr	{ nullptr };
+//	ADSR*							mADSR_Ptr				{ nullptr };
 
 };
 

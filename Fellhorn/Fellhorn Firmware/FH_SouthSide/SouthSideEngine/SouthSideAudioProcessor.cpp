@@ -50,9 +50,9 @@ void SouthSideAudioProcessor::prepareToPlay (
 		void* inSynthParams)
 {
 
-	mPulsarSynthEnginePtr = new PulsarSynthEngine;
-	mPulsarSynthEnginePtr->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock, inSynthParams);
-
+	mAbstractSynthEnginePtr = new PulsarSynthEngine;													// ToDo create the right kind of engine here
+	mAbstractSynthEnginePtr->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock, inSynthParams);
+/*
 	mADSR_Ptr = new ADSR(sampleRate);
 	tADSR_Settings adsrSettings;
 	adsrSettings.type 		  = eADSR_Type::oneShot;
@@ -64,7 +64,7 @@ void SouthSideAudioProcessor::prepareToPlay (
 	adsrSettings.releaseTime  = 0.0f;
 	adsrSettings.cycleTime	  = 0.1f;
 	mADSR_Ptr->updateSettings(&adsrSettings);
-
+*/
 }
 
 //==============================================================================
@@ -76,46 +76,7 @@ void SouthSideAudioProcessor::prepareToPlay (
 //==============================================================================
 void SouthSideAudioProcessor::releaseResources()
 {
-	mPulsarSynthEnginePtr->releaseResources();
-}
-
-//==============================================================================
-//          process_ADC_data
-//
-// Process incoming NerveNet data
-//
-//  CasualNoises    27/07/2025  First implementation
-//==============================================================================
-void SouthSideAudioProcessor::process_ADC_data ( uint16_t* ptr )
-{
-
-	// Update pitch
-	static Average<uint32_t> pitchAverage(10);
-	uint32_t pitch = (uint32_t)ptr[0];
-	uint32_t pa = pitchAverage.nextAverage(pitch);
-	float voltage = cn_map<float>((float)pa, 0.0f, 63200.0f, 0.0f, 10.0f);
-	float frequency = 8.1758 * pow(2.0, voltage);
-	setFrequency(frequency * pow(2.0, 4));
-
-	// CV1 -> trigger adsr
-	static Average<uint32_t> cv1_Average(10);
-	uint32_t cv_1 = (uint32_t)ptr[1];
-	uint32_t cv_1a = cv1_Average.nextAverage(cv_1);
-
-	static bool waitTriggerOn 	= true;
-	static bool waitTriggerOff	= false;
-	if (waitTriggerOn && (cv_1a < 0x4000))
-	{
-		waitTriggerOn	= false;
-		waitTriggerOff	= true;
-		mADSR_Ptr->handleTrigger();
-	}
-	if (waitTriggerOff && (cv_1a > 0x8000))
-	{
-		waitTriggerOn	= true;
-		waitTriggerOff	= false;
-	}
-
+	mAbstractSynthEnginePtr->releaseResources();
 }
 
 //==============================================================================
@@ -125,11 +86,11 @@ void SouthSideAudioProcessor::process_ADC_data ( uint16_t* ptr )
 //
 //  CasualNoises    20/07/2025  First implementation
 //==============================================================================
-void SouthSideAudioProcessor::processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr)
+void SouthSideAudioProcessor::processNerveNetData (
+		uint32_t threadNo,
+		uint32_t size,
+		uint8_t* ptr )
 {
-
-//	CasualNoises::NerveNetSlaveThread* threadPtr = gNerveNetSlaveThreadPtr[threadNo];
-
 
 	// Handle all events
 	while (size > 0)
@@ -146,13 +107,10 @@ void SouthSideAudioProcessor::processNerveNetData(uint32_t threadNo, uint32_t si
 		case eSynthEngineMessageType::requestSetupInfo:		// Set-up info request
 		case eSynthEngineMessageType::setFrequency:			// Set oscillator frequency
 		case eSynthEngineMessageType::potentiometerValue:	// Update potentiometer values
-			mPulsarSynthEnginePtr->processNerveNetData ( threadNo, messageLength, ptr );
+		case eSynthEngineMessageType::triggerEvent:			// Trigger events
+			mAbstractSynthEnginePtr->processNerveNetData ( threadNo, messageLength, ptr );
 			break;
-		case eSynthEngineMessageType::ADC_Value:			// ADC values
-			process_ADC_data( (uint16_t*)( (uint32_t)ptr + sizeof(tNerveNetMessageHeader) ) );
-			break;
-		case eSynthEngineMessageType::triggerEvent:
-			mADSR_Ptr->handleTrigger();
+		case eSynthEngineMessageType::ADC_DataRequest:
 			break;
 		default:
 			CN_ReportFault(eErrorCodes::NerveNetThread_Error);
@@ -172,38 +130,76 @@ void SouthSideAudioProcessor::processNerveNetData(uint32_t threadNo, uint32_t si
 //
 //  CasualNoises    13/07/2025  First implementation
 //==============================================================================
-void SouthSideAudioProcessor::processBlock (AudioBuffer& buffer, AudioBuffer& NN_buffer)
+void SouthSideAudioProcessor::processBlock ( AudioBuffer& buffer, AudioBuffer& NN_buffer )
 {
-	setTimeMarker_4();
+//	setTimeMarker_4();
 
-	mPulsarSynthEnginePtr->processBlock(buffer, NN_buffer);
+	mAbstractSynthEnginePtr->processBlock ( buffer, NN_buffer );
 
-	uint32_t numSamples = NN_buffer.getNumSamples();
-	const float* rptr0 = NN_buffer.getReadPointer(0);
-	const float* rptr1 = NN_buffer.getReadPointer(1);
-	float* wptr0 = NN_buffer.getWritePointer(0);
-	float* wptr1 = NN_buffer.getWritePointer(1);
-	for (uint32_t i = 0; i < numSamples; ++i)
+/* ToDo: handle ADSR functionality in the synthesizer engine
+	uint32_t numSamples = NN_buffer.getNumSamples ();
+	const float* rptr0 = NN_buffer.getReadPointer ( 0 );
+	const float* rptr1 = NN_buffer.getReadPointer ( 1 );
+	float* wptr0 = NN_buffer.getWritePointer ( 0 );
+	float* wptr1 = NN_buffer.getWritePointer ( 1 );
+	for ( uint32_t i = 0; i < numSamples; ++i )
 	{
-//		float gain = mADSR_Ptr->nextValue();					// ToDo: add adsr back in
+		float gain = mADSR_Ptr->nextValue();
 		float gain = 1.0f;
 		*wptr0++ = *rptr0++ * gain;
 		*wptr1++ = *rptr1++ * gain;
 	}
-
-	resetTimeMarker_4();
+*/
+//	resetTimeMarker_4();
 }
 
 //==============================================================================
-//          setFrequency
+//          normalize1V_OCT
 //
-// Set frequency of all parts
+// Convert 1V/OCT ADC values into a voltage											ToDo: use calibration settings
 //
-//  CasualNoises    28/07/2025  First implementation
+//	CasualNoises    11/03/2026  First implementation
 //==============================================================================
-void SouthSideAudioProcessor::setFrequency(float frequency)
+inline float normalize1V_OCT ( uint16_t value )
 {
-	mPulsarSynthEnginePtr->setFrequency(frequency);
+	float volts = ( (float)value * 10) / 65535.0f;
+	return volts;
+}
+
+//==============================================================================
+//          normalizeCV_Input
+//
+// Convert a CV ADC values into a range from -1.0 to 1.0								ToDo: use calibration settings
+//
+//	CasualNoises    11/03/2026  First implementation
+//==============================================================================
+inline float normalizeCV_Input ( uint16_t value )
+{
+	float volts = ( (float)value * 2) / 65535.0f;
+	return 1.0f - volts;
+}
+
+//==============================================================================
+//          handle_ADC_Data
+//
+// Handle new adc data
+//
+//	CasualNoises    02/02/2026  First implementation
+//==============================================================================
+void SouthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr )
+{
+	static sControlVoltages controlVoltages;
+
+	controlVoltages._1V_OCT_1 = normalize1V_OCT( adcDataPtr[0] );
+	controlVoltages._1V_OCT_2 = normalize1V_OCT( adcDataPtr[1] );
+
+	for (uint32_t i = 0; i < NUM_CV_INPUTS; ++i)
+	{
+		controlVoltages.CV_Inputs [ i ] = normalizeCV_Input ( adcDataPtr[i + 2] );
+	}
+
+	mAbstractSynthEnginePtr->applyControlVoltages ( &controlVoltages );
+
 }
 
 } // namespace CasualNoises

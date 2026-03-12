@@ -14,14 +14,14 @@
 
 #include "SouthSideAudioProcessor.h"
 
-#include "Synthesizer/Basics/PulsarSynth.h"
-#include "Synthesizer/Basics/Wavetable_LFO.h"
+#include <Synthesizer/Basics/PulsarSynth.h>
+#include <Synthesizer/Basics/Wavetable_LFO.h>
 
-#include "NerveNet/NerveNetSlaveThread.h"
-#include "NerveNet/NerveNetMessageHeader.h"
-#include "NerveNet/NerveNetMessage.h"
+#include <NerveNet/NerveNetSlaveThread.h>
+#include <NerveNet/NerveNetMessageHeader.h>
+#include <NerveNet/NerveNetMessage.h>
 
-#include "SynthEngineMessage.h"
+#include <SynthEngineMessage.h>
 
 namespace CasualNoises
 {
@@ -46,13 +46,7 @@ void PulsarSynthEngine::prepareToPlay (
 	float frequency						= synthParamsPtr->frequency;
 
 	mPulsarSynthPtr	  = new PulsarSynth(mSampleRate, frequency);
-	mWavetable_LFOPtr = new Wavetable_LFO(mSampleRate, frequency);
-/*
-	mPulsarSynthPtr->setMorphFactor(0.0f / 100.0f);								// ToDo remove default settings
-	mPulsarSynthPtr->setFormant(42.0f / 100.0f);
-	mPulsarSynthPtr->setCluster(11.0f / 100.0f);
-	mPulsarSynthPtr->setWaveFolder(4 / 100.0f);
-*/
+
 }
 
 //==============================================================================
@@ -93,7 +87,7 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 		reply.header.messageTag = (uint32_t)eSynthEngineMessageType::setupInfoReply;
 		reply.header.messageLength = sizeof(tSetupInfoReplyMessageData);
 		sprintf(reply.setupName, "Pulsar");
-		threadPtr->sendMessage((void*)&reply, sizeof(tSetupInfoReplyMessageData));
+		threadPtr->sendMessage( (void*) &reply, sizeof ( tSetupInfoReplyMessageData ) );
 	}
 		break;
 	case eSynthEngineMessageType::setFrequency:			// Set oscillator frequency
@@ -105,28 +99,55 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 	case eSynthEngineMessageType::potentiometerValue:	// Update potentiometer values
 	{
 		tPotValueMessage* messagePtr = (tPotValueMessage*)ptr;
-		uint32_t potId = messagePtr->potId;
-		float potValue = messagePtr->potValue;
-																		//	ToDo put code back in
-		switch (potId)
+		uint8_t multNo = messagePtr->multiplexerNo;
+		uint8_t chanNo = messagePtr->multiplexerChannelNo;
+		ePotentioMeterId potId  = ( ePotentioMeterId)( ( multNo << 4	) + chanNo );
+		float potValue = (float)messagePtr->potValue / 0x0000ffff;
+		switch ( potId )
 		{
-		case 0:
-			mPulsarSynthPtr->setMorphFactor(potValue / 100.0f);
+		case ePotentioMeterId::pot_1:
+			mFrequencyOffset = potValue * 5;
 			break;
-		case 2:
-			mPulsarSynthPtr->setFormant(potValue / 100.0f);
+		case ePotentioMeterId::pot_2:
+			mFormantGain = potValue;
 			break;
-		case 3:
-			mPulsarSynthPtr->setCluster(potValue / 100.0f);
+		case ePotentioMeterId::pot_3:
+			mClusterGain = potValue;
 			break;
-		case 1:
-			mPulsarSynthPtr->setWaveFolder(potValue / 100.0f);
+		case ePotentioMeterId::pot_4:
+			mWaveFoldGain = potValue;
+			break;
+		case ePotentioMeterId::slider_1:
+		{
+			mTragetFormant = potValue;
+			float formant = mTragetFormant + ( mFormant_CV * mFormantGain );
+			mPulsarSynthPtr->setFormant ( formant );
+		}
+			break;
+		case ePotentioMeterId::slider_2:
+		{
+			mTargetCluster = potValue;
+			float cluster = mTargetCluster + ( mCluster_CV * mClusterGain );
+			mPulsarSynthPtr->setCluster ( cluster );
+		}
+			break;
+		case ePotentioMeterId::slider_3:
+		{
+			mTargetWaveFold = potValue;
+			float waveFold = mTargetWaveFold + ( mWaveFold_CV * mWaveFoldGain );
+			mPulsarSynthPtr->setWaveFolder ( waveFold );
+		}
+			break;
+		case ePotentioMeterId::slider_4:
+			mPulsarSynthPtr->setMorphFactor ( potValue );
 			break;
 		default:
 			break;
 		}
-
 	}
+		break;
+	case eSynthEngineMessageType::triggerEvent:
+		// ToDo handle trigger events
 		break;
 	default:
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
@@ -149,29 +170,53 @@ void PulsarSynthEngine::processBlock ( AudioBuffer& buffer, AudioBuffer& NN_buff
 
 	uint32_t noSamples = NN_buffer.getNumSamples();
 
+	constexpr double f0 = 8.1757989156;
+	float frequency = f0 * std::pow(2.0, mTargetFrequency + mFrequencyOffset);
+
 	for ( uint32_t i = 0; i < noSamples; ++i )
 	{
-		float gain = 1.0f;
+		if ( mCurrentFrequency != ( mTargetFrequency + mFrequencyOffset ) )
+		{
+			mCurrentFrequency = mTargetFrequency + mFrequencyOffset;
+			mPulsarSynthPtr->setFrequency ( frequency );
+		}
+
+		float gain = mGain;
 		float sample_1 = mPulsarSynthPtr->nextSample () * gain;
 		*lwptr++ = sample_1;
 		*rwptr++ = sample_1;
-//		float sample_2 = mWavetable_LFOPtr->nextSample () * gain;
-//		*rwptr++ = sample_2;
 	}
 
 }
 
 //==============================================================================
-//          setFrequency
+//          applyControlVoltages
 //
-// Set freuency of all parts
+// Apply control voltage values
 //
-//  CasualNoises    28/07/2025  First implementation
+//  CasualNoises    11/03/2026  First implementation
 //==============================================================================
-void PulsarSynthEngine::setFrequency(float frequency)
+void PulsarSynthEngine::applyControlVoltages ( sControlVoltages* voltages )
 {
-	mPulsarSynthPtr->setFrequency(frequency);
-	mWavetable_LFOPtr->setFrequency(frequency);
+
+	mTargetFrequency = voltages->_1V_OCT_1;
+
+	mGain = voltages->CV_Inputs [ CV_INPUT_4 ];
+	if ( mGain < 0.0f )
+		mGain = 0.0f;
+
+	mFormant_CV = voltages->CV_Inputs [ CV_INPUT_5 ];
+	float formant = mTragetFormant + ( mFormant_CV * mFormantGain );
+	mPulsarSynthPtr->setFormant ( formant );
+
+	mCluster_CV = voltages->CV_Inputs [ CV_INPUT_6 ];
+	float cluster = mTargetCluster + ( mCluster_CV * mClusterGain );
+	mPulsarSynthPtr->setCluster ( cluster );
+
+	mWaveFold_CV = voltages->CV_Inputs [ CV_INPUT_7 ];
+	float waveFold = mTargetWaveFold + ( mWaveFold_CV * mWaveFoldGain );
+	mPulsarSynthPtr->setWaveFolder ( waveFold );
+
 }
 
 } // namespace CasualNoises

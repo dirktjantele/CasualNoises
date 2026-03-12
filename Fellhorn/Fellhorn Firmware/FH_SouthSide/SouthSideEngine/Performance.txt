@@ -1,3 +1,7 @@
 SouthSideAudioProcessor::processBlock()
-	empty 					: 81us
-	LFO::nextSample() x 1 	: 356us
+	empty 					: 81 us
+	LFO::nextSample() x 1 	: 356 us
+	
+PulsarSynth
+	regular processing		: +/- 1.3 ms
+	generating morph		: +/- 4.5 ms

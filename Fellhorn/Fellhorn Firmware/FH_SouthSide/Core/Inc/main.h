@@ -116,6 +116,8 @@ void* getTLV_DriverPtr();
 #define CV_IN_1_GPIO_Port GPIOF
 #define CV_IN_7_Pin GPIO_PIN_12
 #define CV_IN_7_GPIO_Port GPIOF
+#define _1V_OCT_2b_Pin GPIO_PIN_13
+#define _1V_OCT_2b_GPIO_Port GPIOF
 #define FLASH_CS_4_Pin GPIO_PIN_12
 #define FLASH_CS_4_GPIO_Port GPIOB
 #define INTERCONN_SCK_Pin GPIO_PIN_13
