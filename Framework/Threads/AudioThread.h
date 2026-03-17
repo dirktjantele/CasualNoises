@@ -24,7 +24,7 @@ typedef struct
 {
 	AudioProcessor*		audioProcessorPtr;
 	I2S_HandleTypeDef*  hi2sHandlePtr;
-	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*);
+//	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*);
 //	void*				synthesizerParamsPtr;
 } sAudioThreadInitData;
 

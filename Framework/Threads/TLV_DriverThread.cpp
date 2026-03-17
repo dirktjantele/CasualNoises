@@ -296,12 +296,52 @@ uint32_t readTLV_TagBytes ( QueueHandle_t queueHandle, uint32_t tag, uint32_t le
 }
 
 //==============================================================================
+//
+// Variables shared between the TLV_DriverThread & TLV_DriverHelperThread
+//
+//  CasualNoises    12/01/2026  First implementation
+//==============================================================================
+CasualNoises::TLV_Driver* lTLV_DriverPtr 		= nullptr;
+SemaphoreHandle_t lTLV_ThreadSyncSemaphorePtr 	= nullptr;
+
+//==============================================================================
+//          TLV_DriverHelperThread()
+//
+// This helper thread performs cache flush activity so that the main thread can
+//   continue to handle events since a flush can take just over 1 sec and this ends
+//   up in a noticeable delay in the UI
+//
+//  CasualNoises    16/03/2026  First implementation
+//==============================================================================
+void TLV_DriverHelperThread ( void* pvParameters )
+{
+
+	// Thread loop
+	uint32_t loopCnt = 0;
+	for (;;)
+	{
+
+		// Await trigger semaphore
+		if ( xSemaphoreTake ( lTLV_ThreadSyncSemaphorePtr, portMAX_DELAY ) == pdTRUE )
+		{
+			lTLV_DriverPtr->flushCache ();
+			loopCnt += 1;
+		}
+
+	}
+
+}
+
+//==============================================================================
 //          TLV_DriverThread()
 //
 // Handle all TLV related messages
 //
 //  CasualNoises    12/01/2026  First implementation
+//  CasualNoises    16/03/2026  TLV_DriverHelperThread introduced to boost performance
 //==============================================================================
+eTLV_Operation gCurrentEventCode;				// Just for debugging
+
 void TLV_DriverThread ( void* pvParameters )
 {
 
@@ -317,7 +357,7 @@ void TLV_DriverThread ( void* pvParameters )
 	gxUI_ThreadQueue			   = xUI_ThreadQueue;
 
 	// Create a TLV driver
-	CasualNoises::TLV_Driver* TLV_DriverPtr = new CasualNoises::TLV_Driver ( NVM_DriverPtr );
+	lTLV_DriverPtr = new CasualNoises::TLV_Driver ( NVM_DriverPtr );
 
 	// Clear message buffers
 	for (uint32_t i = 0; i < cQueueLength; ++i )
@@ -329,42 +369,45 @@ void TLV_DriverThread ( void* pvParameters )
 		gTLV_MessageBuffer[i].eventData.valuePtr		= nullptr;
 	}
 
-	// Age counter
-	uint32_t age = 0;
-	TLV_DriverPtr->readTLV_TagBytes ( (uint32_t)eTLV_Tag::AgeCounter, sizeof ( age ), &age );
-	age += 1;
-	TLV_DriverPtr->updateTLV_TagBytes ( (uint32_t)eTLV_Tag::AgeCounter, sizeof ( age ), &age, false );
+	// Create a helper thread
+	BaseType_t res = xTaskCreate(TLV_DriverHelperThread, "TLV_DriverHelperThread", DEFAULT_STACK_SIZE, nullptr,
+			UI_THREAD_PRIORITY - 1, nullptr);
+	if ( res != pdPASS)
+		CN_ReportFault ( eErrorCodes::UI_ThreadError );
+
+	// Create a semaphore to start a helper thread flush cycle
+	lTLV_ThreadSyncSemaphorePtr = xSemaphoreCreateBinary();
 
 	// Main thread loop
 	*( paramsPtr->runningFlagPtr ) = true;
 	gRunningFlag				   = true;
-	uint32_t cycles				   = 0;
 	for (;;)
 	{
 
 		// Get next event
 		sTLV_Event event;
-		BaseType_t res = xQueueReceive ( xUI_ThreadQueue, &event, 10000 );
-		if (res == pdPASS)								// Process event if any received
+		BaseType_t res = xQueueReceive ( xUI_ThreadQueue, &event, 5000 );
+		if ( res == pdPASS )								// Process event if any received
 		{
 
 			// Dispatch operation code
 			if ( event.statePtr != nullptr )
 				*event.statePtr = eTLV_OperationState::processing;
+			gCurrentEventCode = event.opCode;
 			switch ( event.opCode )
 			{
 				case eTLV_Operation::deleteAllTLVs:
-					TLV_DriverPtr->deleteAllTLVs( false );
+					lTLV_DriverPtr->deleteAllTLVs( false );
 					break;
 				case eTLV_Operation::deleteTLV:
 					{
 						bool deleteAll = event.length;
-						TLV_DriverPtr->deleteTLV ( event.tag, deleteAll, false );
+						lTLV_DriverPtr->deleteTLV ( event.tag, deleteAll, false );
 					}
 					break;
 				case eTLV_Operation::getTotalNoOfTLVs:
 					{
-						uint32_t count = TLV_DriverPtr->getTotalNoOfTLVs ();
+						uint32_t count = lTLV_DriverPtr->getTotalNoOfTLVs ();
 						uint32_t* ptr = (uint32_t*) event.valuePtr;
 						*ptr = count;
 					}
@@ -373,7 +416,7 @@ void TLV_DriverThread ( void* pvParameters )
 					{
 						uint32_t* ptr = (uint32_t*) event.valuePtr;
 						uint32_t index = *ptr;
-						index = TLV_DriverPtr->findNextTLV( event.tag, index );
+						index = lTLV_DriverPtr->findNextTLV( event.tag, index );
 						*ptr = index;
 					}
 					break;
@@ -381,25 +424,25 @@ void TLV_DriverThread ( void* pvParameters )
 					{
 						uint32_t* ptr = (uint32_t*) event.valuePtr;
 						uint32_t index = *ptr;
-						uint32_t length = TLV_DriverPtr->getTLV_LengthBytes ( index );
+						uint32_t length = lTLV_DriverPtr->getTLV_LengthBytes ( index );
 						*ptr = length;
 					}
 					break;
 				case eTLV_Operation::addTLV_Bytes:
 					{
-						bool res = TLV_DriverPtr->addTLV_Bytes ( event.tag, event.length, event.valuePtr, false );
+						bool res = lTLV_DriverPtr->addTLV_Bytes ( event.tag, event.length, event.valuePtr, false );
 						if ( ! res )
 							*(event.lengthPtr) = 0;
 					}
 					break;
 				case eTLV_Operation::readTLV_TagBytes:
 					{
-						uint32_t count = TLV_DriverPtr->readTLV_TagBytes ( event.tag, *(event.lengthPtr), event.valuePtr );
+						uint32_t count = lTLV_DriverPtr->readTLV_TagBytes ( event.tag, *(event.lengthPtr), event.valuePtr );
 						*(event.lengthPtr) = count * sizeof ( uint32_t );
 					}
 					break;
 				default:
-					CN_ReportFault(eErrorCodes::UI_ThreadError);
+					CN_ReportFault ( eErrorCodes::UI_ThreadError );
 			}
 			if ( event.statePtr != nullptr )
 				*event.statePtr = eTLV_OperationState::done;
@@ -411,16 +454,7 @@ void TLV_DriverThread ( void* pvParameters )
 		} else {										// Time to flush the cache
 
 			// Flush the cache
-			TLV_DriverPtr->flushCache ();
-
-			// Update age counter in flash
-			cycles += 1;
-			if ( cycles > 60 )
-			{
-				age += 1;
-				cycles = 0;
-				TLV_DriverPtr->updateTLV_TagBytes ( (uint32_t)eTLV_Tag::AgeCounter, sizeof ( age ), &age, false );
-			}
+			xSemaphoreGive( lTLV_ThreadSyncSemaphorePtr );
 
 		}
 
