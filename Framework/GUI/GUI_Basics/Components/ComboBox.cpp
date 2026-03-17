@@ -96,7 +96,7 @@ void ComboBox::paint ( Graphics& g )
 		screen->drawText ( leftIndent, y, text.getStringPtr(), mFontPtr );
 		y += textHeight;
 	}
-	screen->drawText ( bounds.getX() + 1, topSpacing + (cursorLine * textHeight), (char*)">", mFontPtr );
+	screen->drawText ( bounds.getX() + 1, topSpacing + ( cursorLine * textHeight ), (char*)">", mFontPtr );
 
 }
 
@@ -130,9 +130,10 @@ void ComboBox::addItem(String* textPtr, uint32_t id)
 //==============================================================================
 void ComboBox::setFocus ( uint32_t focus ) noexcept
 {
-	if ( focus >= mItemPtrs.size() )
-		focus = mItemPtrs.size() - 1;
-	mFocus = focus;
+	uint32_t size = mItemPtrs.size();
+	if ( focus > size )
+		focus = size - 1;
+	mFocus = focus - 1;
 }
 
 //==============================================================================
