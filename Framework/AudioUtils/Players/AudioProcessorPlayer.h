@@ -59,7 +59,7 @@ public:
 //	inline void setSynthesiserParamsPtr (void* ptr) noexcept { mSynthesiserParamsPtr = ptr; }
 
 	// Run the player, this method never returns
-	void runAudioProcessor(AudioBuffer* audioBufferPtr, void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*));
+	void runAudioProcessor(AudioBuffer* audioBufferPtr/*, void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*)*/);
 
 private:
 
