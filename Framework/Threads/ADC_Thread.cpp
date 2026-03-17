@@ -59,7 +59,7 @@ bool ADC_ConvCpltCallback ( ADC_HandleTypeDef* hadc )
 //		setTimeMarker_4 ();				// ToDo remove this line
 
 		if ( gADC_DataHandlerPtr != nullptr )
-			gADC_DataHandlerPtr->handle_ADC_Data ( NUM_CV_INPUTS, gADC_Data );
+			gADC_DataHandlerPtr->handle_ADC_Data ( TOTAL_NUM_CV_INPUTS, gADC_Data );
 
 #ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
 

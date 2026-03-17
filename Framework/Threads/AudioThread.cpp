@@ -17,10 +17,6 @@
 
 #include "CasualNoises.h"
 
-#ifdef OpFour_Hardware							// ToDo: abstract this out
-#include "OpFourAudioProcessor.h"
-#endif
-
 namespace CasualNoises
 {
 
@@ -41,9 +37,8 @@ void AudioThread(void* pvParameters)
 	sAudioThreadInitData* params = (sAudioThreadInitData*) pvParameters;
 	AudioProcessorPlayer* player = AudioProcessorPlayer::getAudioProcessorPlayer(params->audioProcessorPtr/*, audioBufferPtr*/);
 	player->sethi2sHandlePtr(params->hi2sHandlePtr);
-//	player->setSynthesiserParamsPtr(params->synthesizerParamsPtr);
-	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = params->nerveNetCallBackPtr;
-	player->runAudioProcessor(audioBufferPtr, nerveNetCallBackPtr);
+//	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = params->nerveNetCallBackPtr;
+	player->runAudioProcessor(audioBufferPtr/*, nerveNetCallBackPtr*/);
 
 	// We should never come here
 	CN_ReportFault(eErrorCodes::AudioThreadError);
