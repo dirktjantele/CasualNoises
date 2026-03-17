@@ -20,12 +20,13 @@
 namespace CasualNoises {
 
 // A cache for fast in-sector access
-static uint32_t	mSectorCache[cFlashSectorSizeBytes / 4];
+static uint32_t	mSectorCache [cFlashSectorSizeBytes / 4] ;
 
 //==============================================================================
 //          W25Qxx_Driver()
 //
 //  CasualNoises    31/03/2023  First implementation
+//	CasualNoises	16/03/2026	mSectorCacheGuard introduced
 //==============================================================================
 W25Qxx_Driver::W25Qxx_Driver ( const sNVM_DriverInitData* initDataPtr )
 	: mInitDataPtr ( initDataPtr )
@@ -67,8 +68,12 @@ W25Qxx_Driver::W25Qxx_Driver ( const sNVM_DriverInitData* initDataPtr )
 	// Index 1 word above the upper limit, this is used for index error checking
 	mErrorIndex = (mDeviceCapacity * mInitDataPtr->noOfDevices) / 4;
 
+	// Create semaphore to guard access to the page cache for reading & flushing
+	mSectorCacheGuard = xSemaphoreCreateBinary();
+	xSemaphoreGive( mSectorCacheGuard );
+
 	// Load the first sector of the first device into the cache
-	res = fastSectorRead(0);
+	res = fastSectorRead ( 0 );
 	mCurrentSectorNo = 0;
 
 	// On success
@@ -286,9 +291,10 @@ HAL_StatusTypeDef W25Qxx_Driver::waitUntilDeviceReady ( uint16_t deviceNo )
 // Flush the current cache contents first, if the cache is dirty
 //
 //  CasualNoises    31/03/2023  First implementation
+//	CasualNoises	16/03/2026	mSectorCacheGuard introduced
 //==============================================================================
 // address holds the address of the first byte of the sector, must be 4 KB aligned
-HAL_StatusTypeDef W25Qxx_Driver::fastSectorRead(uint32_t address)
+HAL_StatusTypeDef W25Qxx_Driver::fastSectorRead ( uint32_t address, bool ignoreGuard )
 {
 
 	// Flush the cache if it is dirty (even if the same sector is requested as the one in cache)
@@ -296,6 +302,10 @@ HAL_StatusTypeDef W25Qxx_Driver::fastSectorRead(uint32_t address)
 	{
 		flushSectorCache();
 	}
+
+	// Get sector cache access
+	if ( ! ignoreGuard )
+		xSemaphoreTake( mSectorCacheGuard, portMAX_DELAY );
 
 	// Get the device no from the address
 	uint32_t deviceNo = address / mDeviceCapacity;
@@ -313,15 +323,15 @@ HAL_StatusTypeDef W25Qxx_Driver::fastSectorRead(uint32_t address)
 	commandBuffer[2] = startAddress >> 8;
 	commandBuffer[3] = startAddress;
 	HAL_StatusTypeDef res;
-	res = HAL_SPI_TransmitReceive (mInitDataPtr->hspix_ptr, commandBuffer, mInBuffer, 4, HAL_MAX_DELAY);
+	res = HAL_SPI_TransmitReceive ( mInitDataPtr->hspix_ptr, commandBuffer, mInBuffer, 4, HAL_MAX_DELAY );
 	if (res != HAL_OK) goto error;
 
 	// Send dummy 1 dummy byte (8 clock cycles) to set-up the device
-	res = HAL_SPI_TransmitReceive (mInitDataPtr->hspix_ptr, commandBuffer, mInBuffer, 1, HAL_MAX_DELAY);
+	res = HAL_SPI_TransmitReceive ( mInitDataPtr->hspix_ptr, commandBuffer, mInBuffer, 1, HAL_MAX_DELAY );
 	if (res != HAL_OK) goto error;
 
 	// Read the sector data
-	res = HAL_SPI_TransmitReceive (mInitDataPtr->hspix_ptr, (uint8_t *)mSectorCache, (uint8_t *)mSectorCache, cFlashSectorSizeBytes, HAL_MAX_DELAY);
+	res = HAL_SPI_TransmitReceive ( mInitDataPtr->hspix_ptr, (uint8_t *)mSectorCache, (uint8_t *)mSectorCache, cFlashSectorSizeBytes, HAL_MAX_DELAY );
 	if (res != HAL_OK) goto error;
 
 	// Cache is clean now
@@ -335,6 +345,10 @@ HAL_StatusTypeDef W25Qxx_Driver::fastSectorRead(uint32_t address)
 
 	// Chip select goes high to end the transaction
 	HAL_GPIO_WritePin (mInitDataPtr->deviceSelectPorts[deviceNo], deviceSelectPin, GPIO_PIN_SET);
+
+	// Release sector cache access
+	if ( ! ignoreGuard )
+		xSemaphoreGive( mSectorCacheGuard );
 
 	return res;
 
@@ -354,6 +368,12 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 	checkForCacheChange ();
 	if ( ! mSectorCacheDirty )
 		return HAL_OK;
+
+	// Get sector cache access
+	xSemaphoreTake( mSectorCacheGuard, portMAX_DELAY );
+
+	// Allow for cache changes during a flush cycle
+	mSectorCacheDirty = false;
 
 	// Get the device no from the current sector no & sector no in device
 	uint32_t noOfSectors = mDeviceCapacity / cFlashSectorSizeBytes;
@@ -433,8 +453,10 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 	}
 
 	// Reload the cache from flash (the page program command overwrites the cache...)
-	mSectorCacheDirty = false;
-	fastSectorRead(mCurrentSectorNo * cFlashSectorSizeBytes);
+	fastSectorRead ( mCurrentSectorNo * cFlashSectorSizeBytes, true );
+
+	// Release sector cache access
+	xSemaphoreGive( mSectorCacheGuard );
 
 	error:
 

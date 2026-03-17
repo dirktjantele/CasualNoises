@@ -14,6 +14,8 @@
 
 #include "stm32h7xx_hal.h"
 
+#include "semphr.h"
+
 #include "../NVM Driver/NVM_Driver.h"
 
 namespace CasualNoises
@@ -102,6 +104,9 @@ private:
 
 	bool 		checkForCacheChange();
 
+	// Semaphore used to guard access to the
+	SemaphoreHandle_t mSectorCacheGuard { nullptr };
+
 	HAL_StatusTypeDef sendDeviceCommand(uint16_t deviceNo, eFlashCommandCodes commandCode, uint8_t length,
 			uint8_t byte_1 = 0x00, uint8_t byte_2 = 0x00, uint8_t byte_3 = 0x00, uint8_t byte_4 = 0x00,
 			uint8_t byte_5 = 0x00, uint8_t byte_6 = 0x00, uint8_t byte_7 = 0x00);
@@ -109,7 +114,7 @@ private:
 
 	HAL_StatusTypeDef waitUntilDeviceReady(uint16_t deviceNo);
 
-	HAL_StatusTypeDef fastSectorRead(uint32_t address);
+	HAL_StatusTypeDef fastSectorRead(uint32_t address, bool ignoreGuard = false );
 
 };
 
