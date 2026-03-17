@@ -18,7 +18,7 @@
 
 namespace CasualNoises {
 
-const uint32_t			cMagicCode 		= 0x23122031;
+const uint32_t			cMagicCode 		= 0x20260315;		// Current date
 const uint32_t			cFreeTLV_Tag 	= 0x65657246;		// "Free"
 
 /*
@@ -80,7 +80,7 @@ public:
 
 private:
 	NVM_Driver* 			mNVM_DriverPtr;						// Driver used for NVM access
-	uint32_t				mFreeTLV_Index { 0xffffffff };		// Index of the first free/empty TLV
+//	uint32_t				mFreeTLV_Index { 0xffffffff };		// Index of the first free/empty TLV
 	uint32_t				mNVM_AfterEndIndex  { 0 };			// Index one after last available index
 
 	inline uint32_t 		getTag(uint32_t index) const noexcept						{ return (*mNVM_DriverPtr)[index + 0]; }

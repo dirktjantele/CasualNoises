@@ -45,7 +45,7 @@ TLV_Driver::TLV_Driver(NVM_Driver* inNVM_DriverPtr) :
 	mNVM_AfterEndIndex = mNVM_DriverPtr->getTotalCapacity () / 4;
 
 	// Find first empty TLV
-	mFreeTLV_Index = TLV_Driver::findNextTLV ( cFreeTLV_Tag, 0 );
+//	mFreeTLV_Index = TLV_Driver::findNextTLV ( cFreeTLV_Tag, 0 );
 
 }
 
