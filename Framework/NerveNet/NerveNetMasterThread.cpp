@@ -306,8 +306,8 @@ void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
 		HAL_GPIO_WritePin ( mNerveNet_RESET_Port, mNerveNet_RESET_Pin, GPIO_PIN_RESET );
 		vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
 		retryCnt += 1;
-		if ( retryCnt >= 1000 ) // Fail if no connection is made after 10 sec
-			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+//		if ( retryCnt >= 1000 ) // Fail if no connection is made after 10 sec
+//			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 	}
 
 	for (;;)

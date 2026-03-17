@@ -298,6 +298,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 			// Process any NerveNet data
 			if ( mRxMessageBuffers[mRxProcessingBufferIndex]->data.size > 0 )								// ToDo uniform NerveNet message handler
 			{
+/*
 				if ( mSouthSideAudioProcessorPtr != nullptr )
 				{
 					mSouthSideAudioProcessorPtr->processNerveNetData (
@@ -305,6 +306,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 						mRxMessageBuffers[mRxProcessingBufferIndex]->data.size,
 						&mRxMessageBuffers[mRxProcessingBufferIndex]->data.data[0] );
 				}
+*/
 				if ( mNerveNetSlaveProcessorPtr != nullptr )
 				{
 					mNerveNetSlaveProcessorPtr->processNerveNetData (
