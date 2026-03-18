@@ -106,6 +106,29 @@ public:
 	}
 
 	//==============================================================================
+	//          setClipRect()
+	//
+	//  CasualNoises    18/03/2026  First implementation
+	//==============================================================================
+	void setClipRect ( const Rectangle<int>& rect )
+	{
+		mClipRect = rect;
+	}
+
+	//==============================================================================
+	//          restoreClipRect()
+	//
+	//  CasualNoises    18/03/2026  First implementation
+	//==============================================================================
+	void setClipRect ( )
+	{
+		mClipRect.setX( 0 );
+		mClipRect.setY( 0 );
+		mClipRect.setWidth ( cDisplayWidth );
+		mClipRect.setHeight( cDisplayHeight );
+	}
+
+	//==============================================================================
 	//          clearDisplay()
 	//
 	//  CasualNoises    25/12/2024  First implementation
@@ -122,16 +145,16 @@ public:
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
-	HAL_StatusTypeDef refreshDisplay()
+	HAL_StatusTypeDef refreshDisplay ()
 	{
 
 		// Fill bitmap buffer with pixel data from the source bitmap
 		uint32_t x = 0;
 		uint32_t y = 0;
-		for (uint32_t i = 0; i < cBitMapBufferSize; ++i)
+		for ( uint32_t i = 0; i < cBitMapBufferSize; ++i )
 		{
 			uint8_t byte = 0x00;
-			for (uint32_t j = 0; j < 8; ++j)
+			for ( uint32_t j = 0; j < 8; ++j )
 			{
 				byte >>= 1;
 				if (mBitMap[x][y + j])
@@ -139,7 +162,7 @@ public:
 			}
 			mBitMapBuffer[i] = byte;
 			x += 1;
-			if (x >= cDisplayWidth)
+			if ( x >= cDisplayWidth )
 			{
 				x = 0;
 				y += 8;
@@ -147,13 +170,13 @@ public:
 		}
 
 		// Send bitmap buffer to the display
-		HAL_GPIO_WritePin(mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(mConfigDataPtr->DC_PORT, mConfigDataPtr->DC_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin ( mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_RESET );
+		HAL_GPIO_WritePin ( mConfigDataPtr->DC_PORT, mConfigDataPtr->DC_PIN, GPIO_PIN_SET );
 		HAL_StatusTypeDef res;
-		res = HAL_SPI_Transmit(mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize, HAL_MAX_DELAY);
+		res = HAL_SPI_Transmit ( mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize, HAL_MAX_DELAY );
 // ToDo: use dma for the transfert
-//		res = HAL_SPI_Transmit_DMA(mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize);
-		HAL_GPIO_WritePin(mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_SET);
+//		res = HAL_SPI_Transmit_DMA ( mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize );
+		HAL_GPIO_WritePin ( mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_SET );
 		return res;
 
 	}
@@ -161,12 +184,19 @@ public:
 	//==============================================================================
 	//          drawPixel()
 	//
+	// Draw a single pixel in the bitmap according to the op argument given
+	//
 	//  CasualNoises    25/12/2024  First implementation
+	//  CasualNoises    18/03/2026  Variable clip rectangle support added
 	//==============================================================================
 	void drawPixel(int32_t x, int32_t y, eBitOperations op = eBitOperations::SetBitOp)
 	{
-		if ((x < 0) || (x >= cDisplayWidth) ||
-			(y < 0) || (y >= cDisplayHeight))
+		int clipX0 = mClipRect.getX ();
+		int clipY0 = mClipRect.getY ();
+		int clipX1 = clipX0 + mClipRect.getWidth ();
+		int clipY1 = clipY0 + mClipRect.getHeight ();
+		if ( ( x < clipX0 ) || ( x >= clipX1 ) ||
+			 ( y < clipY0 ) || ( y >= clipY1 ) )
 			return;
 		if (op == eBitOperations::SetBitOp)
 			mBitMap[x][y] = 0xff;
@@ -540,44 +570,58 @@ private:
 	uint8_t					mBitMap[cDisplayWidth][cDisplayHeight];
 	uint8_t					mBitMapBuffer[cBitMapBufferSize];
 
+	Rectangle<int>			mClipRect { 0, 0, cDisplayWidth, cDisplayHeight };
+
 	//==============================================================================
 	//          clipRect()
 	//
 	// Return true if there is a clipped result available
 	//
 	//  CasualNoises    27/12/2024  First implementation
+	//  CasualNoises    18/03/2026  Variable clip rectangle support added
 	//==============================================================================
-	bool clipRect(int32_t *x, int32_t *y, int32_t *w, int32_t *h)
+	bool clipRect (int32_t *x, int32_t *y, int32_t *w, int32_t *h )
 	{
+		int clipX0 = mClipRect.getX ();
+		int clipY0 = mClipRect.getY ();
+		int clipX1 = clipX0 + mClipRect.getWidth ();
+		int clipY1 = clipY0 + mClipRect.getHeight ();
 
 		//  1. rect origin beyond screen dimensions, nothing to draw
-		if ((*x >= cDisplayWidth) || (*y >= cDisplayHeight))
+//		if ((*x >= cDisplayWidth) || (*y >= cDisplayHeight))
+		if ( ( *x >= clipX1 ) || ( *y >= clipY1 ) )
 			return false;
 
 		//  2. rect width or height is 0, nothing to draw
-		if ((*w == 0) || (*h == 0))
+//		if ( ( *w == 0 ) || ( *h == 0 ) )
+		if ( ( *w == clipX0 ) || ( *h == clipY0 ) )
 			return false;
 
 		// 3. rect origin has negative component, adjust origin and dimensions
-		if (*x < 0)
+//		if (*x < 0)
+		if ( *x < clipX0)
 		{
 			*w += *x;
 			*x = 0;
 		}
-		if (*y < 0)
+//		if (*y < 0)
+		if ( *y < clipY0 )
 		{
 			*h += *y;
 			*y = 0;
 		}
 
 	    //  4. rect width beyond screen width, reduce rect width
-	    if ((*x + *w - 1) >= cDisplayWidth)
+//	    if ( (*x + *w - 1 ) >= cDisplayWidth)
+		if ( ( *x + *w - 1 ) >= mClipRect.getWidth () )
 	    {
-	    	*w = cDisplayWidth - *x;
+//	    	*w = cDisplayWidth - *x;
+	    	*w = mClipRect.getWidth () - *x;
 	    }
 
 	    //  5. rect height beyond screen height, reduce rect height
-	    if ((*y + *h - 1) >= cDisplayHeight)
+//	    if ((*y + *h - 1) >= cDisplayHeight)
+		if ( ( *y + *h - 1 ) >= mClipRect.getHeight() )
 	    {
 	    	*h = cDisplayHeight - *y;
 	    }
