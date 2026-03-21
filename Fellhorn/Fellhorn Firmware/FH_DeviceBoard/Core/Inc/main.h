@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2024 STMicroelectronics.
+  * Copyright (c) 2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -32,8 +32,6 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-//#include "../../CasualNoises/CasualNoises.h"
-
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -56,130 +54,88 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
-enum eStatusCodes
-{
-	scStartingUp		= 1,
-//	scWaitingHandshake,
-	scHandshakeComplete,
-	scReady,
-
-};
-
-void displayStatus(uint32_t status);
-
-void Error_Handler(void);
-
-void* getTLV_DriverPtr();
-
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define INTERCONN_1_C_Pin GPIO_PIN_2
-#define INTERCONN_1_C_GPIO_Port GPIOE
-#define INTERCONN_2_A_Pin GPIO_PIN_3
-#define INTERCONN_2_A_GPIO_Port GPIOE
-#define INTERCONN_2_B_Pin GPIO_PIN_4
-#define INTERCONN_2_B_GPIO_Port GPIOE
-#define INTERCONN_2_C_Pin GPIO_PIN_5
-#define INTERCONN_2_C_GPIO_Port GPIOE
-#define TIME_MARKER_1_Pin GPIO_PIN_13
-#define TIME_MARKER_1_GPIO_Port GPIOC
-#define TIME_MARKER_2_Pin GPIO_PIN_14
-#define TIME_MARKER_2_GPIO_Port GPIOC
+#define STATUS_LED_3_Pin GPIO_PIN_5
+#define STATUS_LED_3_GPIO_Port GPIOE
+#define STATUS_LED_4_Pin GPIO_PIN_6
+#define STATUS_LED_4_GPIO_Port GPIOE
 #define TIME_MARKER_3_Pin GPIO_PIN_0
 #define TIME_MARKER_3_GPIO_Port GPIOF
 #define TIME_MARKER_4_Pin GPIO_PIN_1
 #define TIME_MARKER_4_GPIO_Port GPIOF
-#define IN_CV_2_Pin GPIO_PIN_5
-#define IN_CV_2_GPIO_Port GPIOF
-#define CV_IN_4_Pin GPIO_PIN_1
-#define CV_IN_4_GPIO_Port GPIOC
-#define CV_IN_6_Pin GPIO_PIN_0
-#define CV_IN_6_GPIO_Port GPIOA
-#define CV_IN_5_Pin GPIO_PIN_2
-#define CV_IN_5_GPIO_Port GPIOA
-#define CV_IN_3_Pin GPIO_PIN_3
-#define CV_IN_3_GPIO_Port GPIOA
-#define _1V_OCT_1_Pin GPIO_PIN_4
-#define _1V_OCT_1_GPIO_Port GPIOA
-#define SS_FLASH_CLK_Pin GPIO_PIN_5
-#define SS_FLASH_CLK_GPIO_Port GPIOA
-#define SS_FLASH_MISO_Pin GPIO_PIN_6
-#define SS_FLASH_MISO_GPIO_Port GPIOA
-#define SS_FLASH_MOSI_Pin GPIO_PIN_7
-#define SS_FLASH_MOSI_GPIO_Port GPIOA
-#define _1V_OCT_2_Pin GPIO_PIN_0
-#define _1V_OCT_2_GPIO_Port GPIOB
-#define CV_IN_2_Pin GPIO_PIN_1
-#define CV_IN_2_GPIO_Port GPIOB
-#define CV_IN_1_Pin GPIO_PIN_11
-#define CV_IN_1_GPIO_Port GPIOF
-#define CV_IN_7_Pin GPIO_PIN_12
-#define CV_IN_7_GPIO_Port GPIOF
-#define _1V_OCT_2b_Pin GPIO_PIN_13
-#define _1V_OCT_2b_GPIO_Port GPIOF
-#define FLASH_CS_4_Pin GPIO_PIN_12
-#define FLASH_CS_4_GPIO_Port GPIOB
-#define INTERCONN_SCK_Pin GPIO_PIN_13
-#define INTERCONN_SCK_GPIO_Port GPIOB
-#define INTERCONN_MISO_Pin GPIO_PIN_14
-#define INTERCONN_MISO_GPIO_Port GPIOB
-#define INTERCONN_MOSI_Pin GPIO_PIN_15
-#define INTERCONN_MOSI_GPIO_Port GPIOB
-#define INTERCONN_REQ_Pin GPIO_PIN_8
-#define INTERCONN_REQ_GPIO_Port GPIOD
-#define INTERCONN_REQ_EXTI_IRQn EXTI9_5_IRQn
-#define INTERCONN_ACK_Pin GPIO_PIN_9
-#define INTERCONN_ACK_GPIO_Port GPIOD
-#define INTERCONN_RESET_Pin GPIO_PIN_10
-#define INTERCONN_RESET_GPIO_Port GPIOD
-#define INTERCONN_RESET_EXTI_IRQn EXTI15_10_IRQn
-#define FLASH_CS_8_Pin GPIO_PIN_11
-#define FLASH_CS_8_GPIO_Port GPIOD
-#define FLASH_CS_3_Pin GPIO_PIN_12
-#define FLASH_CS_3_GPIO_Port GPIOD
-#define FLASH_CS_7_Pin GPIO_PIN_15
-#define FLASH_CS_7_GPIO_Port GPIOD
-#define FLASH_CS_2_Pin GPIO_PIN_2
-#define FLASH_CS_2_GPIO_Port GPIOG
-#define FLASH_CS_6_Pin GPIO_PIN_3
-#define FLASH_CS_6_GPIO_Port GPIOG
-#define FLASH_CS_5_Pin GPIO_PIN_4
-#define FLASH_CS_5_GPIO_Port GPIOG
-#define FLASH_CS_1_Pin GPIO_PIN_5
+#define TIME_MARKER_1_Pin GPIO_PIN_2
+#define TIME_MARKER_1_GPIO_Port GPIOF
+#define TIME_MARKER_2_Pin GPIO_PIN_3
+#define TIME_MARKER_2_GPIO_Port GPIOF
+#define FLASH_SCK_Pin GPIO_PIN_7
+#define FLASH_SCK_GPIO_Port GPIOF
+#define FLASH_MISO_Pin GPIO_PIN_8
+#define FLASH_MISO_GPIO_Port GPIOF
+#define FLASH_MOSI_Pin GPIO_PIN_9
+#define FLASH_MOSI_GPIO_Port GPIOF
+#define SLIDERS_S0_Pin GPIO_PIN_6
+#define SLIDERS_S0_GPIO_Port GPIOA
+#define SLIDERS_S1_Pin GPIO_PIN_7
+#define SLIDERS_S1_GPIO_Port GPIOA
+#define SLIDERS_S2_Pin GPIO_PIN_4
+#define SLIDERS_S2_GPIO_Port GPIOC
+#define NERVE_NET_RESET_Pin GPIO_PIN_2
+#define NERVE_NET_RESET_GPIO_Port GPIOB
+#define EX_HEART_BEAT_Pin GPIO_PIN_13
+#define EX_HEART_BEAT_GPIO_Port GPIOF
+#define NERVE_NET_ACK_Pin GPIO_PIN_8
+#define NERVE_NET_ACK_GPIO_Port GPIOE
+#define NERVE_NET_ACK_EXTI_IRQn EXTI9_5_IRQn
+#define NERVE_NET_REQ_Pin GPIO_PIN_11
+#define NERVE_NET_REQ_GPIO_Port GPIOE
+#define NERVE_NET_SCK_Pin GPIO_PIN_12
+#define NERVE_NET_SCK_GPIO_Port GPIOE
+#define NERVE_NET_MISO_Pin GPIO_PIN_13
+#define NERVE_NET_MISO_GPIO_Port GPIOE
+#define NERVE_NET_MOSI_Pin GPIO_PIN_14
+#define NERVE_NET_MOSI_GPIO_Port GPIOE
+#define SER_OUT_RCLK_Pin GPIO_PIN_12
+#define SER_OUT_RCLK_GPIO_Port GPIOB
+#define SER_OUT_SCK_Pin GPIO_PIN_13
+#define SER_OUT_SCK_GPIO_Port GPIOB
+#define SER_OUT_SER_Pin GPIO_PIN_15
+#define SER_OUT_SER_GPIO_Port GPIOB
+#define POTS_S0_Pin GPIO_PIN_9
+#define POTS_S0_GPIO_Port GPIOD
+#define POTS_S1_Pin GPIO_PIN_10
+#define POTS_S1_GPIO_Port GPIOD
+#define POTS_S2_Pin GPIO_PIN_11
+#define POTS_S2_GPIO_Port GPIOD
+#define OLED_CS_Pin GPIO_PIN_1
+#define OLED_CS_GPIO_Port GPIOD
+#define OLED_DC_Pin GPIO_PIN_2
+#define OLED_DC_GPIO_Port GPIOD
+#define OLED_RES_Pin GPIO_PIN_3
+#define OLED_RES_GPIO_Port GPIOD
+#define FLASH_CS_2_Pin GPIO_PIN_4
+#define FLASH_CS_2_GPIO_Port GPIOD
+#define SER_IN_PL_Pin GPIO_PIN_6
+#define SER_IN_PL_GPIO_Port GPIOD
+#define SER_IN_Q7_Pin GPIO_PIN_9
+#define SER_IN_Q7_GPIO_Port GPIOG
+#define SER_IN_SCK_Pin GPIO_PIN_11
+#define SER_IN_SCK_GPIO_Port GPIOG
+#define FLASH_CS_1_Pin GPIO_PIN_12
 #define FLASH_CS_1_GPIO_Port GPIOG
-#define USB_D__Pin GPIO_PIN_11
-#define USB_D__GPIO_Port GPIOA
-#define USB_D_A12_Pin GPIO_PIN_12
-#define USB_D_A12_GPIO_Port GPIOA
-#define EX_HEART_BEAT_Pin GPIO_PIN_15
-#define EX_HEART_BEAT_GPIO_Port GPIOA
-#define STATUS_LED_4_Pin GPIO_PIN_9
-#define STATUS_LED_4_GPIO_Port GPIOG
-#define STATUS_LED_3_Pin GPIO_PIN_10
-#define STATUS_LED_3_GPIO_Port GPIOG
-#define STATUS_LED_2_Pin GPIO_PIN_11
-#define STATUS_LED_2_GPIO_Port GPIOG
-#define STATUS_LED_1_Pin GPIO_PIN_15
-#define STATUS_LED_1_GPIO_Port GPIOG
-#define NERVENET_1_Pin GPIO_PIN_3
-#define NERVENET_1_GPIO_Port GPIOB
-#define NERVENET_6_Pin GPIO_PIN_4
-#define NERVENET_6_GPIO_Port GPIOB
-#define NERVENET_2_Pin GPIO_PIN_5
-#define NERVENET_2_GPIO_Port GPIOB
-#define NERVENET_5_Pin GPIO_PIN_6
-#define NERVENET_5_GPIO_Port GPIOB
-#define NERVENET_3_Pin GPIO_PIN_7
-#define NERVENET_3_GPIO_Port GPIOB
-#define NERVENET_4_Pin GPIO_PIN_8
-#define NERVENET_4_GPIO_Port GPIOB
-#define INTERCONN_1_A_Pin GPIO_PIN_0
-#define INTERCONN_1_A_GPIO_Port GPIOE
-#define INTERCONN_1_B_Pin GPIO_PIN_1
-#define INTERCONN_1_B_GPIO_Port GPIOE
+#define OLED_SCK_Pin GPIO_PIN_3
+#define OLED_SCK_GPIO_Port GPIOB
+#define OLED_MOSI_Pin GPIO_PIN_5
+#define OLED_MOSI_GPIO_Port GPIOB
+#define STATUS_LED_1_Pin GPIO_PIN_8
+#define STATUS_LED_1_GPIO_Port GPIOB
+#define STATUS_LED_2_Pin GPIO_PIN_9
+#define STATUS_LED_2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+
+uint32_t getInitFreeHeapSize ();
 
 void toggleTimeMarker_1();
 void setTimeMarker_1();
@@ -196,6 +152,18 @@ void resetTimeMarker_3();
 void toggleTimeMarker_4();
 void setTimeMarker_4();
 void resetTimeMarker_4();
+/*
+enum eStatusCodes
+{
+	scStartingUp		= 1,
+//	scWaitingHandshake,
+//	scHandshakeComplete,
+	scRunning,
+
+};
+*/
+//void displayStatus(eStatusCodes status);
+void incDisplayStatus();
 
 /* USER CODE END Private defines */
 

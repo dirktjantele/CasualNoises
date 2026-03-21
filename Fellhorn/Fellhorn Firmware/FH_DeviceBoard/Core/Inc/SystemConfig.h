@@ -2,7 +2,7 @@
   ==============================================================================
 
     SystemConfig.h
-    Created: 23 oct 2024
+    Created: 11/12/2025
     Author:  Dirk Tjantele
 
   ==============================================================================
@@ -12,32 +12,121 @@
 
 #include "cmsis_os.h"
 
-//#include "../../Common Sources/CommonDefinitions.h"
 #include "CommonDefinitions.h"
 
-// SouthSide has no codec, so the sample frequence should be set the same as the on the NorthSide!
-constexpr uint32_t	SAMPLE_FREQUENCY				= 41666.0f;		// Real sample frequency
+constexpr uint32_t	DISPLY_WIDTH						= 128;
+constexpr uint32_t	DISPLAY_HEIGHT						= 64;
 
-// 128 stereo samples at 32 bit/sample using double buffering
-constexpr uint32_t 	FULL_AUDIO_BUFFER_SIZE			= NUM_SAMPLES * NUM_CHANNELS * 2;
+constexpr uint32_t	DEFAULT_STACK_SIZE 					= 512;
+constexpr uint32_t	UI_THREAD_STACK_SIZE 				= DEFAULT_STACK_SIZE * 16;
 
-constexpr uint32_t	DISPLY_WIDTH					= 320;
-constexpr uint32_t	DISPLAY_HEIGHT					= 240;
+constexpr uint32_t	NERVENET_THREAD_PRIORITY			= configMAX_PRIORITIES - 1;
+constexpr uint32_t	UI_THREAD_PRIORITY					= configMAX_PRIORITIES - 10;
+//constexpr uint32_t	EVENT_THREAD_PRIORITY				= 10;
+constexpr uint32_t	ENCODER_THREAD_PRIORITY				= configMAX_PRIORITIES - 15;
+constexpr uint32_t	POT_THREAD_PRIORITY					= configMAX_PRIORITIES - 15;
+constexpr uint32_t	TRIGGER_THREAD_PRIORITY				= 1;
 
-constexpr uint32_t	PCF8574_ADRRESS_1				= 0x40;			// Shifted 1 bit to the left
-constexpr uint32_t	PCF8574_ADRRESS_2				= 0x42;
-constexpr uint32_t	PCF8574_COUNT					= 2;
-constexpr uint32_t	ENCODER_COUNT					= 4;
+constexpr uint32_t	MAX_NO_OF_NERVENET_MASTER_THREADS 	= 1;			// Only 1 master thread is supported
+constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  	= 0;
+constexpr uint32_t	AUDIO_NERVENET_THREAD_NO		  	= 0;
+constexpr uint32_t	NERVENET_DATA_SIZE				  	= 1024;
 
-constexpr uint32_t	DEFAULT_STACK_SIZE 				= 256;
+/*
+// Thread source identification, part of any event send from any thread to the UI thread
+enum class eEventSourceID
+{
+	encoderThreadSourceID,
+	potentiometerThreadSourceID,
+	multiplexerADC_ThreadSourceID,
+};
+*/
 
-constexpr uint32_t	AUDIO_THREAD_PRIORITY			= configMAX_PRIORITIES - 1;
-constexpr uint32_t	NERVENET_THREAD_PRIORITY		= AUDIO_THREAD_PRIORITY - 10;
-constexpr uint32_t	CV_IN_THREAD_PRIORITY			= AUDIO_THREAD_PRIORITY - 15;
-constexpr uint32_t	TRIGGER_THREAD_PRIORITY			= 1;
-constexpr uint32_t	NORTH_SOUTH_COM_THREAD_PRIORITY	= AUDIO_THREAD_PRIORITY - 10;
+// Bit pattern for led's (see schematic for shift register connections)
+// Note, all bit numbers are shifted 8 bit to the right to avoid compilation errors!
+enum class eLED_BitNums
+{
+	FADER_5		 		= 17,
+	FADER_4				= 18,
+	FADER_3				= 19,
+	FADER_2				= 20,
+	FADER_1				= 21,
+	FADER_6				= 22,
+	FADER_7				= 23,
+	FADER_8				= 24,
+	SWITCH_2			= 25,
+	SWITCH_6			= 26,
+	SWITCH_5			= 27,
+	SWITCH_4			= 28,
+	SWITCH_3			= 29,
+	SWITCH_1			= 30,
+	EXIT_SWITCH			= 31,
+};
 
-constexpr uint32_t	MAX_NO_OF_NERVENET_MASTER_THREADS = 1;
-constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  = 2;
-constexpr uint32_t	AUDIO_NERVENET_THREAD_NO		  = 0;
-constexpr uint32_t	NERVENET_DATA_SIZE				  = 1024;
+// Encoder switch &  other switch device numbers
+enum class eEncoderNums
+{
+	MAIN_ENCODER		= 0,
+};
+
+// Encoder switch &  other switch device numbers
+enum class eSwitchNums
+{
+	ENCODER_SWITCH		= 0,
+	EXIT_SWITCH			= 7,
+	ALT_SWITCH			= 1,
+	LEFT_ARROW_SWITCH	= 2,
+	RIGTH_ARROW_SWITCH	= 3,
+	SETUP_SWITCH		= 4,
+	LOAD_SWITCH			= 5,
+	SAVE_SWITCH			= 6,
+};
+
+// Encoder switch bitmap positions
+enum class eSwitchBitmapPos
+{
+	ALT_SWITCH			= 1,
+	SAVE_SWITCH			= 11,
+};
+
+// No of ADC multiplexers and multiplexer channels
+constexpr uint32_t	NO_OF_ADC_MULTIPLEXERS		= 2;
+constexpr uint32_t	NO_OF_ADC_MULTI_CHANNELS	= 8;
+
+// ADC multiplexer channel num's for each multiplexer
+enum class eMultiplexerChannel_0
+{
+	P_1					= 2,
+	P_2					= 6,
+	P_3					= 1,
+	P_4					= 4,
+	P_NC_1				= 3,
+	P_NC_2				= 5,
+	P_NC_3				= 7,
+	P_NC_4				= 0,
+};
+
+enum class eMultiplexerChannel_1
+{
+	F_1					= 2,
+	F_2					= 1,
+	F_3					= 4,
+	F_4					= 6,
+	F_5					= 0,
+	F_6					= 3,
+	F_7					= 5,
+	F_8					= 7,
+};
+
+// TLV tags
+enum class eTLV_Tag
+{
+	UI_CurrentState			= 0x535f4955,			// 'UI_S'
+	UI_PageStack			= 0x73696770,			// 'pgis'
+	UI_PageStackPtr			= 0x74707370,			// 'pspt'
+	UI_MainPageState		= 0x7473706d,			// 'mpst'
+	UI_CalibrationPageState	= 0x74737063,			// 'cpst'
+	CalibrationValues		= 0x766c6370,			// 'pclv'
+};
+
+

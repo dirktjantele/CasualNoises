@@ -751,9 +751,6 @@ static void vPortEnableVFP( void )
 			The following links provide detailed information:
 			http://www.freertos.org/RTOS-Cortex-M3-M4.html
 			http://www.freertos.org/FAQHelp.html */
-			uint8_t prio = 0x50;
-			if ( ucMaxSysCallPriority != prio )
-				ucMaxSysCallPriority = prio;
 			configASSERT( ucCurrentPriority >= ucMaxSysCallPriority );
 		}
 

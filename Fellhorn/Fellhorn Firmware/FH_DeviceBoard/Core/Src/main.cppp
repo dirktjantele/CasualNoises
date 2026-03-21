@@ -23,17 +23,18 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include <UI_Definitions.h>
-#include <YellowPages.h>
+#include "string.h"
 
-#include "CasualNoises.h"
 #include "SystemConfig.h"
 
+#include "CasualNoises.h"
+
+//#include "YellowPages.h"
+
 #include "UI_Thread.h"
+//#include "EventHandlerThread.h"
 
-//#include <NerveNet/NerveNetMessage.h
-
-#include "NorthSideConnection.h"
+#include "../CasualNoises/NerveNet/NerveNetMessage.h"
 
 /* USER CODE END Includes */
 
@@ -59,13 +60,12 @@ DMA_HandleTypeDef hdma_adc2;
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 SPI_HandleTypeDef hspi3;
-SPI_HandleTypeDef hspi4;
 SPI_HandleTypeDef hspi5;
 DMA_HandleTypeDef hdma_spi2_tx;
-DMA_HandleTypeDef hdma_spi4_rx;
-DMA_HandleTypeDef hdma_spi4_tx;
 
 TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim15;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -89,7 +89,8 @@ static void MX_SPI5_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_ADC2_Init(void);
-static void MX_SPI4_Init(void);
+static void MX_TIM6_Init(void);
+static void MX_TIM15_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -99,20 +100,11 @@ void StartDefaultTask(void *argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-static uint32_t gInitFreeHeapSize;
-uint32_t getInitFreeHeapSize ()
-{
-	return gInitFreeHeapSize;
-}
-
 /*
  * displayStatus()
  */
-//void displayStatus(eStatusCodes status)
-static uint32_t _status_ = 0x00;
-void displayStatus(uint32_t status)
+void displayStatus(eStatusCodes status)
 {
-	_status_ = status;
 	uint32_t code = (uint32_t)status;
 	HAL_GPIO_WritePin(GPIOB, STATUS_LED_2_Pin|STATUS_LED_1_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOE, STATUS_LED_4_Pin|STATUS_LED_3_Pin, GPIO_PIN_SET);
@@ -124,12 +116,6 @@ void displayStatus(uint32_t status)
 		HAL_GPIO_WritePin(GPIOE, STATUS_LED_3_Pin, GPIO_PIN_RESET);
 	if (code & 0x00000008)
 		HAL_GPIO_WritePin(GPIOE, STATUS_LED_4_Pin, GPIO_PIN_RESET);
-}
-
-void incDisplayStatus()
-{
-	displayStatus ( ++ _status_ );
-	osDelay ( pdMS_TO_TICKS ( 100 ) );
 }
 
 /*
@@ -241,8 +227,29 @@ int main(void)
   MX_TIM4_Init();
   MX_SPI1_Init();
   MX_ADC2_Init();
-  MX_SPI4_Init();
+  MX_TIM6_Init();
+  MX_TIM15_Init();
   /* USER CODE BEGIN 2 */
+/*
+  HAL_StatusTypeDef res;
+
+
+  uint32_t state;
+  uint16_t data;
+  uint32_t cnt = 0;
+  for (;;)
+  {
+	  res = HAL_ADC_Start(&hadc2);
+	  res = HAL_ADC_PollForConversion(&hadc2, 1);
+	  state = HAL_ADC_GetState(&hadc2);
+	  if ((state & HAL_ADC_STATE_REG_BUSY) != 0UL)
+	  {
+		  ++cnt;
+	  }
+	  data = HAL_ADC_GetValue(&hadc2);
+	  HAL_ADC_Stop(&hadc2);
+  }
+*/
 
   /* USER CODE END 2 */
 
@@ -373,7 +380,7 @@ static void MX_ADC2_Init(void)
   /** Common config
   */
   hadc2.Instance = ADC2;
-  hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;
+  hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV128;
   hadc2.Init.Resolution = ADC_RESOLUTION_16B;
   hadc2.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc2.Init.EOCSelection = ADC_EOC_SEQ_CONV;
@@ -397,7 +404,7 @@ static void MX_ADC2_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_15;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_810CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_32CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -540,7 +547,7 @@ static void MX_SPI3_Init(void)
   hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi3.Init.NSS = SPI_NSS_SOFT;
-  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -562,54 +569,6 @@ static void MX_SPI3_Init(void)
   /* USER CODE BEGIN SPI3_Init 2 */
 
   /* USER CODE END SPI3_Init 2 */
-
-}
-
-/**
-  * @brief SPI4 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI4_Init(void)
-{
-
-  /* USER CODE BEGIN SPI4_Init 0 */
-
-  /* USER CODE END SPI4_Init 0 */
-
-  /* USER CODE BEGIN SPI4_Init 1 */
-
-  /* USER CODE END SPI4_Init 1 */
-  /* SPI4 parameter configuration*/
-  hspi4.Instance = SPI4;
-  hspi4.Init.Mode = SPI_MODE_MASTER;
-  hspi4.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi4.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi4.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi4.Init.NSS = SPI_NSS_SOFT;
-  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
-  hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi4.Init.CRCPolynomial = 0x0;
-  hspi4.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
-  hspi4.Init.NSSPolarity = SPI_NSS_POLARITY_LOW;
-  hspi4.Init.FifoThreshold = SPI_FIFO_THRESHOLD_01DATA;
-  hspi4.Init.TxCRCInitializationPattern = SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
-  hspi4.Init.RxCRCInitializationPattern = SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
-  hspi4.Init.MasterSSIdleness = SPI_MASTER_SS_IDLENESS_00CYCLE;
-  hspi4.Init.MasterInterDataIdleness = SPI_MASTER_INTERDATA_IDLENESS_00CYCLE;
-  hspi4.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
-  hspi4.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_DISABLE;
-  hspi4.Init.IOSwap = SPI_IO_SWAP_DISABLE;
-  if (HAL_SPI_Init(&hspi4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SPI4_Init 2 */
-
-  /* USER CODE END SPI4_Init 2 */
 
 }
 
@@ -636,7 +595,7 @@ static void MX_SPI5_Init(void)
   hspi5.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi5.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi5.Init.NSS = SPI_NSS_SOFT;
-  hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi5.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi5.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi5.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -707,6 +666,90 @@ static void MX_TIM4_Init(void)
 }
 
 /**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 120 - 1;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 65535;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
+
+}
+
+/**
+  * @brief TIM15 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM15_Init(void)
+{
+
+  /* USER CODE BEGIN TIM15_Init 0 */
+
+  /* USER CODE END TIM15_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM15_Init 1 */
+
+  /* USER CODE END TIM15_Init 1 */
+  htim15.Instance = TIM15;
+  htim15.Init.Prescaler = 24000 - 1;
+  htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim15.Init.Period = 100 - 1;
+  htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim15.Init.RepetitionCounter = 0;
+  htim15.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim15) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim15, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim15, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM15_Init 2 */
+
+  /* USER CODE END TIM15_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -722,12 +765,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
-  /* DMA1_Stream2_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
-  /* DMA1_Stream3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
 
 }
 
@@ -766,13 +803,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(SLIDERS_S2_GPIO_Port, SLIDERS_S2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(NERVE_NET_RESET_GPIO_Port, NERVE_NET_RESET_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(NERVE_NET_REQ_GPIO_Port, NERVE_NET_REQ_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SER_OUT_RCLK_Pin|STATUS_LED_1_Pin|STATUS_LED_2_Pin, GPIO_PIN_SET);
@@ -815,13 +846,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(SLIDERS_S2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : NERVE_NET_RESET_Pin SER_OUT_RCLK_Pin */
-  GPIO_InitStruct.Pin = NERVE_NET_RESET_Pin|SER_OUT_RCLK_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
   /*Configure GPIO pin : EX_HEART_BEAT_Pin */
   GPIO_InitStruct.Pin = EX_HEART_BEAT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -829,18 +853,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(EX_HEART_BEAT_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : NERVE_NET_ACK_Pin */
-  GPIO_InitStruct.Pin = NERVE_NET_ACK_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(NERVE_NET_ACK_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : NERVE_NET_REQ_Pin */
-  GPIO_InitStruct.Pin = NERVE_NET_REQ_Pin;
+  /*Configure GPIO pin : SER_OUT_RCLK_Pin */
+  GPIO_InitStruct.Pin = SER_OUT_RCLK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(NERVE_NET_REQ_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(SER_OUT_RCLK_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : POTS_S0_Pin POTS_S1_Pin POTS_S2_Pin OLED_CS_Pin
                            OLED_DC_Pin OLED_RES_Pin FLASH_CS_2_Pin SER_IN_PL_Pin */
@@ -865,10 +883,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(NERVE_NET_ACK_EXTI_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(NERVE_NET_ACK_EXTI_IRQn);
-
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
   /* USER CODE END MX_GPIO_Init_2 */
@@ -890,25 +904,23 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN 5 */
 
 	// Sweep the status led's as a sign of live...
-	displayStatus(/*(eStatusCodes)*/0x01);
+	displayStatus((eStatusCodes)0x01);
 	osDelay(100);
-	displayStatus(/*(eStatusCodes)*/0x02);
+	displayStatus((eStatusCodes)0x02);
 	osDelay(100);
-	displayStatus(/*(eStatusCodes)*/0x04);
+	displayStatus((eStatusCodes)0x04);
 	osDelay(100);
-	displayStatus(/*(eStatusCodes)*/0x08);
+	displayStatus((eStatusCodes)0x08);
 	osDelay(100);
-//	displayStatus(scStartingUp);
-	displayStatus(0x01);
+	displayStatus(scStartingUp);
 
     // Get the amount of free heap memory
     size_t xFreeHeapSize = xPortGetFreeHeapSize();
-    gInitFreeHeapSize = xFreeHeapSize;
+    UNUSED(xFreeHeapSize);
 
     // Create a trigger thread to toggle TimeMarker_1
-    BaseType_t res;
-    TaskHandle_t xHandle;
-	res = xTaskCreate(CasualNoises::TriggerThread, "TriggerThread", 32, nullptr,
+	TaskHandle_t xHandle;
+	BaseType_t res = xTaskCreate(CasualNoises::TriggerThread, "TriggerThread", 32, nullptr,
 			TRIGGER_THREAD_PRIORITY, &xHandle);
 	UNUSED(res);
 
@@ -991,7 +1003,6 @@ void StartDefaultTask(void *argument)
 	sADC_MultiplexerSignatures[num].S1_Port	= GPIOD;
 	sADC_MultiplexerSignatures[num].S2_Pin	= POTS_S2_Pin;
 	sADC_MultiplexerSignatures[num].S2_Port	= GPIOD;
-	sADC_MultiplexerSignatures[num].mask	= 0x56;
 	++num;													// Slider multiplexer
 	sADC_MultiplexerSignatures[num].SO_Pin	= SLIDERS_S0_Pin;
 	sADC_MultiplexerSignatures[num].SO_Port	= GPIOA;
@@ -999,12 +1010,11 @@ void StartDefaultTask(void *argument)
 	sADC_MultiplexerSignatures[num].S1_Port	= GPIOA;
 	sADC_MultiplexerSignatures[num].S2_Pin	= SLIDERS_S2_Pin;
 	sADC_MultiplexerSignatures[num].S2_Port	= SLIDERS_S2_GPIO_Port;
-	sADC_MultiplexerSignatures[num].mask	= 0xff;
 
 	// Encoder #1 (Value)
 	// Create a UI thread and run it
 	// Note, part of the UI_ThreadData is filled in by the UI thread when starting up
-	void ( *nerveNetCallBackPtr ) ( uint32_t size, uint8_t* ptr ) = nullptr;
+	void (*nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = nullptr;
 	static CasualNoises::UI_ThreadData uiData;
 	// ... NVM Driver settings
 	uiData.nvmDriverInitData.noOfDevices				= 2;
@@ -1035,57 +1045,33 @@ void StartDefaultTask(void *argument)
 	uiData.oledConfigData.NRST_PORT						= GPIOD;
 	// ...
 	uiData.ADC_MultiplexerThreadData.hadc				= &hadc2;
+//	uiData.ADC_MultiplexerThreadData.htim				= &htim2;
 	uiData.ADC_MultiplexerThreadData.noOfMultiplexers	= 2;
 	uiData.ADC_MultiplexerThreadData.multiplexerSignatureArray = sADC_MultiplexerSignatures;
 
-	// Start UI thread
-	uiData.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
-	res = CasualNoises::Start_UI_Thread ( &uiData );
-	if ( res != pdPASS )
-		CN_ReportFault( eErrorCodes::FreeRTOS_ErrorRes );
 
-	// There are no NerveNet threads running
-	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_MASTER_THREADS; ++i)
-		gNerveNetMasterThreadPtr[i] = nullptr;
-	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_SLAVE_THREADS; ++i)
-		gNerveNetSlaveThreadPtr[i] = nullptr;
-
-	// Start NerveNet master thread
-	static CasualNoises::sNerveNetThreadData nerveNetThreadData;
-	memset(&nerveNetThreadData, 0x00, sizeof(CasualNoises::sNerveNetThreadData));
-	nerveNetThreadData.NerveNetThreadNo			= 0;
-	nerveNetThreadData.NerveNet_REQ_Port		= NERVE_NET_REQ_GPIO_Port;
-	nerveNetThreadData.NerveNet_REQ_Pin			= NERVE_NET_REQ_Pin;
-	nerveNetThreadData.NerveNet_ACK_Port		= NERVE_NET_ACK_GPIO_Port;
-	nerveNetThreadData.NerveNet_ACK_Pin			= NERVE_NET_ACK_Pin;
-	nerveNetThreadData.NerveNet_RESET_Port		= NERVE_NET_RESET_GPIO_Port;
-	nerveNetThreadData.NerveNet_RESET_Pin		= NERVE_NET_RESET_Pin;
-	nerveNetThreadData.NerveNet_SPI_Ptr			= &hspi4;
-	nerveNetThreadData.NerveNetThreadQueue		= &CasualNoises::gYellowPages.gNerveNetMasterThreadQueueHandle;
-	nerveNetThreadData.NerveNetRunningFlagPtr	= &CasualNoises::gYellowPages.gNetMasterThreadRunning;
-	static TaskHandle_t xHandlePtr;
-	static CasualNoises::NerveNetMasterThread nerveNetMasterThread;
-	res = CasualNoises::startNerveNetMasterThread ( &nerveNetMasterThread, &nerveNetThreadData, &xHandlePtr );
+//	uiData.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
+	res = CasualNoises::Start_UI_Thread(&uiData);
 	if (res != pdPASS)
-		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
-	CasualNoises::gYellowPages.gNerveNetMasterThreadTaskHandle 	= xHandlePtr;
-	CasualNoises::NorthSideConnection connection;
-	nerveNetMasterThread.setNerveNetMasterProcessorPtr ( &connection );
+		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 
-   /* Infinite loop */
+    /* Infinite loop */
 	osDelay(200);
-//	displayStatus(scRunning);
-	incDisplayStatus();
+	displayStatus(scRunning);
 	for(;;)
 	{
-		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET );
-		osDelay (pdMS_TO_TICKS ( 100 ) );
-		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
-		osDelay (pdMS_TO_TICKS ( 100) );
-		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET );
-		osDelay ( pdMS_TO_TICKS (100) );
-		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
-		osDelay( pdMS_TO_TICKS ( 700) );
+//		uint32_t counterValue2  = __HAL_TIM_GET_COUNTER(&htim2);								// ToDo remove debug code
+		uint32_t counterValue4  = __HAL_TIM_GET_COUNTER(&htim4);
+		uint32_t counterValue15 = __HAL_TIM_GET_COUNTER(&htim15);
+
+		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET);
+		osDelay(pdMS_TO_TICKS(100));
+		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET);
+		osDelay(pdMS_TO_TICKS(100));
+		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_RESET);
+		osDelay(pdMS_TO_TICKS(100));
+		HAL_GPIO_WritePin(EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET);
+		osDelay(pdMS_TO_TICKS(700));
 	}
 
   /* USER CODE END 5 */
