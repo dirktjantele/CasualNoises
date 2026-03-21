@@ -27,14 +27,16 @@ class String;
 class Component
 {
 public:
-	 Component() = default;
-	 Component(String name);
-	~Component() = default;
+	 Component () = default;
+	 Component ( String name );
+	~Component () = default;
 
 	virtual void paint ( Graphics& g ) noexcept 			= 0;
-	void setBounds ( uint32_t x, uint32_t y, uint32_t w, uint32_t h ) noexcept;
-	void setBounds ( Rectangle<int>& bounds ) noexcept;
-	Rectangle<int>& getLocalBounds () noexcept			{ return mLocalBounds; }
+	virtual void setBounds ( uint32_t x, uint32_t y, uint32_t w, uint32_t h ) noexcept;
+	virtual void setBounds ( Rectangle<int>& bounds ) noexcept;
+	virtual Rectangle<int>& getLocalBounds () noexcept			{ return mLocalBounds; }
+
+	virtual uint32_t getHeight () { return mLocalBounds.getHeight (); }
 
 	void setVisible ( bool shouldBeVisible ) noexcept	{ mIsVisible = shouldBeVisible; }
 	bool isVisible () const noexcept					{ return mIsVisible; }
@@ -42,8 +44,18 @@ public:
 	virtual bool handleUI_event ( sIncommingUI_Event* uiEvent,
 								  bool altState,
 								  Graphics& g ) { return false; };
+/*
+    Rectangle removeFromBottom (uint32_t amountToRemove) noexcept
+    {
+        amountToRemove = jmin (amountToRemove, h);
+        const Rectangle r (mLocalBounds., mLocalBounds.y + h - amountToRemove, w, amountToRemove);
+        h -= amountToRemove;
+        return r;
+    }
+*/
 
 private:
+
 	String 					mComponentName;
 	Rectangle<int> 			mLocalBounds;
 	bool					mIsVisible		{ false };

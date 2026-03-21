@@ -62,7 +62,7 @@ public:
 	//  CasualNoises    02/08/2023  First implementation
 	//==============================================================================
 	/** Create a string from a character C array */
-	String ( char* string )
+	String ( const char* string )
 	{
 //		std::string str ( string );
 //		mStringLength = str.length();

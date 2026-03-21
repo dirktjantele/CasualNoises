@@ -25,7 +25,7 @@ class Box : public Component
 public:
 	 	 	  Box () = delete;
 	 	 	  Box ( String name );
-	 virtual ~Box () {};
+	 virtual ~Box () = default;
 
 	void paint ( Graphics& g ) noexcept override;
 

@@ -374,11 +374,11 @@ public:
          Effectively, its new size is (x - deltaX, y - deltaY, w + deltaX * 2, h + deltaY * 2).
          @see expanded, reduce, reduced
      */
-     void expand (ValueType deltaX,
-                  ValueType deltaY) noexcept
+     void expand ( ValueType deltaX,
+                   ValueType deltaY ) noexcept
      {
-         auto nw = jmax (ValueType(), w + deltaX * 2);
-         auto nh = jmax (ValueType(), h + deltaY * 2);
+         auto nw = jmax ( ValueType(), w + deltaX  * 2 );
+         auto nh = jmax ( ValueType(), h + deltaY  * 2 );
          setBounds (pos.x - deltaX, pos.y - deltaY, nw, nh);
      }
 

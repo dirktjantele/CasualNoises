@@ -41,7 +41,7 @@ void Box::paint ( Graphics& g )
 {
 	SSD1309_Driver* screen = g.getScreen ();
 	Rectangle<int> bounds = getLocalBounds ();
-	screen->drawRect(bounds.getX(), bounds.getY(), bounds.getWidth() - 1, bounds.getHeight() - 1);
+	screen->drawRect ( bounds.getX(), bounds.getY(), bounds.getWidth() - 1, bounds.getHeight() - 1 );
 }
 
 //==============================================================================
