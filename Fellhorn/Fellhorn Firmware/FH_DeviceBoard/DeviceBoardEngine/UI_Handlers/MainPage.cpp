@@ -382,7 +382,7 @@ PotentiometerCalibrationPage::PotentiometerCalibrationPage (
 	addAndMakeVisible ( mAwaitingMinLabelPtr );
 	mAwaitingMaxLabelPtr = new Label ( "Calibration\nSet pots to max" );
 	addChildComponent ( mAwaitingMaxLabelPtr );
-	mCompletionLabelPtr  = new Label ( "Calibration done,\nPress 'EXIT'" );
+	mCompletionLabelPtr  = new Label ( "Done...\nPress 'EXIT'" );
 	addChildComponent ( mCompletionLabelPtr );
 
 	// Create progress bar
@@ -469,7 +469,7 @@ void PotentiometerCalibrationPage::resized()
 
     // Set text
     mContLabelPtr->setBounds ( mLocalBounds );
-    mCompletionLabelPtr->setJustification ( eJustificationFlags::centred );
+    mContLabelPtr->setJustification ( eJustificationFlags::centred );
 
 }
 
