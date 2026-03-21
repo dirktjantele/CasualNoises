@@ -63,6 +63,7 @@ void ProgressBar::paint(Graphics& g)
 	// Paint text
 	mLabelPtr->setBounds(bounds);
 	mLabelPtr->setText ( mText );
+	mLabelPtr->setJustification ( eJustificationFlags::centred );
 	mLabelPtr->paint(g);
 
 	// Fill progress bar
