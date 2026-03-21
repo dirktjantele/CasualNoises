@@ -541,7 +541,7 @@ void ExitRun0Mode(void)
 #else
   /* No system power supply configuration is selected at exit Run* mode */
 #endif /* USE_PWR_LDO_SUPPLY */
- }
+}
 
 /**
   * @}

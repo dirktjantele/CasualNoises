@@ -1,13 +1,21 @@
+
+Patch in port.c line 754				ToDo: find out why this solves a semaphore realted issue
+
+			uint8_t prio = 0x50;
+			if ( ucMaxSysCallPriority != prio )
+				ucMaxSysCallPriority = prio;
+			configASSERT( ucCurrentPriority >= ucMaxSysCallPriority );
+
+
+
 Device allocation:
 ------------------
 
-ADC2 potentiometer/sliders inputs
+ADC1 1V/OCT & CV inputs
+ADC2 1V/OCT inputs
 
-SPI1 encoder/switch shift register
-SPI2 led shift register
-SPI3 oled interface
-SPI4 NerveNet
-SPI5 flash memory
+SPI2 NerveNet North Side <-> South Side
 
-TIM4 led handler thread
-
+TIM2 ADC3 trigger (10 KHz)
+TIM3 Internal clock (when external clock in is not used) (200Hz)
+TIM5 Used to calculate elapsed time during processBlock::AudioProcessor() + overhead (1MHz)
