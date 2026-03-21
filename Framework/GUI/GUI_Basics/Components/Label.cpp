@@ -24,10 +24,16 @@ namespace CasualNoises
 //          Label()
 //
 //  CasualNoises    04/01/2026  First implementation
+//  CasualNoises    20/03/2026  Allow for anonymous labels
 //==============================================================================
 Label::Label ( String name, String text ) :
-	Component (name),
-	mLabelText (text)
+	Component ( name ),
+	mLabelText ( text )
+{
+}
+
+Label::Label ( String text ) :
+	mLabelText ( text )
 {
 }
 
@@ -41,6 +47,38 @@ void Label::setText( String text )
 	mLabelText = text;
 }
 
+//==============================================================================
+//          getHeight()
+//
+//  CasualNoises    18/03/2026  First implementation
+//==============================================================================
+uint32_t Label::getHeight () noexcept
+{
+
+	// Count the no of lines
+	uint32_t length	= mLabelText.length();
+	uint32_t lines 	= 0;
+	for (uint32_t i = 0; i <= length; ++i)
+	{
+
+		if ( (mLabelText[i] == 0x0a ) || ( mLabelText[i] == 0x00 ) )
+		{
+			lines += 1;
+		}
+
+	}
+
+	// Get the total height
+	uint32_t height = ( ( mFontPtr->height + 1 ) * lines ) - 1;
+	return height;
+
+}
+
+//==============================================================================
+//          isJustificationSet()
+//
+//  CasualNoises    19/03/2026  First implementation
+//==============================================================================
 bool isJustificationSet ( eJustificationFlags flags, eJustificationFlags flag)
 {
 	bool res = static_cast <unsigned int>( flags ) & static_cast <unsigned int>( flag );
@@ -58,19 +96,19 @@ void Label::paint ( Graphics& g )
 {
 
 	// Calculate required width & height
-	uint32_t length = mLabelText.length();
+	uint32_t length 	= mLabelText.length();
 	uint32_t lines		= 0;
 	uint32_t width		= 0;
 	uint32_t tmpWidth	= 0;
 	for (uint32_t i = 0; i <= length; ++i)
 	{
-		if ( (mLabelText[i] == 0x0a ) || ( mLabelText[i] == 0x00 ) )
+		if ( ( mLabelText[i] == 0x0a ) || ( mLabelText[i] == 0x00 ) )
 		{
 			lines += 1;
 			if ( tmpWidth > width )
 				width = tmpWidth;
 			tmpWidth = 0;
-			mLabelText[i] = 0x00;
+			mLabelText [i] = 0x00;			// Split into separate strings, will be rejoined later
 			i += 1;
 		}
 		else
@@ -80,18 +118,20 @@ void Label::paint ( Graphics& g )
 	}
 
 	// Calculate justification (for 'left' we don't have to do anything
-	width								= ( width * ( mFontPtr->width + 1)) - 1;
-	uint32_t height 					= ( lines * ( mFontPtr->height + 1)) - 1;
+	width								= ( width * ( mFontPtr->width + 1) ) - 1;
+	uint32_t height 					= ( lines * ( mFontPtr->height + 1) ) - 1;
 	Rectangle<int> bounds				= getLocalBounds ();
-	if ( isJustificationSet ( mJustification, eJustificationFlags::horizontallyCentred ) )
+	if ( ( isJustificationSet ( mJustification, eJustificationFlags::horizontallyCentred ) ) ||
+		 ( isJustificationSet ( mJustification, eJustificationFlags::centred ) ) )
 	{
-		bounds.setX ( ( bounds.getX() + bounds.getWidth() / 2 ) - ( width / 2 ) );
+		bounds.setX ( ( ( bounds.getX() + bounds.getWidth() ) / 2 ) - ( width / 2 ) );
 	}
 	if ( isJustificationSet ( mJustification, eJustificationFlags::right ) )
 	{
 		bounds.setX ( bounds.getWidth () - width );
 	}
-	if ( isJustificationSet ( mJustification, eJustificationFlags::verticallyCentred ) )
+	if ( ( isJustificationSet ( mJustification, eJustificationFlags::verticallyCentred ) ) ||
+		 ( isJustificationSet ( mJustification, eJustificationFlags::centred ) ) )
 	{
 		bounds.setY ( bounds.getY () + ( bounds.getHeight () / 2) - ( height / 2 ) );
 	}
@@ -109,7 +149,7 @@ void Label::paint ( Graphics& g )
 		char* ptr = charPtr;
 		charPtr += strlen ( charPtr ) + 1;
 		if (i < ( lines - 1 ) )
-			ptr[strlen(ptr)] = 0x0a;
+			ptr[strlen(ptr)] = 0x0a;		// Rejoin strings again
 	}
 
 }

@@ -30,6 +30,7 @@ class Label final : public Component
 public:
 	 Label () = delete;
 	 Label ( String name, String text ) ;
+	 Label ( String text ) ;
 	~Label () = default;
 
 	void setText( String text );
@@ -38,6 +39,8 @@ public:
 	{
 		mFontPtr = font;
 	}
+
+	uint32_t getHeight () noexcept override;
 
 	eJustificationFlags getJustification () 		   { return mJustification; };
 	void setJustification ( eJustificationFlags just ) { mJustification = just; };
