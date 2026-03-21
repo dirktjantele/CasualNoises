@@ -108,6 +108,8 @@ public:
 	//==============================================================================
 	//          setClipRect()
 	//
+	//	Set clip rectangle to specified boarders
+	//
 	//  CasualNoises    18/03/2026  First implementation
 	//==============================================================================
 	void setClipRect ( const Rectangle<int>& rect )
@@ -116,11 +118,13 @@ public:
 	}
 
 	//==============================================================================
-	//          restoreClipRect()
+	//          resetClipRect()
+	//
+	//	Set clip rectangle to default boarders
 	//
 	//  CasualNoises    18/03/2026  First implementation
 	//==============================================================================
-	void setClipRect ( )
+	void resetClipRect ( )
 	{
 		mClipRect.setX( 0 );
 		mClipRect.setY( 0 );
