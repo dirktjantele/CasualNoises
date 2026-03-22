@@ -40,7 +40,7 @@ Box::Box ( String name ) :
 void Box::paint ( Graphics& g )
 {
 	SSD1309_Driver* screen = g.getScreen ();
-	Rectangle<int> bounds = getLocalBounds ();
+	Rectangle<int32_t> bounds = getLocalBounds ();
 	screen->drawRect ( bounds.getX(), bounds.getY(), bounds.getWidth() - 1, bounds.getHeight() - 1 );
 }
 
@@ -72,7 +72,7 @@ void IndexBox::paint ( Graphics& g )
 {
 	Box::paint(g);
 	SSD1309_Driver* screen = g.getScreen ();
-	Rectangle<int> bounds = getLocalBounds ();
+	Rectangle<int32_t> bounds = getLocalBounds ();
 	uint32_t x = 8;
 	uint32_t y = bounds.getY ();
 	for ( uint32_t i = 0; i < mNoOfTabs; ++i )

@@ -34,11 +34,11 @@ Component::Component ( String name ) :
 //==============================================================================
 //          setBounds()
 //
-// 	Set local bouds
+// 	Set local bounds
 //
 //  CasualNoises    24/12/2025  First implementation
 //==============================================================================
-void Component::setBounds ( uint32_t x, uint32_t y, uint32_t w, uint32_t h )
+void Component::setBounds ( int32_t x, int32_t y, int32_t w, int32_t h )
 {
 	mLocalBounds.setBounds ( x, y, w, h );
 }
@@ -50,7 +50,7 @@ void Component::setBounds ( uint32_t x, uint32_t y, uint32_t w, uint32_t h )
 //
 //  CasualNoises    29/12/2025  First implementation
 //==============================================================================
-void Component::setBounds ( Rectangle<int>& bounds )
+void Component::setBounds ( Rectangle<int32_t>& bounds )
 {
 	mLocalBounds.setBounds ( bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight() );
 }

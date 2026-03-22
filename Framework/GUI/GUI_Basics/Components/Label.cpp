@@ -95,6 +95,11 @@ bool isJustificationSet ( eJustificationFlags flags, eJustificationFlags flag)
 void Label::paint ( Graphics& g )
 {
 
+	// Is component resized?
+	Rectangle<int32_t> bounds = getLocalBounds ();
+	if ( ( bounds.getWidth() == 0 ) || ( bounds.getHeight() == 0 ) )
+		return;
+
 	// Calculate required width & height
 	uint32_t length 	= mLabelText.length();
 	uint32_t lines		= 0;
@@ -118,22 +123,23 @@ void Label::paint ( Graphics& g )
 	}
 
 	// Calculate justification (for 'left' we don't have to do anything
-	width								= ( width * ( mFontPtr->width + 1) ) - 1;
-	uint32_t height 					= ( lines * ( mFontPtr->height + 1) ) - 1;
-	Rectangle<int> bounds				= getLocalBounds ();
+	width								= ( width * mFontPtr->width );
+	uint32_t height 					= ( lines * mFontPtr->height );
 	if ( ( isJustificationSet ( mJustification, eJustificationFlags::horizontallyCentred ) ) ||
 		 ( isJustificationSet ( mJustification, eJustificationFlags::centred ) ) )
 	{
-		bounds.setX ( ( ( bounds.getX() + bounds.getWidth() ) / 2 ) - ( width / 2 ) );
+		int midX = bounds.getX() + ( bounds.getWidth () / 2 );
+		bounds.setX ( midX - ( width / 2 ) );
 	}
 	if ( isJustificationSet ( mJustification, eJustificationFlags::right ) )
 	{
-		bounds.setX ( bounds.getWidth () - width );
+		bounds.setX ( bounds.getX() + bounds.getWidth () - width );
 	}
 	if ( ( isJustificationSet ( mJustification, eJustificationFlags::verticallyCentred ) ) ||
 		 ( isJustificationSet ( mJustification, eJustificationFlags::centred ) ) )
 	{
-		bounds.setY ( bounds.getY () + ( bounds.getHeight () / 2) - ( height / 2 ) );
+		int midY = bounds.getY() + ( bounds.getHeight () / 2 );
+		bounds.setY ( midY - ( height / 2 ) );
 	}
 	// ToDo			implement other justification types
 

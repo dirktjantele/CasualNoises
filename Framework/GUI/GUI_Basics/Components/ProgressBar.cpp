@@ -57,7 +57,7 @@ void ProgressBar::paint(Graphics& g)
 
 	// Outer bounds
 	SSD1309_Driver* screen = g.getScreen();
-	Rectangle<int> bounds = getLocalBounds();
+	Rectangle<int32_t> bounds = getLocalBounds();
 	screen->drawRect(bounds);
 
 	// Paint text
@@ -70,7 +70,7 @@ void ProgressBar::paint(Graphics& g)
 	mValue += 0.1f;
 	if ( mValue <   0.0f ) mValue =   0.0f;
 	if ( mValue > 100.0f ) mValue = 100.0f;
-	Rectangle<int> fill = bounds;
+	Rectangle<int32_t> fill = bounds;
 	fill.reduce ( 1, 1 );
 	fill.setHeight( fill.getHeight() + 1 );
 	fill.setWidth ( ( fill.getWidth() * mValue ) / 100 );

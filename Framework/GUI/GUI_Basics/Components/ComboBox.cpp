@@ -56,7 +56,7 @@ void ComboBox::paint ( Graphics& g )
 		mFontPtr = &font_7x10;
 
 	// Calculate working stuff...
-	Rectangle<int> bounds 	= getLocalBounds ();
+	Rectangle<int32_t> bounds = getLocalBounds ();
 	int32_t textHeight 		= mFontPtr->height + 1;
 	int32_t visibleItems 	= bounds.getHeight () / textHeight;
 	int32_t topSpacing 		= ( ( bounds.getHeight() - ( visibleItems * (mFontPtr->height + 1 ) ) ) / 2 ) + 4;

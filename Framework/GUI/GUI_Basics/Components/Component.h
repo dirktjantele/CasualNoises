@@ -31,10 +31,11 @@ public:
 	 Component ( String name );
 	~Component () = default;
 
-	virtual void paint ( Graphics& g ) noexcept 			= 0;
-	virtual void setBounds ( uint32_t x, uint32_t y, uint32_t w, uint32_t h ) noexcept;
-	virtual void setBounds ( Rectangle<int>& bounds ) noexcept;
-	virtual Rectangle<int>& getLocalBounds () noexcept			{ return mLocalBounds; }
+	virtual void paint ( Graphics& g ) noexcept {};
+	virtual void setBounds ( int32_t x, int32_t y, int32_t w, int32_t h ) noexcept;
+	virtual void setBounds ( Rectangle<int32_t>& bounds ) noexcept;
+	virtual Rectangle<int32_t>& getLocalBounds () noexcept
+		{ return mLocalBounds; }
 
 	virtual uint32_t getHeight () { return mLocalBounds.getHeight (); }
 
@@ -44,20 +45,10 @@ public:
 	virtual bool handleUI_event ( sIncommingUI_Event* uiEvent,
 								  bool altState,
 								  Graphics& g ) { return false; };
-/*
-    Rectangle removeFromBottom (uint32_t amountToRemove) noexcept
-    {
-        amountToRemove = jmin (amountToRemove, h);
-        const Rectangle r (mLocalBounds., mLocalBounds.y + h - amountToRemove, w, amountToRemove);
-        h -= amountToRemove;
-        return r;
-    }
-*/
-
 private:
 
 	String 					mComponentName;
-	Rectangle<int> 			mLocalBounds;
+	Rectangle<int32_t>		mLocalBounds;
 	bool					mIsVisible		{ false };
 
 };
