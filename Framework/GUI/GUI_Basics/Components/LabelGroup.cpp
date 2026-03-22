@@ -83,15 +83,38 @@ void LabelGroup::addLabel ( Label* label )
 }
 
 //==============================================================================
+//          setBounds()
+//
+//	Set the bounds of each contained label according to the given bounds
+//
+//  CasualNoises    21/03/2026  First implementation
+//==============================================================================
+void LabelGroup::setBounds ( int32_t x, int32_t y, int32_t w, int32_t h ) noexcept
+{
+	for (Label* label : mLabelGroup)
+	{
+		h = label->getHeight ();
+		label->setBounds ( x, y, w, h );
+		y += label->getHeight() + 1;
+	}
+	mElementBoundsSet = true;
+}
+
+//==============================================================================
 //          paint()
 //
-//	Paint the component
+//	Paint each label contained in the group
 //
-//  CasualNoises    19/03/2026  First implementation
+//  CasualNoises    21/03/2026  First implementation
 //==============================================================================
 void LabelGroup::paint ( Graphics& g )
 {
-
+	if (! mElementBoundsSet )
+		return;
+	for (Label* label : mLabelGroup)
+	{
+		label->paint( g );
+	}
 }
 
 } // namespace CasualNoises

@@ -34,12 +34,19 @@ public:
 
 	uint32_t getHeight ();
 
+	virtual void setBounds ( int32_t x, int32_t y, int32_t w, int32_t h ) noexcept override;
+	virtual void setBounds ( Rectangle<int32_t>& bounds ) noexcept override
+	{
+		setBounds ( bounds.getX (), bounds.getY (), bounds.getWidth (), bounds.getHeight() );
+	};
+
 	void paint ( Graphics& g ) noexcept override;
 
 private:
 	std::vector<Label*> 	mLabelGroup;
-	bool 					mDeleteElements		{ false };
+	bool 					mDeleteElements		{ true };
 
+	bool					mElementBoundsSet	{ false };
 };
 
 } // namespace CasualNoises
