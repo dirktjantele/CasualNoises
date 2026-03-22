@@ -28,21 +28,21 @@ public:
 			 ViewPort ( String name );
 	virtual ~ViewPort () {};
 
-	// The component is not  owned by the ViwPort
+	// The component is not owned by the ViwPort
 	void setContent ( Component* componentPtr )
 	{
 		mContentsComponentPtr = componentPtr;
 	}
 
-	void paint ( Graphics& g ) noexcept override;
+	void applyVerticalScrolling ( int32_t amount );
 
-	bool handleUI_event ( sIncommingUI_Event* uiEvent,
-						  bool altState, Graphics& g ) override
-		{ return false; }
+	void paint ( Graphics& g ) noexcept override;
 
 private:
 
-	Component*		mContentsComponentPtr				{ nullptr };
+	Component*		mContentsComponentPtr	{ nullptr };
+
+	int32_t			mOffset					{ 0 };
 
 };
 

@@ -15,6 +15,7 @@
 #ifdef CASUALNOISES_DISPLAY_DRIVER
 
 #include "ViewPort.h"
+#include "Graphics/Contexts/Graphics.h"
 
 namespace CasualNoises
 {
@@ -30,6 +31,23 @@ ViewPort::ViewPort ( String name ) :
 }
 
 //==============================================================================
+//          applyVerticalScrolling()
+//
+//  CasualNoises    22/03/2026  First implementation
+//==============================================================================
+void ViewPort::applyVerticalScrolling ( int32_t amount )
+{
+	int32_t minY 		   = getHeight() - mContentsComponentPtr->getHeight();
+	int32_t newOffset = mOffset + amount;
+	if ( newOffset > 0)
+		newOffset = 0;
+	else if ( newOffset < minY )
+		newOffset = mOffset;
+
+	mOffset = newOffset;
+}
+
+//==============================================================================
 //          paint()
 //
 //	Paint the component
@@ -38,13 +56,26 @@ ViewPort::ViewPort ( String name ) :
 //==============================================================================
 void ViewPort::paint ( Graphics& g )
 {
-	// Set clip rectangle
-	// Set bounds of the contained component
-	// In LabelGroup, implement setBounds to set the bounds of each label according to it's bounds
 
-	uint32_t height = mContentsComponentPtr->getHeight ();
+	// Is there any content?
+	if ( mContentsComponentPtr == nullptr )
+		return;
+
+	// Set clip rectangle
+	Rectangle<int32_t> bounds = getLocalBounds ();
+	g.setClipRect( bounds );
+
+	// Apply Y offset to local bounds of the content
+	int32_t y = bounds.getY();
+	y += mOffset;
+	mContentsComponentPtr->setBounds ( bounds.getX(), y, bounds.getWidth(), bounds.getHeight() );
+
+	// Paint contents
+	mContentsComponentPtr->paint( g );
 
 	// Restore clip rectangle
+	g.resetClipRect ();
+
 }
 
 } // namespace CasualNoises
