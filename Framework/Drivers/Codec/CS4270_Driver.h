@@ -5,11 +5,12 @@
  *      Author: dirk tjantele
  */
 
-#ifdef USE_CS4270_Driver
+#ifdef CASUALNOISES_CS4270_DRIVER
 
 #pragma once
 
 #include "Codec_Driver.h"
+#include "Utilities/ReportFault.h"
 
 namespace CasualNoises
 {

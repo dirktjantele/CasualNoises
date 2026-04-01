@@ -15,7 +15,8 @@
 
 #ifdef CASUALNOISES_NERVENET_THREAD
 
-#include "main.h"
+//#include "main.h"
+#include "stm32h7xx_hal.h"
 
 namespace CasualNoises
 {

@@ -8,7 +8,9 @@
   ==============================================================================
 */
 
-#ifdef USE_AUDIO_BUFFER
+//#ifdef debugging
+
+#ifdef CASUALNOISES_AUDIO_BUFFER
 
 #pragma once
 
@@ -95,7 +97,7 @@ public:
 
 			// Limit morph amount
 			mMorphAmount = morph;
-			mMorphAmount = cn_limit ( mMorphAmount, 0.0f, 1.0f );
+//			mMorphAmount = WT_limit ( mMorphAmount, 0.0f, 1.0f );
 
 			// Get wave index into the wave table
 			float indx = mMorphAmount * (mWavetableCount - 1);
@@ -251,6 +253,7 @@ private:
 		mWavetable[8] = mWavetable[0];
 
 		// Calculate sine wave, this is also the default wave
+		constexpr float pi  = 3.14159265358979323846f;
 		float angle = 0.0f;
 		float step  = (2 * pi) / mWaveLength;
 		for (uint32_t i = 0; i < mWaveLength; ++i)
@@ -327,6 +330,21 @@ private:
 	float 				mScale1					{ 0.0f };
 	float 				mScale2					{ 0.0f };
 
+	//==============================================================================
+	//          limit
+	//
+	//  CasualNoises    21/07/2025  First implementation
+	//==============================================================================
+	/*
+	float WT_limit (float sourceValue, float rangeMin, float rangeMax)
+	{
+	if (sourceValue < rangeMin)
+		sourceValue = rangeMin;
+	else if (sourceValue > rangeMax)
+		sourceValue = rangeMax;
+	return sourceValue;
+	}
+	*/
 };
 
 class CachedWavetable_LFO : public Wavetable_LFO
@@ -430,3 +448,5 @@ private:
 } // namespace CasualNoises
 
 #endif
+
+//#endif

@@ -370,7 +370,7 @@ void TLV_DriverThread ( void* pvParameters )
 	}
 
 	// Create a helper thread
-	BaseType_t res = xTaskCreate(TLV_DriverHelperThread, "TLV_DriverHelperThread", DEFAULT_STACK_SIZE, nullptr,
+	BaseType_t res = xTaskCreate(TLV_DriverHelperThread, "TLV_Helper", DEFAULT_STACK_SIZE, nullptr,
 			UI_THREAD_PRIORITY - 1, nullptr);
 	if ( res != pdPASS)
 		CN_ReportFault ( eErrorCodes::UI_ThreadError );
@@ -471,7 +471,7 @@ void TLV_DriverThread ( void* pvParameters )
 //==============================================================================
 BaseType_t startTLV_DriverThread ( void* pvParameters, TaskHandle_t* xHandlePtr )
 {
-	BaseType_t res = xTaskCreate(TLV_DriverThread, "TLV_DriverThread", DEFAULT_STACK_SIZE, pvParameters,
+	BaseType_t res = xTaskCreate(TLV_DriverThread, "TLV_Driver", DEFAULT_STACK_SIZE, pvParameters,
 			UI_THREAD_PRIORITY, xHandlePtr);
 	return res;
 }

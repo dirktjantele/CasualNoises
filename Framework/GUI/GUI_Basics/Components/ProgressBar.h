@@ -16,6 +16,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Graphics/Fonts/Font.h"
 
 namespace CasualNoises
 {

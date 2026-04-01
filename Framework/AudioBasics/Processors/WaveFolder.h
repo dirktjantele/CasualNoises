@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#ifdef USE_AUDIO_BUFFER
+#ifdef CASUALNOISES_AUDIO_BUFFER
 
 #pragma once
 

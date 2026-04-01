@@ -85,17 +85,17 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 
 std::vector<CN_HAL_SPI_TxCpltCallback> CN_HAL_SPI_TxCpltCallbacks;
 
-void add_HAL_SPI_TxCpltCallback(CN_HAL_SPI_TxCpltCallback callback)
+void add_HAL_SPI_TxCpltCallback ( CN_HAL_SPI_TxCpltCallback callback )
 {
-	CN_HAL_SPI_TxCpltCallbacks.push_back(callback);
+	CN_HAL_SPI_TxCpltCallbacks.push_back ( callback );
 }
 
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+void HAL_SPI_TxCpltCallback ( SPI_HandleTypeDef *hspi )
 {
-	for (auto callback : CN_HAL_SPI_TxCpltCallbacks)
+	for ( auto callback : CN_HAL_SPI_TxCpltCallbacks )
 	{
-		bool flag = callback(hspi);
-		if (flag)
+		bool flag = callback ( hspi );
+		if ( flag )
 			return;
 	}
 	return;
@@ -120,7 +120,7 @@ void add_HAL_SPI_TxRxCpltCallback(CN_HAL_SPI_TxRxCpltCallback callback)
 	CN_HAL_SPI_TxRxCpltCallbacks.push_back(callback);
 }
 
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
+void HAL_SPI_TxRxCpltCallback ( SPI_HandleTypeDef *hspi )
 {
 	bool flag = false;
 

@@ -71,7 +71,7 @@ uint32_t LabelGroup::getHeight ()
 }
 
 //==============================================================================
-//			addLabelpaint()
+//			addLabel()
 //
 //	Add a Label to the end of the group
 //
@@ -80,6 +80,20 @@ uint32_t LabelGroup::getHeight ()
 void LabelGroup::addLabel ( Label* label )
 {
 	mLabelGroup.push_back ( label );
+}
+
+//==============================================================================
+//			addLabel()
+//
+//	Add a Label to the end of the group
+//
+//  CasualNoises    23/03/2026  First implementation
+//==============================================================================
+void LabelGroup::addLabel ( std::string text, eJustificationFlags flags )
+{
+	Label* ptr = new Label ( text.c_str() );
+	ptr->setJustification( flags );
+	addLabel( ptr );
 }
 
 //==============================================================================

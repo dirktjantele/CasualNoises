@@ -34,6 +34,9 @@
 
 #pragma once
 
+#include <math.h>
+//#include <cmath>
+
 #include "Core/Text/String.h"
 
 namespace CasualNoises
@@ -209,8 +212,8 @@ public:
     */
     FloatType getAngleToPoint (Point other) const noexcept
     {
-        return static_cast<FloatType> (std::atan2 (static_cast<FloatType> (other.x - x),
-                                                   static_cast<FloatType> (y - other.y)));
+        return static_cast<FloatType> ( std::atan2 ( static_cast<FloatType> ( other.x - x ),
+                                                     static_cast<FloatType> ( y - other.y) ) );
     }
 
     /** Returns the point that would be reached by rotating this point clockwise

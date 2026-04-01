@@ -42,7 +42,7 @@ public:
 	void setVisible ( bool shouldBeVisible ) noexcept	{ mIsVisible = shouldBeVisible; }
 	bool isVisible () const noexcept					{ return mIsVisible; }
 
-	virtual bool handleUI_event ( sIncommingUI_Event* uiEvent,
+	virtual bool handleUI_event ( void* uiEvent,
 								  bool altState,
 								  Graphics& g ) { return false; };
 private:

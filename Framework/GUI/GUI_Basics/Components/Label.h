@@ -31,6 +31,7 @@ public:
 	 Label () = delete;
 	 Label ( String name, String text ) ;
 	 Label ( String text ) ;
+	 Label ( std::string text, int x );
 	~Label () = default;
 
 	void setText( String text );

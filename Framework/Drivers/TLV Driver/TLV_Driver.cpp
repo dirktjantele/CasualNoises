@@ -275,15 +275,15 @@ bool TLV_Driver::updateTLV_Tag(uint32_t tag, uint32_t length, void* valuePtr, bo
 //
 //  CasualNoises    13/02/2025  First implementation
 //==============================================================================
-uint32_t TLV_Driver::getLargestFreeTLV_Size()
+uint32_t TLV_Driver::getLargestFreeTLV_Size ()
 {
-	uint32_t index = findNextTLV (cFreeTLV_Tag, 0);
+	uint32_t index = findNextTLV ( cFreeTLV_Tag, 0 );
 	uint32_t size = 0;
-	while (index > 0)
+	while ( index > 0 )
 	{
-		if (getLength(index) > size)
+		if ( getLength (index) > size )
 			size = getLength(index);
-		index = findNextTLV (cFreeTLV_Tag, index);
+		index = findNextTLV ( cFreeTLV_Tag, index );
 	}
 	return size;
 }

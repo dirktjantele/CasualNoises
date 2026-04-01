@@ -39,6 +39,9 @@
 #include "Line.h"
 #include "Point.h"
 
+#include "Core/Maths/MathsFunctions.h"
+#include "Core/Maths/Range.h"
+
 namespace CasualNoises
 {
 

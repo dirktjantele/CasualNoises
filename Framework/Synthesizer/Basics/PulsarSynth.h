@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#ifdef USE_AUDIO_BUFFER
+#ifdef CASUALNOISES_AUDIO_BUFFER
 
 #pragma once
 
@@ -135,8 +135,8 @@ public:
 	void setCluster ( float cluster ) noexcept
 	{
 
-		mCluster = cn_limit(cluster, 0.0f, 1.0f);
-		mCluster = cn_map((float)mCluster, 0.0f, 1.0f, 1.0f, 5.0f);
+		mCluster = cn_limit ( cluster, 0.0f, 1.0f );
+		mCluster = cn_map ( (float)mCluster, 0.0f, 1.0f, 1.0f, 5.0f );
 	}
 
 	//==============================================================================
@@ -148,8 +148,8 @@ public:
 	//==============================================================================
 	void setWaveFolder ( float fold ) noexcept
 	{
-		mWaveFold = cn_limit(fold, 0.0f, 1.0f);
-		mWaveFold = cn_map((float)mWaveFold, 0.0f, 1.0f, 1.0f, 10.0f);
+		mWaveFold = cn_limit ( fold, 0.0f, 1.0f );
+		mWaveFold = cn_map ( (float)mWaveFold, 0.0f, 1.0f, 1.0f, 10.0f );
 	}
 
 	//==============================================================================
@@ -176,6 +176,21 @@ private:
 	float		mCluster			{ 1.0f };		// 1.0f -> 5.0f
 	float		mWaveFold			{ 1.0f };		// 1.0f -> 5.0f
 
+	//==============================================================================
+	//          limit
+	//
+	//  CasualNoises    21/07/2025  First implementation
+	//==============================================================================
+	/*
+	float limit (float sourceValue, float rangeMin, float rangeMax)
+	{
+	if (sourceValue < rangeMin)
+		sourceValue = rangeMin;
+	else if (sourceValue > rangeMax)
+		sourceValue = rangeMax;
+	return sourceValue;
+	}
+	*/
 	//==============================================================================
 	//          refresh
 	//

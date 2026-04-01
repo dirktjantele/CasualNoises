@@ -8,16 +8,19 @@
   ==============================================================================
 */
 
-#ifdef USE_AUDIO_PROCESSOR_PLAYER
+#ifdef CASUALNOISES_AUDIO_PROCESSOR_PLAYER
 
 #pragma once
 
-#include "Utilities/ReportFault.h"
-#include "AudioProcessors/Processors/AudioProcessor.h"
-
-#include "../../NerveNet/NerveNetMessage.h"
+#include "stm32h7xx_hal.h"
 
 #include "semphr.h"
+
+#include "Utilities/ReportFault.h"
+//#include "AudioBasics/Buffers/AudioBuffer.h"
+//#include "AudioProcessors/Processors/AudioProcessor.h"
+
+#include "../../NerveNet/NerveNetMessage.h"
 
 namespace CasualNoises
 {
@@ -53,13 +56,13 @@ public:
 	};
 
 	// Set a pointer to the I2S device handle to be used, nullptr = no I2S is used
-	inline void sethi2sHandlePtr (I2S_HandleTypeDef* ptr) noexcept { m_hi2sHandlePtr = ptr; }
+	inline void sethi2sHandlePtr ( I2S_HandleTypeDef* ptr )  noexcept { m_hi2sHandlePtr = ptr; }
 
 	// Set pointer to the synthesiser parameters
 //	inline void setSynthesiserParamsPtr (void* ptr) noexcept { mSynthesiserParamsPtr = ptr; }
 
 	// Run the player, this method never returns
-	void runAudioProcessor(AudioBuffer* audioBufferPtr/*, void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*)*/);
+	void runAudioProcessor( AudioBuffer* audioBufferPtr, void ( **nerveNetCallBackPtr )( CasualNoises::sNerveNetData* ) = nullptr );
 
 private:
 

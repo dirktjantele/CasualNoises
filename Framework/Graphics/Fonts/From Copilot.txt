@@ -1,0 +1,59 @@
+
+#include <vector>
+#include <cstdint>
+
+Resizing a given glyph t
+
+std::vector<uint32_t> convertGlyph(
+    const std::vector<uint32_t>& glyph,
+    int oldWidth,
+    int newWidth,
+    int newHeight)
+{
+    int oldHeight = glyph.size();
+
+    // Find which rows are active (non-zero)
+    std::vector<int> activeRows;
+    for (int i = 0; i < oldHeight; i++) {
+        if (glyph[i] != 0)
+            activeRows.push_back(i);
+    }
+
+    // Determine old bit index (assumes only one bit set)
+    int oldBitIndex = -1;
+    if (!activeRows.empty()) {
+        uint32_t sample = glyph[activeRows[0]];
+        for (int b = 31; b >= 0; b--) {
+            if (sample & (1u << b)) {
+                oldBitIndex = b;
+                break;
+            }
+        }
+    }
+
+    // Compute new centered bit
+    uint32_t newBitmask = 0;
+    if (oldBitIndex >= 0) {
+        int newBitIndex = newWidth / 2;
+        newBitmask = (1u << newBitIndex);
+    }
+
+    // Build new glyph with vertical scaling
+    std::vector<uint32_t> newGlyph(newHeight, 0);
+
+    for (int y = 0; y < newHeight; y++) {
+        int oldY = (y * oldHeight) / newHeight;
+        bool isActive = false;
+
+        for (int ar : activeRows) {
+            if (ar == oldY) {
+                isActive = true;
+                break;
+            }
+        }
+
+        newGlyph[y] = isActive ? newBitmask : 0;
+    }
+
+    return newGlyph;
+}

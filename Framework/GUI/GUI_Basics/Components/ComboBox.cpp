@@ -19,6 +19,8 @@
 
 #include "SystemConfig.h"
 
+#include "../../../DeviceBoardEngine/UI_Definitions.h"				// ToDo find a way to get rid of this include
+
 namespace CasualNoises
 {
 
@@ -141,18 +143,19 @@ void ComboBox::setFocus ( uint32_t focus ) noexcept
 //
 //  CasualNoises    02/01/2026  First implementation
 //==============================================================================
-bool ComboBox::handleUI_event ( sIncommingUI_Event* uiEvent,
+bool ComboBox::handleUI_event ( void* uiEvent,
 								bool altState,
 								Graphics& g )
 {
-	if ( uiEvent->encoderEvent.encoderNo == (uint16_t)eEncoderNums::MAIN_ENCODER )
+	sIncommingUI_Event* eventPtr = static_cast< sIncommingUI_Event* > ( uiEvent );
+	if ( eventPtr->encoderEvent.encoderNo == (uint16_t)eEncoderNums::MAIN_ENCODER )
 	{
-		if ( uiEvent->encoderEvent.eventType == eEncoderEventType::encoderSwitch )
+		if ( eventPtr->encoderEvent.eventType == eEncoderEventType::encoderSwitch )
 		{
 			onChange ();
-		} else if ( uiEvent->encoderEvent.eventType == eEncoderEventType::encoderCount )
+		} else if ( eventPtr->encoderEvent.eventType == eEncoderEventType::encoderCount )
 		{
-			int32_t focus = mFocus + uiEvent->encoderEvent.encoderCount;
+			int32_t focus = mFocus - eventPtr->encoderEvent.encoderCount;
 			if ( focus < 0 )
 				focus = 0;
 			if ( focus >= (int32_t)mItemPtrs.size() )

@@ -8,11 +8,12 @@
   ==============================================================================
 */
 
-#ifdef USE_AUDIO_BUFFER
+#ifdef CASUALNOISES_AUDIO_BUFFER
 
 #include "WaveFolder.h"
 
 #include <math.h>
+#include <stdint.h>
 
 namespace CasualNoises
 {

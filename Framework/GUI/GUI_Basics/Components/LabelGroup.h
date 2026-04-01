@@ -15,7 +15,10 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Component.h"
+#include "../../../Graphics/Placement/Justification.h"
 
 namespace CasualNoises
 {
@@ -30,6 +33,8 @@ public:
 	~LabelGroup ();
 
 	void addLabel ( Label* label );
+	void addLabel ( std::string text, eJustificationFlags flags = eJustificationFlags::left );
+
 	void takeOwnership ( bool flag )	{ mDeleteElements = flag; }
 
 	uint32_t getHeight ();

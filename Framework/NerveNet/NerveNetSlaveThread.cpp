@@ -54,7 +54,8 @@ bool NerveNetSlaveThread::sendMessage ( const void* messagePtr, uint32_t size)
 	// Block if another thread is using this function
 	BaseType_t rtosRes = xSemaphoreTake ( mSyncSemaphoreHandle, portMAX_DELAY );
 	if ( rtosRes != pdTRUE )
-		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
+		CN_ReportFault ( ( eErrorCodes ) 0x01 );
+//	CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
 
 	// Enough remaining buffer space?
 	if (mRemainingSpace < size)
@@ -76,7 +77,8 @@ bool NerveNetSlaveThread::sendMessage ( const void* messagePtr, uint32_t size)
 	// Release function for other threads
 	rtosRes = xSemaphoreGive ( mSyncSemaphoreHandle );
 	if (rtosRes != pdTRUE)
-		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
+//		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
+		CN_ReportFault ( ( eErrorCodes ) 0x02 );
 
 	return true;
 
@@ -106,6 +108,7 @@ bool NerveNetSlaveThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_SET );
 			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_RESET );
 			mThreadState = eNerveNetSlaveThreadState::idle;
+//			CN_ReportFault ( ( eErrorCodes ) 0x09 );
 		}
 		return true;
 	}
@@ -123,6 +126,10 @@ bool NerveNetSlaveThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 
 		} else
 		{
+
+			if ( ( mThreadState == eNerveNetSlaveThreadState::idle ) ||
+				 ( mThreadState == eNerveNetSlaveThreadState::awaitingReset ))
+				return true;
 
 			// Rotate Tx and Rx buffers
 			uint32_t temp = mTxToBeSentBufferIndex;
@@ -190,7 +197,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	{
 		mTxMessageBuffers[i] = new sNerveNetMessage;
 		memset(mTxMessageBuffers[i], 0x00, sizeof(sNerveNetMessage));
-		mTxMessageBuffers[i]->header.messageSourceID = eNerveNetSourceId::eFellhornSouthSide;
+		mTxMessageBuffers[i]->header.messageSourceID = eNerveNetSourceId::awaitingId;
 		mTxMessageBuffers[i]->header.messageNumber = 0;
 	}
 	for (uint32_t i = 0; i < cNoOfRxMessageBuffers; ++i)
@@ -227,7 +234,8 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	{
 		BaseType_t res = HAL_TIM_Base_Start ( mPerformanceTestTimerPtr );
 		if (res != HAL_OK)
-			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+//			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+			CN_ReportFault ( ( eErrorCodes ) 0x06 );
 		mPerformanceTestTimerPtr->Instance->CNT = 0;
 	}
 
@@ -258,9 +266,14 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 				startCycleTime = mPerformanceTestTimerPtr->Instance->CNT;
 			}
 
+			// If we awaiting a reset, act as if it did happen
+			if ( mThreadState == eNerveNetSlaveThreadState::awaitingReset )
+				mThreadState = eNerveNetSlaveThreadState::idle;
+
 			// Start of NerveNet cycle, the thread should be idle here
 			if ( mThreadState != eNerveNetSlaveThreadState::idle )
-				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+//				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+				CN_ReportFault ( ( eErrorCodes ) 0x07 );
 
 			// If there is any data in the construction buffer, add it to current Tx message
 			mTxMessageBuffers [ mTxToBeSentBufferIndex ]->data.size = 0;
@@ -283,7 +296,8 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 					(uint8_t *) mRxMessageBuffers [mRxReceivingBufferIndex],
 					size );
 			if ( res != HAL_OK )
-				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+//				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+				CN_ReportFault ( ( eErrorCodes ) 0x08 );
 
 			// Start of AudioProcessor::processBlock () call
 			uint32_t startOfProcessBlockTime = 0;
@@ -319,7 +333,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 			// Generate new audio in the current filling buffer using audio from the current processing buffer
 #ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
 			inBufferPtr->importAudio ( mRxMessageBuffers [mRxProcessingBufferIndex] ->audio.audioData );
-			mSouthSideAudioProcessorPtr->processBlock ( *inBufferPtr, *outBufferPtr );
+			mSouthSideAudioProcessorPtr->processBlock ( inBufferPtr, outBufferPtr );
 			outBufferPtr->exportAudio ( mTxMessageBuffers [mTxFillingBufferIndex] ->audio.audioData );
 #endif
 
@@ -393,4 +407,3 @@ BaseType_t startNerveNetSlaveThread(CasualNoises::NerveNetSlaveThread* threadPtr
 } // namespace CasualNoises
 
 #endif
-

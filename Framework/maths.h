@@ -10,7 +10,9 @@
 
 #pragma once
 
-#include <limits>
+//#include <limits>
+#include <math.h>
+//#include <cmath>
 
 namespace CasualNoises
 {
@@ -28,6 +30,7 @@ constexpr bool approximatelyEqual (Type a, Type b)
     const auto diff = std::abs (a - b);
     return diff < 0.0000000001;
 }
+
 
 /** Re-maps a value from a source range to a target range. */
 // NOTE: try to avoid cn_map, it takes a lot of cpu time!!!
@@ -50,6 +53,7 @@ Type cn_limit (Type sourceValue, Type rangeMin, Type rangeMax)
 }
 
 /** Equivalent to operator== */
+/*
 template <typename Type>
 constexpr bool exactlyEqual (Type a, Type b)
 {
@@ -57,7 +61,7 @@ constexpr bool exactlyEqual (Type a, Type b)
     return a == b;
 //    JUCE_END_IGNORE_WARNINGS_GCC_LIKE
 }
-
+*/
 /** The isfinite() method seems to vary between platforms, so this is a
     platform-independent function for it.
 */

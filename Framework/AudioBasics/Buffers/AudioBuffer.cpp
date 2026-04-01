@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#ifdef USE_AUDIO_BUFFER
+#ifdef CASUALNOISES_AUDIO_BUFFER
 
 #include "AudioBuffer.h"
 
@@ -83,7 +83,7 @@ AudioBuffer::~AudioBuffer()
 //
 //  CasualNoises    26/07/2023  First implementation
 //==============================================================================
-void AudioBuffer::clearAudioBuffer()
+void AudioBuffer::clearAudioBuffer() noexcept
  {
 	int32_t noOfSamples = getNumSamples();
 
@@ -105,7 +105,7 @@ void AudioBuffer::clearAudioBuffer()
 //
 //  CasualNoises    13/07/2025  First implementation
 //==============================================================================
-void AudioBuffer::copyAudio(AudioBuffer& inBuffer)
+void AudioBuffer::copyAudio(AudioBuffer& inBuffer) noexcept
 {
 	assert(getNumChannels() == 2);
 
@@ -133,7 +133,7 @@ void AudioBuffer::copyAudio(AudioBuffer& inBuffer)
 //
 //  CasualNoises    13/07/2025  First implementation
 //==============================================================================
-void AudioBuffer::importAudio(float* ptr)
+void AudioBuffer::importAudio(float* ptr) noexcept
 {
 	assert(getNumChannels() == 2);
 
@@ -158,7 +158,7 @@ void AudioBuffer::importAudio(float* ptr)
 //
 //  CasualNoises    13/07/2025  First implementation
 //==============================================================================
-void AudioBuffer::exportAudio(float* ptr)
+void AudioBuffer::exportAudio ( float* ptr ) noexcept
 {
 	assert(getNumChannels() == 2);
 
@@ -181,7 +181,7 @@ void AudioBuffer::exportAudio(float* ptr)
 //
 //  CasualNoises    28/02/2025  First implementation
 //==============================================================================
-void AudioBuffer::normalizeAudioBuffer()
+void AudioBuffer::normalizeAudioBuffer() noexcept
  {
 	 int32_t noOfSamples = getNumSamples();
 	 for (uint8_t i = 0; i < getNumChannels(); ++i)

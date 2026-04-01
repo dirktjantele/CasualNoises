@@ -66,6 +66,7 @@ bool ADC_ConvCpltCallback ( ADC_HandleTypeDef* hadc )
 		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 		if ( gADC_SemaphoreHandle != nullptr )
 			xSemaphoreGiveFromISR( gADC_SemaphoreHandle, &xHigherPriorityTaskWoken );
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
 #endif
 

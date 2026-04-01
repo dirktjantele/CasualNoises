@@ -42,6 +42,7 @@ public:
 	//==============================================================================
 	inline void setFrequency(float frequency) noexcept
 	{
+//		constexpr float pi  = 3.14159265358979323846f;
 		mFrequency	= frequency;
 		mStep = (2 * pi * mFrequency) / mSampleRate;
 	}
@@ -63,6 +64,7 @@ public:
 	//==============================================================================
 	const float nextSample() noexcept
 	{
+//		constexpr float pi  = 3.14159265358979323846f;
 		float sample = sin(mAngle);
 		mAngle += mStep;
 		if (mAngle > (2 * pi))

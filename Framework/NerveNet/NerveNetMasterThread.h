@@ -57,6 +57,8 @@ public:
 
 	void setNerveNetMasterProcessorPtr ( NerveNetMasterProcessor* ptr ) noexcept { mNerveNetMasterProcessorPtr = ptr; };
 
+	void checkCycleCount () noexcept;
+
 private:
 
 	// Tx and Rx buffers & indexes
@@ -96,10 +98,13 @@ private:
 	// Semaphore used to make sendMessage() thread save
 	SemaphoreHandle_t		mSyncSemaphoreHandle		{ nullptr };
 
+
+	uint32_t				mMasterCycle				{ 0 };
+
 };
 
 // Start thread function
-BaseType_t startNerveNetMasterThread ( CasualNoises::NerveNetMasterThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr ) noexcept;
+BaseType_t startNerveNetMasterThread ( CasualNoises::NerveNetMasterThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr = nullptr ) noexcept;
 
 } // namespace CasualNoises
 

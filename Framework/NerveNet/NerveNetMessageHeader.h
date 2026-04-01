@@ -17,14 +17,18 @@
 
 #ifdef CASUALNOISES_NERVENET_THREAD
 
+#include "NerveNetMessage.h"
+
 namespace CasualNoises
 {
 
 typedef struct
 {
-		uint32_t		messageTag;			// Tags are implementation specific
-		uint32_t		messageLength;		// The total length of the message in bytes
-		// Any data to be send follows this header in memory as indicated by messageLength
+	eNerveNetSourceId 	sourceID;			// ID of the source used for any reply on an event
+	eNerveNetSourceId	destinationID;		// Used for forwarding messages
+	uint32_t			messageTag;			// Tags are implementation specific
+	uint32_t			messageLength;		// The total length of the message in bytes
+	// Any data to be send follows this header in memory as indicated by messageLength
 } tNerveNetMessageHeader;
 
 }	// namespace CasualNoises

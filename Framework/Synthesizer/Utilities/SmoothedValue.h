@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "AudioBasics/Buffers/AudioBuffer.h"
+
 namespace CasualNoises
 {
 
@@ -65,9 +67,9 @@ public:
 		return mCurrentValue;
 	}
 
-#ifdef USE_AUDIO_BUFFER
+#ifdef CASUALNOISES_AUDIO_BUFFER
 
-	void applyGain(AudioBuffer& buffer) noexcept
+	void applyGain ( AudioBuffer& buffer ) noexcept
 	{
 		uint32_t noChannels = buffer.getNumChannels();
 		uint32_t noSamples  = buffer.getNumSamples();

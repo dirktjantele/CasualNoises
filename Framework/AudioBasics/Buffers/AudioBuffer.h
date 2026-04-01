@@ -8,12 +8,13 @@
   ==============================================================================
 */
 
-#ifdef USE_AUDIO_BUFFER
+#ifdef CASUALNOISES_AUDIO_BUFFER
 
 #pragma once
 
+#include <stdint.h>
+
 #include "SystemConfig.h"
-#include "AudioUtils/Players/AudioProcessorPlayer.h"
 
 namespace CasualNoises
 {
@@ -27,9 +28,9 @@ typedef struct
 class AudioBuffer final
 {
 public:
-	  AudioBuffer();
-	  AudioBuffer(uint32_t numSamples, uint32_t numChannels);
-	 ~AudioBuffer();
+	  AudioBuffer ();
+	  AudioBuffer ( uint32_t numSamples, uint32_t numChannels );
+	 ~AudioBuffer ();
 
 	  inline uint32_t		getNumSamples()		const noexcept  	{ return mNumSamples; }
 	  inline uint32_t		getNumChannels()	const noexcept		{ return mNumChannels; }

@@ -183,7 +183,7 @@ BaseType_t start_LED_Thread(void *argument, TaskHandle_t* xHandlePtr)
 {
 
 	// Create the thread to drive the led's
-	BaseType_t res = xTaskCreate(LED_Thread, "LED_Thread", DEFAULT_STACK_SIZE / 2, argument,
+	BaseType_t res = xTaskCreate(LED_Thread, "SPI_LED", DEFAULT_STACK_SIZE / 2, argument,
 			UI_THREAD_PRIORITY,	xHandlePtr);
 	gYellowPages.gLED_ThreadTaskHandle = *xHandlePtr;
 	return res;

@@ -49,7 +49,7 @@ void Graphics::fillAll ( eBitOperations op )
 //  CasualNoises    19/08/2023  First implementation
 //  CasualNoises    27/12/2025  Adapted for Fellhorn
 //==============================================================================
-void Graphics::fillRect( int x, int y, int width, int height, eBitOperations op )
+void Graphics::fillRect( int32_t x, int32_t y, int32_t width, int32_t height, eBitOperations op )
 {
 	mScreen->fillRect ( x, y, width, height, op );
 }
@@ -59,7 +59,7 @@ void Graphics::fillRect( int x, int y, int width, int height, eBitOperations op 
 //
 //  CasualNoises    05/01/2026  First implementation
 //==============================================================================
-void Graphics::fillRect(Rectangle<int> rect, eBitOperations op)
+void Graphics::fillRect(Rectangle<int32_t> rect, eBitOperations op)
 {
 	mScreen->fillRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), op);
 }

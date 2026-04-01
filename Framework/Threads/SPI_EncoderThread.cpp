@@ -108,7 +108,7 @@ void encoderThread(void* pvParameters)
 
 	// Send initial switch bit map
 	sEncoderEvent event;
-	event.eventSourceID = eEventSourceID::encoderThreadSourceID;
+	event.eventSourceID = eEventSourceDestinationID::encoderThreadSourceID;
 	event.eventType     = eEncoderEventType::encoderSwitch;
 	event.encoderNo     = 0;
 	event.encoderCount  = 0;
@@ -160,7 +160,7 @@ void encoderThread(void* pvParameters)
 					if ( clientQueue != nullptr )
 					{
 						sEncoderEvent event;
-						event.eventSourceID = eEventSourceID::encoderThreadSourceID;
+						event.eventSourceID = eEventSourceDestinationID::encoderThreadSourceID;
 						event.eventType     = eEncoderEventType::encoderSwitch;
 						event.encoderNo     = signatures[encNo].encoderNo;
 						event.encoderCount  = 1;
@@ -206,7 +206,7 @@ void encoderThread(void* pvParameters)
 					if (clientQueue != nullptr)
 					{
 						sEncoderEvent event;
-						event.eventSourceID = eEventSourceID::encoderThreadSourceID;
+						event.eventSourceID = eEventSourceDestinationID::encoderThreadSourceID;
 						event.eventType     = eEncoderEventType::encoderCount;
 						event.encoderNo     = signatures[encNo].encoderNo;
 						event.encoderCount  = encIncTable[encNo];

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "main.h"
+//#include "main.h"
 #include "SystemConfig.h"
 
 namespace CasualNoises
@@ -21,15 +21,17 @@ constexpr uint32_t cNoOfRxMessageBuffers = 2;
 
 enum class eNerveNetSourceId
 {
-	eAwaitingId,
-	eFellhornNortSide,
-	eFellhornSouthSide,
-	eFellhornDeviceBoard,
+	awaitingId,
+	FellhornNorthSide,
+	FellhornSouthSide,
+	FellhornDeviceBoard,
+	FellhornBothSides,
 };
 
 typedef struct
 {
 	eNerveNetSourceId	messageSourceID;
+	eNerveNetSourceId	messageDestinationID;
 	uint32_t			messageNumber;
 } sNerveNetHeader;
 

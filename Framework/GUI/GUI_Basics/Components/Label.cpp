@@ -37,6 +37,13 @@ Label::Label ( String text ) :
 {
 }
 
+Label::Label ( std::string text, int x ) :
+	mLabelText ( text.c_str() )
+{
+}
+
+
+
 //==============================================================================
 //          setText()
 //

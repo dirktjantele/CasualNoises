@@ -60,6 +60,7 @@ bool PotentiometerConvCpltCallback(ADC_HandleTypeDef* hadc)
 			gNewPotDataAvailable 				= true;
 			BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 			xSemaphoreGiveFromISR(gPotSemaphoreHandle, &xHigherPriorityTaskWoken);
+			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 		}
 
 		return true;

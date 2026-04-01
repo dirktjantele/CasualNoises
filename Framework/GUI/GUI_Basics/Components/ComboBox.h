@@ -16,6 +16,9 @@
 #pragma once
 
 #include <functional>
+#include <vector>
+
+#include "Graphics/Fonts/Font.h"
 
 #include "Component.h"
 
@@ -49,7 +52,7 @@ public:
 	uint32_t getSelectedId () const noexcept { return getItemId ( mFocus ); }
 	void setFocus ( uint32_t focus ) noexcept;
 
-	bool handleUI_event ( sIncommingUI_Event* uiEvent,
+	bool handleUI_event ( void* uiEvent,
 						  bool altState, Graphics& g ) override;
 
 	std::function<void()> onChange;

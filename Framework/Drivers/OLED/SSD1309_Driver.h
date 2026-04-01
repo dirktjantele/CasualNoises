@@ -14,16 +14,21 @@
 
 #include <math.h>
 
-#include "CasualNoises.h"
+//#include "CasualNoises.h"
 #include <Core/Text/String.h>
 #include <Graphics/Fonts/Font.h>
-#include <Graphics/Geometry/Rectangle.h>
+//#include <Graphics/Geometry/Rectangle.h>
+#include "../../Graphics/Geometry/Rectangle.h"
 #include "maths.h"
+
+//#include "CasualNoises.h"
 
 #include "main.h"
 
 namespace CasualNoises
 {
+
+//class Rectangle<int32_t>;
 
 //==============================================================================
 //          SSD1309_ConfigData
@@ -112,7 +117,7 @@ public:
 	//
 	//  CasualNoises    18/03/2026  First implementation
 	//==============================================================================
-	void setClipRect ( const Rectangle<int>& rect )
+	void setClipRect ( const Rectangle<int32_t>& rect ) noexcept
 	{
 		mClipRect = rect;
 	}
@@ -124,7 +129,7 @@ public:
 	//
 	//  CasualNoises    18/03/2026  First implementation
 	//==============================================================================
-	void resetClipRect ( )
+	void resetClipRect ( ) noexcept
 	{
 		mClipRect.setX( 0 );
 		mClipRect.setY( 0 );
@@ -229,7 +234,7 @@ public:
 	//
 	//  CasualNoises    04/01/2026  First implementation
 	//==============================================================================
-	void drawRect(Rectangle<int> rect,
+	void drawRect(Rectangle<int32_t> rect,
 			eBitOperations op = eBitOperations::SetBitOp)
 	{
 		drawRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), op);
@@ -386,8 +391,8 @@ public:
 	//
 	//  CasualNoises    27/12/2024  First implementation
 	//==============================================================================
-	void drawCharacter(int32_t x, int32_t y, unsigned char c, const sFont* fontPtr,
-							eBitOperations op = eBitOperations::SetBitOp)
+	void drawCharacter( int32_t x, int32_t y, unsigned char c, const sFont* fontPtr,
+							eBitOperations op = eBitOperations::SetBitOp )
 	{
 		if (c < ' ')
 			c = ' ';
@@ -574,7 +579,7 @@ private:
 	uint8_t					mBitMap[cDisplayWidth][cDisplayHeight];
 	uint8_t					mBitMapBuffer[cBitMapBufferSize];
 
-	Rectangle<int>			mClipRect { 0, 0, cDisplayWidth, cDisplayHeight };
+	Rectangle<int32_t>		mClipRect { 0, 0, cDisplayWidth, cDisplayHeight };
 
 	//==============================================================================
 	//          clipRect()

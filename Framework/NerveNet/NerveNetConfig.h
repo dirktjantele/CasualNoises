@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "stm32h7xx.h"
+
 #include "queue.h"
 
 namespace CasualNoises

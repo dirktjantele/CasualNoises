@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include <Graphics/Geometry/Rectangle.h>
+
 #include "../../Drivers/OLED/SSD1309_Driver.h"
 
 #include "../Colour/Colour.h"
@@ -35,9 +37,12 @@ public:
 	void setColour (colour 	newColour ) { mColor = newColour; }
 	void refreshDisplay()				{ mScreen->refreshDisplay(); }
 
+	void setClipRect ( const Rectangle<int32_t>& rect ) noexcept { mScreen->setClipRect ( rect ); }
+	void resetClipRect () noexcept { mScreen->resetClipRect (); }
+
 	void fillAll ( eBitOperations op = eBitOperations::ClearBitOp )  noexcept;
-	void fillRect ( int x, int y, int width, int height, eBitOperations op = eBitOperations::SetBitOp ) noexcept;
-	void fillRect ( Rectangle<int> rect, eBitOperations op = eBitOperations::SetBitOp ) noexcept;
+	void fillRect ( int32_t x, int32_t y, int32_t width, int32_t height, eBitOperations op = eBitOperations::SetBitOp ) noexcept;
+	void fillRect ( Rectangle<int32_t> rect, eBitOperations op = eBitOperations::SetBitOp ) noexcept;
 
 private:
 

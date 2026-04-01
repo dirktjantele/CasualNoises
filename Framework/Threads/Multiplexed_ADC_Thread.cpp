@@ -96,6 +96,7 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 				BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 				if (gSemaphoreHandle != nullptr)
 					xSemaphoreGiveFromISR(gSemaphoreHandle, &xHigherPriorityTaskWoken);
+				portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
 				// Select next multiplexer channel
 				multiplexChannel = 0;
@@ -227,7 +228,7 @@ void multiplexed_ADC_Thread ( void* pvParameters )
 					if (clientQueue != nullptr)
 					{
 						sMultiplexed_ADC_Event event;
-						event.eventSourceID 		= eEventSourceID::multiplexerADC_ThreadSourceID;
+						event.eventSourceID 		= eEventSourceDestinationID::multiplexerADC_ThreadSourceID;
 						event.multiplexerNo			= i;
 						event.multiplexerChannelNo	= j;
 						event.value					= gAverageAdcData[i][j];
@@ -238,9 +239,9 @@ void multiplexed_ADC_Thread ( void* pvParameters )
 							osDelay(pdMS_TO_TICKS(10));
 							count = uxQueueSpacesAvailable ( clientQueue );
 						}
-						BaseType_t res = xQueueSendToBack ( clientQueue, (void*)&event, 10 );
+						BaseType_t res = xQueueSendToBack ( clientQueue, ( void* )&event, 10 );
 						if (res != pdPASS)
-							CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+							CN_ReportFault( eErrorCodes::FreeRTOS_ErrorRes );
 					}
 
 				}

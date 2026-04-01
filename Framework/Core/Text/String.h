@@ -11,8 +11,8 @@
 #pragma once
 
 #include <string>
-
-#include "CasualNoises.h"
+#include <string.h>
+//#include "CasualNoises.h"
 #include <Utilities/ReportFault.h>
 
 namespace CasualNoises
@@ -64,13 +64,11 @@ public:
 	/** Create a string from a character C array */
 	String ( const char* string )
 	{
-//		std::string str ( string );
-//		mStringLength = str.length();
-		mStringLength = strlen(string);
+		mStringLength = strlen ( string );
 		mStringPtr = (char*)pvPortMalloc ( mStringLength + 1 );
-		if (mStringPtr == nullptr)
-			CN_ReportFault(eErrorCodes::unknowError);
-		for (uint16_t i = 0; i < mStringLength; ++i)
+		if ( mStringPtr == nullptr )
+			CN_ReportFault ( eErrorCodes::unknowError );
+		for ( uint16_t i = 0; i < mStringLength; ++i )
 			mStringPtr[i] = string[i];
 		mStringPtr[mStringLength] = 0;
 	}

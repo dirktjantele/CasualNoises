@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "main.h"
+#include "stm32h7xx_hal.h"
 
 // CN_TIM_PeriodElapsedCallback handler
 // ------------------------------------
@@ -26,8 +26,8 @@ void CN_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 #ifdef CASUALNOISES_TxRxCplt_CALLBACKS
 
 // SPI DMA Tx complete callback handlers
-typedef bool (*CN_HAL_SPI_TxCpltCallback)(SPI_HandleTypeDef* hspi);
-void add_HAL_SPI_TxCpltCallback(CN_HAL_SPI_TxCpltCallback callback);
+typedef bool ( *CN_HAL_SPI_TxCpltCallback )( SPI_HandleTypeDef* hspi );
+void add_HAL_SPI_TxCpltCallback ( CN_HAL_SPI_TxCpltCallback callback );
 
 // SPI DMA TxRx complete callback handlers
 typedef bool (*CN_HAL_SPI_TxRxCpltCallback)(SPI_HandleTypeDef* hspi);
@@ -49,7 +49,7 @@ void add_ADC_ConvCpltCallback(ADC_ConvCpltCallback callback);
 // ------------------------------
 #ifdef CASUALNOISES_EXTI_CALLBACKS
 
-typedef bool (*GPIO_EXTI_Callback)(uint16_t GPIO_Pin);
+typedef bool ( *GPIO_EXTI_Callback )( uint16_t GPIO_Pin );
 void add_EXTI_ConvCpltCallback(GPIO_EXTI_Callback callback);
 
 #endif

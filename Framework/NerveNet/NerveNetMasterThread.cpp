@@ -24,7 +24,7 @@
 
 #include "SystemConfig.h"
 
-CasualNoises::NerveNetMasterThread* gNerveNetMasterThreadPtr [MAX_NO_OF_NERVENET_MASTER_THREADS];
+CasualNoises::NerveNetMasterThread* gNerveNetMasterThreadPtr [ MAX_NO_OF_NERVENET_MASTER_THREADS ];
 
 namespace CasualNoises
 {
@@ -44,8 +44,21 @@ struct sRunNerveNetMasterThreadParams
 //  CasualNoises    18/07/2025  First implementation
 //  CasualNoises	25/07/2025	Made function thread save
 //==============================================================================
-bool NerveNetMasterThread::sendMessage( const void* messagePtr, uint32_t size, bool waitForSpace )
+bool NerveNetMasterThread::sendMessage( const void* messagePtr, uint32_t size, bool waitForSpace ) noexcept
 {
+
+	// Check source and destination ID's
+	tNerveNetMessageHeader* headerPtr = ( tNerveNetMessageHeader* ) messagePtr;
+	if ( ! ( ( headerPtr->sourceID == eNerveNetSourceId::FellhornDeviceBoard ) ||
+			 ( headerPtr->sourceID == eNerveNetSourceId::FellhornNorthSide ) ||
+			 ( headerPtr->sourceID == eNerveNetSourceId::FellhornSouthSide ) ||
+			 ( headerPtr->sourceID == eNerveNetSourceId::FellhornBothSides ) ) )
+		CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
+	if ( ! ( ( headerPtr->destinationID == eNerveNetSourceId::FellhornDeviceBoard ) ||
+			 ( headerPtr->destinationID == eNerveNetSourceId::FellhornNorthSide ) ||
+			 ( headerPtr->destinationID == eNerveNetSourceId::FellhornSouthSide ) ||
+			 ( headerPtr->destinationID == eNerveNetSourceId::FellhornBothSides) ) )
+		CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 
 	// Enough remaining buffer space?
 	while ( waitForSpace && ( mRemainingSpace < size ) )
@@ -91,7 +104,7 @@ bool NerveNetMasterThread::sendMessage( const void* messagePtr, uint32_t size, b
 //
 //  CasualNoises    11/07/2025  First implementation
 //==============================================================================
-sNerveNetMessage* NerveNetMasterThread::startNewDataExchange ()
+sNerveNetMessage* NerveNetMasterThread::startNewDataExchange () noexcept
 {
 
 	// Ignore request while reseting slave thread
@@ -125,6 +138,25 @@ sNerveNetMessage* NerveNetMasterThread::startNewDataExchange ()
 	// Return message to be processed by the AudioProcessorPlayer next
 	return mRxMessageBuffers[mRxProcessingBufferIndex];
 
+}
+
+//==============================================================================
+//          checkCycleCount()
+//
+// This should be called at regular intervals to check if communication with
+//	the slave side is still running
+// If not, CN_ReportFault is called
+//
+//  CasualNoises    29/03/2026  First implementation
+//==============================================================================
+void NerveNetMasterThread::checkCycleCount () noexcept
+{
+	uint32_t count = mMasterCycle;
+	if ( ( count == 0 ) &&
+		 ( mThreadState != eNerveNetMasterThreadState::resetSlave ) &&
+		 ( mThreadState != eNerveNetMasterThreadState::idle ) )
+		CN_ReportFault( eErrorCodes::MasterThreadBlocked );
+	mMasterCycle = 0;
 }
 
 //==============================================================================
@@ -222,6 +254,9 @@ bool NerveNetMasterThread::SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 			// Set REQ line low
 			HAL_GPIO_WritePin (mNerveNet_REQ_Port, mNerveNet_REQ_Pin, GPIO_PIN_RESET );
 
+			// Increment cycle counter
+			mMasterCycle += 1;
+
 		} else
 		{
 			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
@@ -238,8 +273,9 @@ bool NerveNetMasterThread::SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 // NerveNet master thread
 //
 //  CasualNoises    09/07/2025  First implementation
+//  CasualNoises    30/03/2026  Source and destination ID added
 //==============================================================================
-void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
+void NerveNetMasterThread::mainNerveNetMasterThread ( void* pvParameters )
 {
 
 	// Get parameters
@@ -262,16 +298,17 @@ void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
 	{
 		mTxMessageBuffers [i] = new sNerveNetMessage;
 		memset( mTxMessageBuffers[i], 0, sizeof ( sNerveNetMessage ) );
-		mTxMessageBuffers [i]->header.messageSourceID = eNerveNetSourceId::eFellhornDeviceBoard;
+		mTxMessageBuffers [i]->header.messageSourceID = eNerveNetSourceId::awaitingId;
 		mTxMessageBuffers [i]->header.messageNumber = 0;
 		mTxMessageBuffers [i]->data.size			= 0;
 	}
 	for (uint32_t i = 0; i < cNoOfRxMessageBuffers; ++i)
 	{
 		mRxMessageBuffers [i] = new sNerveNetMessage;
-		mRxMessageBuffers [i]->header.messageSourceID = eNerveNetSourceId::eAwaitingId;
-		mRxMessageBuffers [i]->header.messageNumber = 0;
-		mRxMessageBuffers [i]->data.size			= 0;
+		mRxMessageBuffers [i]->header.messageSourceID 		= eNerveNetSourceId::awaitingId;
+		mRxMessageBuffers [i]->header.messageDestinationID 	= eNerveNetSourceId::awaitingId;
+		mRxMessageBuffers [i]->header.messageNumber 		= 0;
+		mRxMessageBuffers [i]->data.size					= 0;
 	}
 
 	// Buffer used to build up data to be send on next exchange
@@ -292,7 +329,7 @@ void NerveNetMasterThread::mainNerveNetMasterThread(void* pvParameters)
 	}
 
 	// Signal that thread is up and running
-	if (nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetRunningFlagPtr != nullptr)
+	if ( nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetRunningFlagPtr != nullptr )
 	{
 		*nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetRunningFlagPtr = true;
 	}
@@ -337,7 +374,7 @@ void runNerveNetMasterThread(void* pvParameters)
 //
 //  CasualNoises    09/07/2025  First implementation
 //==============================================================================
-BaseType_t startNerveNetMasterThread ( CasualNoises::NerveNetMasterThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr)
+BaseType_t startNerveNetMasterThread ( CasualNoises::NerveNetMasterThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr ) noexcept
 {
 	assert(MAX_NO_OF_NERVENET_MASTER_THREADS == 1);
 
@@ -346,7 +383,7 @@ BaseType_t startNerveNetMasterThread ( CasualNoises::NerveNetMasterThread* threa
 	params.threadPtr = threadPtr;
 
 	// Create the thread to scan the ADC convertions
-	BaseType_t res = xTaskCreate ( runNerveNetMasterThread, "NerveNetMasterThread", DEFAULT_STACK_SIZE, &params,
+	BaseType_t res = xTaskCreate ( runNerveNetMasterThread, "NerveNetMaster", DEFAULT_STACK_SIZE, &params,
 			NERVENET_THREAD_PRIORITY, xHandlePtr );
 	return res;
 

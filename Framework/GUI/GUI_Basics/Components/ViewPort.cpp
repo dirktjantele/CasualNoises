@@ -38,7 +38,7 @@ ViewPort::ViewPort ( String name ) :
 void ViewPort::applyVerticalScrolling ( int32_t amount )
 {
 	int32_t minY 		   = getHeight() - mContentsComponentPtr->getHeight();
-	int32_t newOffset = mOffset + amount;
+	int32_t newOffset = mOffset - amount;
 	if ( newOffset > 0)
 		newOffset = 0;
 	else if ( newOffset < minY )

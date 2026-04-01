@@ -198,7 +198,7 @@ HAL_StatusTypeDef W25Qxx_Driver::eraseAllDevices()
 	}
 
 	// Load the first sector of the first device into the cache
-	res = fastSectorRead(0);
+	res = fastSectorRead ( 0, true );
 	mCurrentSectorNo = 0;
 
 	error:
