@@ -26,6 +26,8 @@
 #include <GUI/GUI_Basics/Components/ProgressBar.h>
 #include <Graphics/Geometry/Rectangle.h>
 
+#include "NerveNet/NerveNetMasterThread.h"
+
 namespace CasualNoises
 {
 
@@ -52,9 +54,9 @@ MainPage::MainPage (
 	// Build a ComboBox
 	static String names[]
 	{
-	    String( (char*) "New Performance" ),
-		String( (char*) "Calibration" ),
-		String( (char*) "System Info" ),
+	    String ( "New Performance" ),
+		String ( "Calibration" ),
+		String ( "System Info" ),
 	};
 	mComboBoxPtr = new ComboBox( String( (char*) "ComboBox" ) );
 	uint32_t itemNo = 0;
@@ -138,7 +140,7 @@ void MainPage::resized()
 {
 
     // Box around this page
-    Rectangle<int> rect = getGlobalBounds();
+    Rectangle<int32_t> rect = getGlobalBounds();
     mOuterBoxPtr->setBounds ( rect );
 
     // Main menu
@@ -290,7 +292,7 @@ void CalibrationPage::resized()
 {
 
     // Box around this page
-    Rectangle<int> rect = getGlobalBounds();
+    Rectangle<int32_t> rect = getGlobalBounds();
     mOuterBoxPtr->setBounds ( rect );
 
     // Main menu
@@ -446,7 +448,7 @@ void PotentiometerCalibrationPage::resized()
 
 
     // Box around this page
-    Rectangle<int> rect = getGlobalBounds();
+    Rectangle<int32_t> rect = getGlobalBounds();
     mOuterBoxPtr->setBounds ( rect );
 
     // Place labels
@@ -484,7 +486,7 @@ void PotentiometerCalibrationPage::processADC_Event ( sIncommingUI_Event* uiEven
 {
 
 	uint32_t value = uiEvent->multiplexed_ADC_Event.value;
-	if (uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID)
+	if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
 	{
 		String text;
 		if ( uiEvent->multiplexed_ADC_Event.multiplexerNo == 0 )
@@ -579,7 +581,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::AwaitingMins:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::AwaitingMins );
-		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
+		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
 		{
 			dimSwitchLeds ();
 			mAwaitingMinLabelPtr->setVisible ( false );
@@ -592,7 +594,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::ProcessingMins:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::ProcessingMins );
-		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
+		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
 		{
 			processADC_Event ( uiEvent );
 			mCalibrationValues.minValues [uiEvent->multiplexed_ADC_Event.multiplexerNo]
@@ -610,7 +612,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::AwaitingMaxs:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::AwaitingMaxs );
-		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
+		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID ) &&
 			( uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::RIGTH_ARROW_SWITCH ) )
 		{
 			dimSwitchLeds ();
@@ -625,7 +627,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::ProcessingMaxs:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::ProcessingMaxs );
-		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
+		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
 		{
 			mAwaitingMaxLabelPtr->setVisible ( false );
 			mProgressBarPtr->setVisible ( true );
@@ -646,7 +648,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::Completion:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::Completion );
-		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
+		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID ) &&
 			( uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::RIGTH_ARROW_SWITCH ) )
 		{
 			dimSwitchLeds ();
@@ -809,7 +811,7 @@ void CV_CalibrationPage::resized()
 {
 
     // Box around this page
-    Rectangle<int> rect = getGlobalBounds();
+    Rectangle<int32_t> rect = getGlobalBounds();
     mOuterBoxPtr->setBounds ( rect );
 
 

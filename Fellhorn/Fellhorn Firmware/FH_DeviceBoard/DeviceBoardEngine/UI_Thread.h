@@ -16,6 +16,7 @@
 #include <Threads/SPI_LED_Thread.h>
 #include <Drivers/OLED/SSD1309_Driver.h>
 #include <NerveNet/NerveNetMessage.h>
+#include "Threads/Multiplexed_ADC_Thread.h"
 
 namespace CasualNoises
 {

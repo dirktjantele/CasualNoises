@@ -26,7 +26,9 @@
 #include "maths.h"
 
 #include "SynthEngineMessage.h"
-#include "Synthesizer/Basics/ADSR.h"
+//#include "Synthesizer/Basics/ADSR.h"
+
+#include <CommonUtilities.h>
 
 #include "string.h"
 
@@ -130,7 +132,7 @@ void SouthSideAudioProcessor::processNerveNetData (
 //
 //  CasualNoises    13/07/2025  First implementation
 //==============================================================================
-void SouthSideAudioProcessor::processBlock ( AudioBuffer& buffer, AudioBuffer& NN_buffer )
+void SouthSideAudioProcessor::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buffer )
 {
 //	setTimeMarker_4();
 
@@ -152,7 +154,7 @@ void SouthSideAudioProcessor::processBlock ( AudioBuffer& buffer, AudioBuffer& N
 */
 //	resetTimeMarker_4();
 }
-
+/*
 //==============================================================================
 //          normalize1V_OCT
 //
@@ -169,7 +171,7 @@ inline float normalize1V_OCT ( uint16_t value )
 //==============================================================================
 //          normalizeCV_Input
 //
-// Convert a CV ADC values into a range from -1.0 to 1.0								ToDo: use calibration settings
+// Convert a CV ADC values into a range from -1.0 to 1.0							ToDo: use calibration settings
 //
 //	CasualNoises    11/03/2026  First implementation
 //==============================================================================
@@ -178,7 +180,7 @@ inline float normalizeCV_Input ( uint16_t value )
 	float volts = ( (float)value * 2) / 65535.0f;
 	return 1.0f - volts;
 }
-
+*/
 //==============================================================================
 //          handle_ADC_Data
 //

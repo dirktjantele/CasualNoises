@@ -1,0 +1,95 @@
+write a c++ class that implements a stereo audio ping-pong echo effect with a max time of 1 sec. Create a method processBlock that proceses a block of 512 samples.
+suplly setter methods for delay time, feedback and wet/dry ratio
+
+#pragma once
+#include <vector>
+#include <algorithm>
+
+class PingPongDelay
+{
+public:
+    PingPongDelay(float sampleRate)
+        : sampleRate(sampleRate)
+    {
+        const int maxDelaySamples = static_cast<int>(sampleRate * maxDelayTimeSec);
+        bufferL.resize(maxDelaySamples, 0.0f);
+        bufferR.resize(maxDelaySamples, 0.0f);
+    }
+
+    // --- Setters ---
+    void setDelayTime(float seconds)
+    {
+        delayTimeSec = std::clamp(seconds, 0.0f, maxDelayTimeSec);
+        delaySamples = static_cast<int>(delayTimeSec * sampleRate);
+    }
+
+    void setFeedback(float fb)
+    {
+        feedback = std::clamp(fb, 0.0f, 0.99f);
+    }
+
+    void setWetDry(float mix)
+    {
+        wet = std::clamp(mix, 0.0f, 1.0f);
+        dry = 1.0f - wet;
+    }
+
+    // --- Main processing method ---
+    void processBlock(float* left, float* right, int numSamples = 512)
+    {
+        for (int i = 0; i < numSamples; ++i)
+        {
+            // Read delayed samples
+            float delayedL = bufferL[readIndex];
+            float delayedR = bufferR[readIndex];
+
+            // Ping-pong crossfeed:
+            // Left input feeds left delay, but right delay receives left delayed signal, and vice versa.
+            float inL = left[i];
+            float inR = right[i];
+
+            float writeL = inL + delayedR * feedback;
+            float writeR = inR + delayedL * feedback;
+
+            // Write into buffers
+            bufferL[writeIndex] = writeL;
+            bufferR[writeIndex] = writeR;
+
+            // Output mix
+            left[i]  = dry * inL + wet * delayedL;
+            right[i] = dry * inR + wet * delayedR;
+
+            // Advance circular buffer indices
+            incrementIndices();
+        }
+    }
+
+private:
+    float sampleRate;
+    static constexpr float maxDelayTimeSec = 1.0f;
+
+    std::vector<float> bufferL, bufferR;
+
+    float delayTimeSec = 0.5f;
+    float feedback = 0.5f;
+    float wet = 0.5f, dry = 0.5f;
+
+    int delaySamples = 0;
+    int writeIndex = 0;
+
+    // Read index is always writeIndex - delaySamples (wrapped)
+    int readIndex = 0;
+
+    void incrementIndices()
+    {
+        const int bufferSize = static_cast<int>(bufferL.size());
+
+        writeIndex++;
+        if (writeIndex >= bufferSize)
+            writeIndex = 0;
+
+        readIndex = writeIndex - delaySamples;
+        if (readIndex < 0)
+            readIndex += bufferSize;
+    }
+};

@@ -13,18 +13,21 @@
 
 #include "UI_Thread.h"
 
-#include <UI_Handlers/PageManager.h>
-#include <UI_Handlers/RootPage.h>
-#include <Threads/TLV_DriverThread.h>
-#include <NerveNet/NerveNetMessage.h>
-#include <NerveNet/NerveNetMasterThread.h>
+#include "Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h"
+
+#include "UI_Handlers/PageManager.h"
+#include "UI_Handlers/RootPage.h"
+#include "Threads/TLV_DriverThread.h"
+#include "NerveNet/NerveNetMessage.h"
+#include "NerveNet/NerveNetMasterThread.h"
 
 #include "UI_Handlers/MainPage.h"
 #include "SystemConfig.h"
 
 #include "YellowPages.h"
+#include "MCU_BoardInfo.h"
 
-#include <SynthEngineMessage.h>
+#include "SynthEngineMessage.h"
 
 namespace CasualNoises
 {
@@ -35,7 +38,7 @@ sSystemSettings gSystemSettings;
 //==============================================================================
 //          handleNerveNetCallBacks ()
 //
-// Handle incoming data from NerveNet
+// Make a copy of the event and post it onto the queue
 //
 //  CasualNoises    22/01/2026  First implementation
 //==============================================================================
@@ -45,11 +48,11 @@ void handleNerveNetCallBacks ( uint32_t size, uint8_t* ptr )
 	// Make a copy of the NerveNet data and place it on the UI message queue
 	uint8_t* copy = (uint8_t*) pvPortMalloc ( size );
 	memcpy ( copy, ptr, size );
-	sIncommingUI_Event event;
-	event.nerveNetEvent.eventSourceID = eEventSourceID::nerveNetSourceID;
-	event.nerveNetEvent.eventLength   = size;
-	event.nerveNetEvent.eventdataPtr  = copy;
-	xQueueSend ( gYellowPages.gUI_ThreadQueueHandle, &event, portMAX_DELAY );
+	sNerveNetEvent event;
+	event.eventSourceID = eEventSourceDestinationID::nerveNetNorthSideSourceID;
+	event.eventLength	= size;
+	event.eventdataPtr	= copy;
+	xQueueSend ( gYellowPages.gUI_ThreadQueueHandle, (const void*) &event, portMAX_DELAY );
 
 }
 
@@ -109,6 +112,52 @@ void createInitialTLVs ( QueueHandle_t TLV_DriverQueue )
 			CN_ReportFault ( eErrorCodes::UI_ThreadError );
 	}
 
+}
+
+//==============================================================================
+//          handleLocalEvent()
+//
+// 	Handle all NerveNet events that can be processed by the UI_Thread
+//
+//  CasualNoises    30/03/2026  First implementation
+//==============================================================================
+void handleLocalEvent ( sIncommingUI_Event* uiEvent )
+{
+
+	// Handle only NerveNet events
+	if ( ( uiEvent->nerveNetEvent.eventSourceID != eEventSourceDestinationID::nerveNetNorthSideSourceID ) &&
+		 ( uiEvent->nerveNetEvent.eventSourceID != eEventSourceDestinationID::nerveNetSouthSideSourceID ) )
+		return;
+
+	// Process all data
+	tNerveNetMessageHeader* headerPtr 	= ( tNerveNetMessageHeader* ) uiEvent->nerveNetEvent.eventdataPtr;
+	uint32_t eventSize 					= uiEvent->nerveNetEvent.eventLength;
+ 	while ( eventSize > 0 )
+	{
+
+ 		// Process event
+ 		eSynthEngineMessageType tag = (eSynthEngineMessageType)headerPtr->messageTag;
+ 		switch ( tag )
+ 		{
+ 		case eSynthEngineMessageType::requestSetupInfo:
+ 		{
+ 			tRequestSetupInfoReplyData* dataPtr = ( tRequestSetupInfoReplyData* ) ((uint8_t*) headerPtr + sizeof ( tNerveNetMessageHeader ) );
+ 			if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID )
+ 				gMCU_BoardInfo.NorthSide.version = dataPtr->version;
+ 			else
+ 				gMCU_BoardInfo.SouthSide.version = dataPtr->version;
+ 		}
+ 			break;
+ 		default:
+ 			break;
+ 		}
+
+		// Next event
+		uint32_t size = headerPtr->messageLength;
+		eventSize -= size;
+		headerPtr = (tNerveNetMessageHeader*)((uint8_t*)headerPtr + size);
+
+	}
 }
 
 //==============================================================================
@@ -187,9 +236,9 @@ void UI_Thread(void* pvParameters)
 
 	// Initial UI state
 	static UI_StateData UI_State;
-	UI_State.version	= 0x312e3076;			// v0.1
-	UI_State.count		= 0;
-	uint32_t* ptr 		= ( uint32_t* ) &UI_State;
+	UI_State.version		 = 0x312e3076;			// v0.1
+	UI_State.count			 = 0;
+	uint32_t* UI_UI_StatePtr = ( uint32_t* ) &UI_State;
 
 	// TLV used to hold the current UI state
 	bool saveState = false;
@@ -205,17 +254,17 @@ void UI_Thread(void* pvParameters)
 	}
 	if (saveState)																	// Save the new TLV
 	{
-		addTLV_Bytes ( driverQueueHandle, (uint32_t) eTLV_Tag::UI_CurrentState, sizeof ( UI_StateData ), ptr );
+		addTLV_Bytes ( driverQueueHandle, (uint32_t) eTLV_Tag::UI_CurrentState, sizeof ( UI_StateData ), UI_UI_StatePtr );
 	}
 
 	// Update cycle counter
-	readTLV_TagBytes (  driverQueueHandle, (uint32_t) eTLV_Tag::UI_CurrentState, sizeof ( UI_StateData ), ptr );
+	readTLV_TagBytes (  driverQueueHandle, (uint32_t) eTLV_Tag::UI_CurrentState, sizeof ( UI_StateData ), UI_UI_StatePtr );
 	UI_State.count += 1;
-	updateTLV_Bytes ( driverQueueHandle, (uint32_t) eTLV_Tag::UI_CurrentState, sizeof ( UI_StateData ), ptr  );
+	updateTLV_Bytes ( driverQueueHandle, (uint32_t) eTLV_Tag::UI_CurrentState, sizeof ( UI_StateData ), UI_UI_StatePtr  );
 
 	// Create a queue to receive events from encoder and other threads
 	const uint32_t cQueueLength = 10;
-	QueueHandle_t xUI_ThreadQueue = xQueueCreate ( cQueueLength, sizeof(sIncommingUI_Event) );
+	QueueHandle_t xUI_ThreadQueue = xQueueCreate ( cQueueLength, sizeof( sIncommingUI_Event ) );
 	if (xUI_ThreadQueue == nullptr)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 	gYellowPages.gUI_ThreadQueueHandle = xUI_ThreadQueue;
@@ -287,19 +336,24 @@ void UI_Thread(void* pvParameters)
 	while ( ! gYellowPages.gNetMasterThreadRunning )
 		vTaskDelay ( pdMS_TO_TICKS ( 1 )  );
 
-	// Send initialization message to the North Side
+	// Send initialization message to North & South Side
+	bool success;
 	tInitMessage initMessage;
+	initMessage.header.sourceID		 = eNerveNetSourceId::FellhornDeviceBoard;
+	initMessage.header.destinationID = eNerveNetSourceId::FellhornBothSides;								// North- & South Side
 	initMessage.header.messageTag 	 = (uint32_t) eSynthEngineMessageType::initSynthEngine;
 	initMessage.header.messageLength = sizeof ( tInitMessage );
 	initMessage.initMessage			 = eSynthEngineInitType::hardInit;
-	bool success = gNerveNetMasterThreadPtr[0]->sendMessage ( &initMessage, sizeof ( tInitMessage ) );
+	success = gNerveNetMasterThreadPtr[0]->sendMessage ( &initMessage, sizeof ( tInitMessage ) );
 	if ( ! success)
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 
-	// Send setup info request
+	// Send setup info request to North & South Side
 	tRequestSetupInfoMessageData setupMessage;
-	setupMessage.header.messageTag 	 = (uint32_t) eSynthEngineMessageType::requestSetupInfo;
-	setupMessage.header.messageLength = sizeof ( tRequestSetupInfoMessageData );
+	setupMessage.header.sourceID		= eNerveNetSourceId::FellhornDeviceBoard;
+	setupMessage.header.destinationID 	= eNerveNetSourceId::FellhornBothSides;							// North- & South Side
+	setupMessage.header.messageTag 	 	= (uint32_t) eSynthEngineMessageType::requestSetupInfo;
+	setupMessage.header.messageLength	= sizeof ( tRequestSetupInfoMessageData );
 	success = gNerveNetMasterThreadPtr[0]->sendMessage ( &setupMessage, sizeof(tRequestSetupInfoMessageData) );
 	if ( ! success )
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
@@ -321,7 +375,7 @@ void UI_Thread(void* pvParameters)
 		res = xQueueReceive ( xUI_ThreadQueue, (void *) &event, 1000 );
 		if ( res == pdPASS)
 		{
-			if ( event.encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID )
+			if ( event.encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID )
 			{
 				bool altState  = ! ( event.encoderEvent.switchBitMap & ( 0x00000001 << (uint32_t)eSwitchBitmapPos::ALT_SWITCH ) );
 				bool saveState = ! ( event.encoderEvent.switchBitMap & ( 0x00000001 << (uint32_t)eSwitchBitmapPos::SAVE_SWITCH ) );
@@ -329,6 +383,12 @@ void UI_Thread(void* pvParameters)
 				{
 					deleteAllTLVs ( driverQueueHandle );
 				}
+			} else if ( event.nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID )
+			{
+				eEventSourceDestinationID sourceId = event.nerveNetEvent.eventSourceID;
+				uint32_t size 					   = event.nerveNetEvent.eventLength;
+				uint8_t* dataPtr				   = event.nerveNetEvent.eventdataPtr;
+
 			}
 		}
 		osDelay ( pdMS_TO_TICKS ( 10 ) );
@@ -375,11 +435,19 @@ void UI_Thread(void* pvParameters)
 		res = xQueueReceive ( xUI_ThreadQueue, (void *) &event, 1 );
 		if ( res == pdPASS )
 		{
+
+			// Try to handle this event local
+			handleLocalEvent ( &event );
+
+			// Hand event to the PageManger
 			pageManagerPtr->handleUI_event ( &event, &gSystemSettings );
-			if ( event.nerveNetEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
+
+			// Free memory if the event was a NerveNet event
+			if ( ( event.nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID ) ||
+			     ( event.nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID ) )
 				vPortFree ( event.nerveNetEvent.eventdataPtr );
-		}
-		else
+
+		} else
 		{
 			gNerveNetMasterThreadPtr[0]->startNewDataExchange ();
 		}

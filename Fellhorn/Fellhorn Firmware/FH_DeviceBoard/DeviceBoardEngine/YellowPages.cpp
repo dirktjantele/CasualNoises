@@ -13,8 +13,6 @@
 
 #include "YellowPages.h"
 
-#include "main.h"
-
 namespace CasualNoises
 {
 

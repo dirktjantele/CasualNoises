@@ -1,0 +1,11 @@
+NorthSideAudioProcessor::processBlock:
+
+Audio buffer size 256 samples
+
+- Only copy the nerve net generated audio into the output buffer
+	
+	buffer.copyAudio(NN_buffer)		270us			
+	
+- Just a single empty effect  		?
+
+- Echo effect 						700us

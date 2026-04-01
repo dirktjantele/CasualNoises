@@ -36,14 +36,13 @@ namespace CasualNoises
 void PulsarSynthEngine::prepareToPlay (
 		float sampleRate,
 		uint32_t maximumExpectedSamplesPerBlock,
-		void* inSynthParams)
+		void* /*inSynthParams*/)
 {
 
 	// store settings
 	mSampleRate 					    = sampleRate;
 	mMaximumExpectedSamplesPerBlock     = maximumExpectedSamplesPerBlock;
-	sSynthesiserParams*	synthParamsPtr	= (sSynthesiserParams*)inSynthParams;
-	float frequency						= synthParamsPtr->frequency;
+	float frequency = 220.0f;														// ToDo implement presets in flash
 
 	mPulsarSynthPtr	  = new PulsarSynth(mSampleRate, frequency);
 
@@ -56,7 +55,7 @@ void PulsarSynthEngine::prepareToPlay (
 //
 //  CasualNoises    24/07/2025  First implementation
 //==============================================================================
-void PulsarSynthEngine::releaseResources()
+void PulsarSynthEngine::releaseResources()											// ToDo save current state to flash
 {
 	CN_ReportFault(eErrorCodes::runtimeError);			// Not implemented yet
 }
@@ -99,9 +98,9 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 	case eSynthEngineMessageType::potentiometerValue:	// Update potentiometer values
 	{
 		tPotValueMessage* messagePtr = (tPotValueMessage*)ptr;
-		uint8_t multNo = messagePtr->multiplexerNo;
-		uint8_t chanNo = messagePtr->multiplexerChannelNo;
-		ePotentioMeterId potId  = ( ePotentioMeterId)( ( multNo << 4	) + chanNo );
+		uint8_t multiplexerNo 		 = messagePtr->multiplexerNo;
+		uint8_t multiplexerChannelNo = messagePtr->multiplexerChannelNo;
+		ePotentioMeterId potId  = ( ePotentioMeterId )( ( multiplexerNo << 4	) + multiplexerChannelNo );
 		float potValue = (float)messagePtr->potValue / 0x0000ffff;
 		switch ( potId )
 		{
@@ -162,13 +161,13 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 //
 //  CasualNoises    24/07/2025  First implementation
 //==============================================================================
-void PulsarSynthEngine::processBlock ( AudioBuffer& buffer, AudioBuffer& NN_buffer )
+void PulsarSynthEngine::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buffer )
 {
 
-	float* lwptr = NN_buffer.getWritePointer(0);
-	float* rwptr = NN_buffer.getWritePointer(1);
+	float* lwptr = NN_buffer->getWritePointer(0);
+	float* rwptr = NN_buffer->getWritePointer(1);
 
-	uint32_t noSamples = NN_buffer.getNumSamples();
+	uint32_t noSamples = NN_buffer->getNumSamples();
 
 	constexpr double f0 = 8.1757989156;
 	float frequency = f0 * std::pow(2.0, mTargetFrequency + mFrequencyOffset);

@@ -13,11 +13,13 @@
   ==============================================================================
 */
 
+//#ifdef debugging
+
 #pragma once
 
 #include "CommonDefinitions.h"
 
-#include <NerveNet/NerveNetMessageHeader.h>
+#include "NerveNet/NerveNetMessageHeader.h"
 
 namespace CasualNoises
 {
@@ -44,6 +46,7 @@ enum class eSynthEngineInitType
 /***************************************** tInitMessageData *******************************/
 typedef struct
 {
+
 	tNerveNetMessageHeader		header;
 	eSynthEngineInitType		initMessage;
 } tInitMessage;
@@ -56,7 +59,7 @@ typedef struct
 
 typedef struct
 {
-	tNerveNetMessageHeader		header;
+//	tNerveNetMessageHeader		header;
 	uint32_t					version;
 } tRequestSetupInfoReplyData;
 
@@ -104,3 +107,5 @@ typedef struct
 } tSetFrequencyMessage;
 
 }	// namespace CasualNoises
+
+//#endif

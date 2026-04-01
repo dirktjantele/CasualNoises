@@ -26,12 +26,14 @@
 #include <UI_Definitions.h>
 #include <YellowPages.h>
 
-#include "CasualNoises.h"
 #include "SystemConfig.h"
 
 #include "UI_Thread.h"
 
-//#include <NerveNet/NerveNetMessage.h
+#include <NerveNet/NerveNetMasterThread.h>
+#include <NerveNet/NerveNetSlaveThread.h>
+#include "NerveNet/NerveNetConfig.h"
+#include "Threads/TriggerThread.h"
 
 #include "NorthSideConnection.h"
 
@@ -243,6 +245,8 @@ int main(void)
   MX_ADC2_Init();
   MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
+
+//  HAL_Delay( 10000 );
 
   /* USER CODE END 2 */
 
@@ -588,7 +592,7 @@ static void MX_SPI4_Init(void)
   hspi4.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi4.Init.NSS = SPI_NSS_SOFT;
-  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -838,7 +842,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : NERVE_NET_REQ_Pin */
   GPIO_InitStruct.Pin = NERVE_NET_REQ_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(NERVE_NET_REQ_GPIO_Port, &GPIO_InitStruct);
 
@@ -905,13 +909,15 @@ void StartDefaultTask(void *argument)
     size_t xFreeHeapSize = xPortGetFreeHeapSize();
     gInitFreeHeapSize = xFreeHeapSize;
 
+    BaseType_t res;
+/*
     // Create a trigger thread to toggle TimeMarker_1
     BaseType_t res;
     TaskHandle_t xHandle;
 	res = xTaskCreate(CasualNoises::TriggerThread, "TriggerThread", 32, nullptr,
 			TRIGGER_THREAD_PRIORITY, &xHandle);
 	UNUSED(res);
-
+*/
 	// Create a signature map for all encoders/switches
 	uint32_t num;
 	constexpr uint32_t noOfEncoders 	= 1 + 7;			// 1 encoder & 7 switches
@@ -1086,6 +1092,7 @@ void StartDefaultTask(void *argument)
 		osDelay ( pdMS_TO_TICKS (100) );
 		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
 		osDelay( pdMS_TO_TICKS ( 700) );
+		nerveNetMasterThread.checkCycleCount ();
 	}
 
   /* USER CODE END 5 */

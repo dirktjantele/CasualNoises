@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "../UI_Thread.h"
 #include "../../DeviceBoardEngine/UI_Definitions.h"
 
@@ -34,23 +36,23 @@ class RootPage
 {
 public:
 
-	 RootPage() = delete;
-	 RootPage(SSD1309_Driver* m_oledDriverPtr,
-			  QueueHandle_t driverQueueHandle,
-			  PageManager* pageManagerPtr);
+	 RootPage () = delete;
+	 RootPage ( SSD1309_Driver* m_oledDriverPtr,
+			  	QueueHandle_t driverQueueHandle,
+				PageManager* pageManagerPtr );
 	virtual ~RootPage() = default;
 
 	void paintAll(Graphics& g);
 
-	virtual void paint(Graphics& g) 	= 0;
+	virtual void paint ( Graphics& g ) 	= 0;
 	virtual void resized() 				= 0;
 
 	virtual void loadContext() 			= 0;
 	virtual void saveContext() 			= 0;
 
-	bool handleUI_event (sIncommingUI_Event* uiEvent,
-						 bool altState, Graphics& g,
-						 sSystemSettings* settingsPtr );
+	bool handleUI_event ( sIncommingUI_Event* uiEvent,
+						  bool altState, Graphics& g,
+						  sSystemSettings* settingsPtr );
 
 protected:
 
@@ -58,12 +60,12 @@ protected:
 	QueueHandle_t 	mTLV_DriverQueueHandle	{ nullptr };
 	PageManager* 	mPageManagerPtr			{ nullptr };
 
-	Rectangle< int > 			mLocalBounds;
+	Rectangle< int32_t > 			mLocalBounds;
 
 	void addChildComponent ( Component* child );
 	void addAndMakeVisible ( Component* child );
 
-	Rectangle<int> getGlobalBounds() const
+	Rectangle<int32_t> getGlobalBounds() const
 	{
 		return mGlobalBounds;
 	}
@@ -77,7 +79,7 @@ protected:
 	void setSwitchLed  ( eLED_BitNums led );
 
 private:
-	Rectangle< int > 			mGlobalBounds;
+	Rectangle< int32_t > 		mGlobalBounds;
 
 	std::vector<Component*> 	mChildren;
 

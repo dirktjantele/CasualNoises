@@ -1,0 +1,62 @@
+hoe implementeer ik een pitch shifter in c++
+
+
+#include <vector>
+#include <cmath>
+
+class PitchShifter {
+public:
+    PitchShifter(double sampleRate, int grainSize = 1024, int overlap = 4)
+        : fs(sampleRate), grainSize(grainSize), overlap(overlap)
+    {
+        buffer.resize(grainSize * 4, 0.0f);
+        window.resize(grainSize);
+
+        // Hann window
+        for (int i = 0; i < grainSize; i++)
+            window[i] = 0.5 * (1.0 - std::cos(2.0 * M_PI * i / (grainSize - 1)));
+    }
+
+    void setPitch(float semitones) {
+        pitchFactor = std::pow(2.0f, semitones / 12.0f);
+    }
+
+    float process(float x) {
+        buffer[writePos] = x;
+
+        float out = 0.0f;
+
+        // lees met variabele snelheid
+        float readPosFloat = readPos;
+        int rp = static_cast<int>(readPosFloat) % buffer.size();
+
+        for (int i = 0; i < grainSize; i++) {
+            int idx = (rp + i) % buffer.size();
+            out += buffer[idx] * window[i];
+        }
+
+        // normaliseren
+        out /= grainSize;
+
+        // pointers updaten
+        writePos = (writePos + 1) % buffer.size();
+        readPos += pitchFactor;
+
+        if (readPos >= buffer.size())
+            readPos -= buffer.size();
+
+        return out;
+    }
+
+private:
+    double fs;
+    int grainSize;
+    int overlap;
+
+    std::vector<float> buffer;
+    std::vector<float> window;
+
+    int writePos = 0;
+    float readPos = 0.0f;
+    float pitchFactor = 1.0f;
+};

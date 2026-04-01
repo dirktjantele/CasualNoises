@@ -26,6 +26,8 @@
 #include <Utilities/ReportFault.h>
 #include <Threads/TLV_DriverThread.h>
 
+#include <NerveNet/NerveNetMasterThread.h>
+
 #include <Core/Maths/MathsFunctions.h>
 
 namespace CasualNoises
@@ -231,7 +233,7 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 {
 
 	// Handle encoder and switch events
-	if ((uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID) &&
+	if (( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID) &&
 		((uiEvent->encoderEvent.eventType == eEncoderEventType::encoderSwitch) ||
 		 (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderCount)))
 	{
@@ -272,7 +274,7 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 		mPageObjectStack[mPageIdStackPtr - 1]->paintAll ( *mGraphics );
 
 	// Handle ADC events
-	} else if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
+	} else if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
 	{
 
 		// Try current page to handle the event
@@ -291,7 +293,8 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 		}
 
 	// Handle NerveNet events
-	} else if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
+//	} else if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
+	} else if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID )
 	{
 
 		// Get first event ptr and no of bytes to process
@@ -304,7 +307,8 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 
 			// Extract a single event
 			sIncommingUI_Event event;
-			event.nerveNetEvent.eventSourceID = eEventSourceID::nerveNetSourceID;
+//			event.nerveNetEvent.eventSourceID = eEventSourceID::nerveNetSourceID;
+			event.nerveNetEvent.eventSourceID = eEventSourceDestinationID::nerveNetNorthSideSourceID;
 			event.nerveNetEvent.eventLength	  = sizeof ( sIncommingUI_Event );
 			event.nerveNetEvent.eventdataPtr  = (uint8_t*) headerPtr;
 
@@ -443,6 +447,7 @@ void PageManager::handleExitSwitch(bool altState, bool doPaint)									// ToDo:
 //==============================================================================
 //          forwardADC_Event()
 //
+// Forward event to both North & South Side
 //  CasualNoises    22/01/2026  First implementation
 //==============================================================================
 void PageManager::forwardADC_Event ( sIncommingUI_Event* uiEvent,
@@ -462,6 +467,8 @@ void PageManager::forwardADC_Event ( sIncommingUI_Event* uiEvent,
 
 	// Send NerveNet event
 	tPotValueMessage message;
+	message.header.sourceID			= eNerveNetSourceId::FellhornDeviceBoard;
+	message.header.destinationID	= eNerveNetSourceId::FellhornBothSides;
 	message.header.messageTag		= (uint32_t) eSynthEngineMessageType::potentiometerValue;
 	message.header.messageLength 	= sizeof ( tPotValueMessage );
 	message.multiplexerNo			= eventPtr->multiplexerNo;

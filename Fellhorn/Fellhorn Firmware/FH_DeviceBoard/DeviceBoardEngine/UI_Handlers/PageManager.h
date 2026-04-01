@@ -15,6 +15,8 @@
 
 #include "RootPage.h"
 
+#include "NerveNet/NerveNetMessageHeader.h"
+
 #include "../UI_Thread.h"
 #include "Graphics/Contexts/Graphics.h"
 

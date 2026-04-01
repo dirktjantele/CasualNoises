@@ -13,15 +13,18 @@
 #include "main.h"
 #include "SystemConfig.h"
 
+#include "NerveNet/NerveNetMessageHeader.h"
+
 namespace CasualNoises
 {
 
 // Thread source identification, part of any event send from any thread to the UI thread
-enum class eEventSourceID
+enum class eEventSourceDestinationID
 {
 	encoderThreadSourceID,
 	multiplexerADC_ThreadSourceID,
-	nerveNetSourceID,
+	nerveNetNorthSideSourceID,
+	nerveNetSouthSideSourceID,
 };
 
 // Multiplexer signature
@@ -40,11 +43,11 @@ typedef struct
 // Structure of a multiplexed ADC event
 typedef struct
 {
-	eEventSourceID		eventSourceID;
-	uint16_t	 		multiplexerNo;
-	uint16_t			multiplexerChannelNo;
-	uint32_t			value;
-	int32_t				deviation;
+	eEventSourceDestinationID	eventSourceID;
+	uint16_t	 				multiplexerNo;
+	uint16_t					multiplexerChannelNo;
+	uint32_t					value;
+	int32_t						deviation;
 } sMultiplexed_ADC_Event;
 
 // Encoder signature
@@ -70,27 +73,27 @@ enum class eEncoderEventType
 // Structure of an encoder event
 typedef struct
 {
-	eEventSourceID			eventSourceID;
-	eEncoderEventType 		eventType;
-	uint16_t				encoderNo;
-	int16_t					encoderCount;
-	int32_t					switchBitMap;
+	eEventSourceDestinationID	eventSourceID;
+	eEncoderEventType 			eventType;
+	uint16_t					encoderNo;
+	int16_t						encoderCount;
+	int32_t						switchBitMap;
 } sEncoderEvent;
 
 // Structure of a NerveNet event
 typedef struct
 {
-	eEventSourceID			eventSourceID;
-	uint32_t				eventLength;
-	uint8_t*				eventdataPtr;
+	eEventSourceDestinationID	eventSourceID;
+	uint32_t					eventLength;
+	uint8_t*					eventdataPtr;
 } sNerveNetEvent;
 
 // Structure of incoming UI messages
 typedef union
 {
-	sEncoderEvent			encoderEvent;
-	sMultiplexed_ADC_Event	multiplexed_ADC_Event;
-	sNerveNetEvent			nerveNetEvent;
+	sEncoderEvent				encoderEvent;
+	sMultiplexed_ADC_Event		multiplexed_ADC_Event;
+	sNerveNetEvent				nerveNetEvent;
 } sIncommingUI_Event;
 
 // Potentiometer/slider calibration values

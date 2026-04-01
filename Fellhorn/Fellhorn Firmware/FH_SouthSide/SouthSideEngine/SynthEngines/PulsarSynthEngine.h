@@ -29,7 +29,7 @@ public:
 						   void* inSynthParams) noexcept override;
 	void 	releaseResources() noexcept override;
 	void 	processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) noexcept override;
-	void 	processBlock (AudioBuffer &buffer, AudioBuffer& NN_buffer) noexcept override;
+	void 	processBlock (AudioBuffer* buffer, AudioBuffer* NN_buffer) noexcept override;
 
 	void 	applyControlVoltages ( sControlVoltages* voltages ) override;
 

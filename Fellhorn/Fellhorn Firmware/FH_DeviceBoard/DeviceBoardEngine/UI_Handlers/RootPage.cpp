@@ -90,19 +90,6 @@ void RootPage::addAndMakeVisible (Component* child)
 }
 
 //==============================================================================
-//          getBounds()
-//
-// 	Returns the bounds of the parent page if there is one,
-//		otherwise return the display size
-//
-//  CasualNoises    26/12/2025  First implementation
-//==============================================================================
-/*Rectangle< int > RootPage::getBounds () const
-{
-	return mLocalBounds;
-}
-*/
-//==============================================================================
 //          handleUI_event()
 //
 // 	Iterate over all child components & call handleUI_event
@@ -119,10 +106,15 @@ bool RootPage::handleUI_event ( sIncommingUI_Event* uiEvent,
 	{
 		for ( auto child : mChildren )
 		{
-			if ( child->handleUI_event ( uiEvent, altState, g/*, settingsPtr*/ ) )
+			if ( child->handleUI_event ( uiEvent, altState, g ) )
 				return true;
 		}
 		return false;
+	}
+	if ( success )
+	{
+		resized ();
+		paintAll ( g );
 	}
 	return success;
 }

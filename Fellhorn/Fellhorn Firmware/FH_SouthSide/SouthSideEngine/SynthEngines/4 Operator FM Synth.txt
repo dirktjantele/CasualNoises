@@ -1,0 +1,403 @@
+Nice—JUCE makes this a lot more fun. Let’s wire what you already have in your head into something that can live inside a JUCE synth voice.
+I’ll give you:
+A JUCE‑friendly FmOperator and AdsrEnvelope
+A FourOpFmVoice that plugs into juce::SynthesiserVoice
+Notes on parameter control (ratios, algorithms, envelopes) the way Operator does it
+1. Minimal JUCE‑friendly building blocks
+AdsrEnvelope (custom, but you can also use juce::ADSR)
+cpp
+#pragma once
+#include <cmath>
+
+struct AdsrEnvelope
+{
+    enum class State { Idle, Attack, Decay, Sustain, Release };
+
+    float sampleRate = 48000.0f;
+
+    float attackTime  = 0.01f;
+    float decayTime   = 0.1f;
+    float sustain     = 0.7f;
+    float releaseTime = 0.2f;
+
+    State state = State::Idle;
+    float level = 0.0f;
+
+    float attackInc  = 0.0f;
+    float decayDec   = 0.0f;
+    float releaseDec = 0.0f;
+
+    void setSampleRate (float sr)
+    {
+        sampleRate = sr;
+        updateIncrements();
+    }
+
+    void setParameters (float a, float d, float s, float r)
+    {
+        attackTime  = a;
+        decayTime   = d;
+        sustain     = s;
+        releaseTime = r;
+        updateIncrements();
+    }
+
+    void updateIncrements()
+    {
+        attackInc  = (attackTime  > 0.0f) ? (1.0f - level) / (attackTime  * sampleRate) : 1.0f;
+        decayDec   = (decayTime   > 0.0f) ? (1.0f - sustain) / (decayTime * sampleRate) : 1.0f;
+        releaseDec = (releaseTime > 0.0f) ? (sustain)        / (releaseTime * sampleRate) : 1.0f;
+    }
+
+    void noteOn()
+    {
+        state = State::Attack;
+    }
+
+    void noteOff()
+    {
+        state = State::Release;
+    }
+
+    float process()
+    {
+        switch (state)
+        {
+        case State::Idle:
+            break;
+
+        case State::Attack:
+            level += attackInc;
+            if (level >= 1.0f)
+            {
+                level = 1.0f;
+                state = State::Decay;
+            }
+            break;
+
+        case State::Decay:
+            level -= decayDec;
+            if (level <= sustain)
+            {
+                level = sustain;
+                state = State::Sustain;
+            }
+            break;
+
+        case State::Sustain:
+            break;
+
+        case State::Release:
+            level -= releaseDec;
+            if (level <= 0.0f)
+            {
+                level = 0.0f;
+                state = State::Idle;
+            }
+            break;
+        }
+
+        return level;
+    }
+
+    bool isActive() const noexcept { return state != State::Idle; }
+};
+FmOperator
+cpp
+#pragma once
+#include <cmath>
+#include "AdsrEnvelope.h"
+
+struct FmOperator
+{
+    float sampleRate = 48000.0f;
+
+    // Frequency control
+    float baseFrequency = 440.0f;
+    float ratio         = 1.0f;
+    float detuneHz      = 0.0f;
+    bool  fixedFreq     = false;   // Operator-style fixed mode
+
+    // Output
+    float outputLevel   = 1.0f;    // linear gain
+    float feedbackAmount= 0.0f;    // 0..something
+
+    // Internal
+    float phase         = 0.0f;
+    float lastOutput    = 0.0f;
+
+    AdsrEnvelope ampEnv;
+
+    void setSampleRate (float sr)
+    {
+        sampleRate = sr;
+        ampEnv.setSampleRate (sr);
+    }
+
+    void setAmpEnvelope (float a, float d, float s, float r)
+    {
+        ampEnv.setParameters (a, d, s, r);
+    }
+
+    void noteOn (float freq)
+    {
+        if (! fixedFreq)
+            baseFrequency = freq;
+
+        ampEnv.noteOn();
+    }
+
+    void noteOff()
+    {
+        ampEnv.noteOff();
+    }
+
+    float getFrequency() const
+    {
+        if (fixedFreq)
+            return baseFrequency + detuneHz;
+
+        return baseFrequency * ratio + detuneHz;
+    }
+
+    float process (float modPhaseInput)
+    {
+        float envVal = ampEnv.process();
+        if (! ampEnv.isActive())
+        {
+            lastOutput = 0.0f;
+            return 0.0f;
+        }
+
+        const float freq = getFrequency();
+
+        const float fb = feedbackAmount * lastOutput;
+        const float phaseInc = (2.0f * float (M_PI) * freq) / sampleRate;
+
+        phase += phaseInc + modPhaseInput + fb;
+
+        // keep phase bounded
+        if (phase > 2.0f * float (M_PI))
+            phase -= 2.0f * float (M_PI);
+        else if (phase < -2.0f * float (M_PI))
+            phase += 2.0f * float (M_PI);
+
+        const float s = std::sin (phase);
+        lastOutput = s * envVal * outputLevel;
+        return lastOutput;
+    }
+
+    bool isActive() const noexcept { return ampEnv.isActive(); }
+};
+2. Algorithm description (who modulates whom)
+cpp
+#pragma once
+
+struct FmAlgorithm
+{
+    // modMatrix[modulator][carrier] = index (depth)
+    float modMatrix[4][4] = { 0.0f };
+
+    // 3 -> 2 -> 1 -> 0 (0 is main carrier)
+    static FmAlgorithm stack4()
+    {
+        FmAlgorithm a{};
+        a.modMatrix[3][2] = 1.0f;
+        a.modMatrix[2][1] = 1.0f;
+        a.modMatrix[1][0] = 1.0f;
+        return a;
+    }
+
+    // 1 -> 0, 3 -> 2, 0 and 2 carriers
+    static FmAlgorithm twoAndTwo()
+    {
+        FmAlgorithm a{};
+        a.modMatrix[1][0] = 1.0f;
+        a.modMatrix[3][2] = 1.0f;
+        return a;
+    }
+
+    // all carriers, no modulation
+    static FmAlgorithm parallel()
+    {
+        return FmAlgorithm{};
+    }
+};
+You can later mirror Operator’s exact algorithms by hard‑coding a small set and a “carrier mask” per algorithm.
+3. A JUCE SynthesiserVoice with 4 operators
+cpp
+#pragma once
+
+#include <array>
+#include <JuceHeader.h>
+#include "FmOperator.h"
+#include "FmAlgorithm.h"
+
+class FourOpFmVoice : public juce::SynthesiserVoice
+{
+public:
+    FourOpFmVoice()
+    {
+        setSampleRate (44100.0);
+    }
+
+    void setSampleRate (double sr)
+    {
+        sampleRate = sr;
+        for (auto& op : ops)
+            op.setSampleRate ((float) sr);
+    }
+
+    void setAlgorithm (const FmAlgorithm& a)
+    {
+        algo = a;
+    }
+
+    FmOperator& getOperator (int i)       { return ops[(size_t) i]; }
+    const FmOperator& getOperator (int i) const { return ops[(size_t) i]; }
+
+    //==============================================================
+    bool canPlaySound (juce::SynthesiserSound* s) override
+    {
+        return dynamic_cast<juce::SynthesiserSound*> (s) != nullptr;
+    }
+
+    void startNote (int midiNoteNumber,
+                    float velocity,
+                    juce::SynthesiserSound*,
+                    int /*currentPitchWheelPosition*/) override
+    {
+        const float freq = (float) juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
+        currentFrequency = freq;
+        currentVelocity  = velocity;
+
+        for (auto& op : ops)
+        {
+            op.noteOn (freq);
+            // you can scale outputLevel by velocity if you like
+        }
+
+        isActiveFlag = true;
+    }
+
+    void stopNote (float /*velocity*/, bool allowTailOff) override
+    {
+        if (allowTailOff)
+        {
+            for (auto& op : ops)
+                op.noteOff();
+        }
+        else
+        {
+            clearCurrentNote();
+            for (auto& op : ops)
+                op.ampEnv.state = AdsrEnvelope::State::Idle;
+            isActiveFlag = false;
+        }
+    }
+
+    void pitchWheelMoved (int newValue) override
+    {
+        // TODO: apply pitch bend to baseFrequency
+        const float bendSemis = juce::jmap ((float) newValue,
+                                            0.0f, 16383.0f,
+                                            -2.0f, 2.0f); // +/- 2 semitones
+        const float bendRatio = std::pow (2.0f, bendSemis / 12.0f);
+
+        for (auto& op : ops)
+            op.baseFrequency = currentFrequency * bendRatio;
+    }
+
+    void controllerMoved (int, int) override {}
+
+    void renderNextBlock (juce::AudioBuffer<float>& outputBuffer,
+                          int startSample,
+                          int numSamples) override
+    {
+        if (! isActiveFlag)
+            return;
+
+        auto numChannels = outputBuffer.getNumChannels();
+
+        while (numSamples-- > 0)
+        {
+            const float sample = processSample();
+
+            for (int ch = 0; ch < numChannels; ++ch)
+                outputBuffer.addSample (ch, startSample, sample);
+
+            ++startSample;
+
+            // voice tail‑off check
+            bool anyActive = false;
+            for (auto& op : ops)
+                if (op.isActive())
+                {
+                    anyActive = true;
+                    break;
+                }
+
+            if (! anyActive)
+            {
+                clearCurrentNote();
+                isActiveFlag = false;
+                break;
+            }
+        }
+    }
+
+private:
+    float processSample()
+    {
+        float modPhase[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        float opOut[4]    = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+        // simple one‑pass evaluation
+        for (int i = 0; i < 4; ++i)
+        {
+            const float modInput = modPhase[i];
+            opOut[i] = ops[i].process (modInput);
+
+            for (int target = 0; target < 4; ++target)
+            {
+                const float index = algo.modMatrix[i][target];
+                if (index != 0.0f)
+                    modPhase[target] += opOut[i] * index;
+            }
+        }
+
+        // For now, treat all operators as carriers and sum them.
+        // Later: define per‑algorithm carrier flags.
+        float out = 0.0f;
+        for (int i = 0; i < 4; ++i)
+            out += opOut[i];
+
+        // simple output scaling
+        return out * currentVelocity;
+    }
+
+    double sampleRate = 44100.0;
+    std::array<FmOperator, 4> ops;
+    FmAlgorithm algo;
+
+    float currentFrequency = 0.0f;
+    float currentVelocity  = 0.0f;
+    bool  isActiveFlag     = false;
+};
+Then in your AudioProcessor:
+cpp
+synth.addVoice (new FourOpFmVoice());
+synth.addSound (new juce::SynthesiserSound()); // or your own sound class
+4. Hooking this up to parameters (Operator‑style)
+A few ideas to get it feeling closer to Ableton Operator:
+Per‑operator ratio vs fixed mode:
+Params: opX_ratio, opX_fixedOn, opX_fixedFreq, opX_detune.
+In your AudioProcessorValueTreeState listener, update voice->getOperator(i) fields.
+Algorithms:
+Make an int parameter algorithmIndex.
+In prepareToPlay, or when the parameter changes, call voice->setAlgorithm(FmAlgorithm::stack4()), etc.
+Later, add a carrierMask[4] per algorithm and use that instead of “sum all ops”.
+Envelopes:
+Either use JUCE’s ADSR per operator, or keep the custom one and expose opX_attack, opX_decay, opX_sustain, opX_release.
+Feedback:
+Expose opX_feedback and map 0–1 to a sensible range (e.g. 0–5 radians of phase modulation).

@@ -23,7 +23,15 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "CasualNoises.h"
+//#include "CasualNoises.h"
+
+#include "Utilities/CallbackHandlers.h"
+
+#include "Threads/TriggerThread.h"
+
+#include "NerveNet/NerveNetConfig.h"
+#include "NerveNet/NerveNetMasterThread.h"
+#include "NerveNet/NerveNetSlaveThread.h"
 
 #include "SouthSideAudioProcessor.h"
 
@@ -209,6 +217,9 @@ int main(void)
 
   /* MPU Configuration--------------------------------------------------------*/
   MPU_Config();
+
+	for ( ;; )							// ToDo remove debug code
+	{}
 
   /* Enable the CPU Cache */
 
@@ -1247,7 +1258,7 @@ void StartDefaultTask(void *argument)
     // Get the amount of free heap memory
     size_t xFreeHeapSize = xPortGetFreeHeapSize();
     UNUSED(xFreeHeapSize);
-
+/*																							ToDo remove comment
     // Create a trigger thread to toggle TimeMarker_1
 #ifdef CASUALNOISES_TRIGGER_THREAD
 	TaskHandle_t xHandle;
@@ -1256,7 +1267,7 @@ void StartDefaultTask(void *argument)
 	if (_res != pdPASS)
 		CN_ReportFault(eErrorCodes::runtimeError);
 #endif
-
+*/
 	// Create a TLV driver
 	CasualNoises::sNVM_DriverInitData NVM_Data;
 	NVM_Data.noOfDevices 			= 8;
@@ -1397,7 +1408,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		return;
 	} else
 	{
-		CN_TIM_PeriodElapsedCallback(htim);
+		CN_TIM_PeriodElapsedCallback ( htim );
 	}
 
   /* USER CODE END Callback 1 */

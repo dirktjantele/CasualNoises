@@ -78,7 +78,6 @@
 									<listOptionValue builtIn="false" value="SOUTH_SIDE"/>
 									<listOptionValue builtIn="false" value="NVM_DRIVER_SUPPORT"/>
 									<listOptionValue builtIn="false" value="TLV_DRIVER_SUPPORT"/>
-									<listOptionValue builtIn="false" value="USE_AUDIO_BUFFER"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_NERVENET_THREAD"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_ADC_THREAD"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_ADC_CALLBACKS"/>
@@ -89,6 +88,9 @@
 									<listOptionValue builtIn="false" value="__PROGRAM_START"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_NVM_DRIVER_SUPPORT"/>
 									<listOptionValue builtIn="false" value="CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT"/>
+									<listOptionValue builtIn="false" value="CASUALNOISES_NERVENET_AUDIO_SUPPORT"/>
+									<listOptionValue builtIn="false" value="CASUALNOISES_AUDIO_BUFFER"/>
+									<listOptionValue builtIn="false" value="USE_AUDIO_BUFFER"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths.1480106496" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Core/Inc"/>

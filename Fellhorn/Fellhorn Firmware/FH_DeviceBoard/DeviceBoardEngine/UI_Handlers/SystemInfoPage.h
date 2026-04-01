@@ -36,6 +36,10 @@ public:
 					 PageManager* pageManagerPtr);
 	~SystemInfoPage() override;
 
+	virtual bool handleLocalUI_event ( sIncommingUI_Event* uiEvent,
+									   bool altState, Graphics& g,
+									   sSystemSettings* settingsPtr ) override;
+
 	void paint(Graphics& g) override;
 	void resized() override;
 
@@ -44,12 +48,14 @@ public:
 
 private:
 
-	Box*			mOuterBoxPtr		{ nullptr };
+	Box*			mOuterBoxPtr			{ nullptr };
 
-	LabelGroup*		mLabelGroupPtr		{ nullptr };
-	ViewPort*		mViewPortPtr		{ nullptr };
+	Label*			mDataCollectionLabelPtr	{ nullptr };
 
-//	sMainPageState	mPreviousSavedContext;
+	LabelGroup*		mLabelGroupPtr			{ nullptr };
+	ViewPort*		mViewPortPtr			{ nullptr };
+
+	void			startDataCollection ();
 
 };
 
