@@ -23,14 +23,14 @@ enum class eErrorCodes
 	FreeRTOS_ErrorRes,		// 1
 	runtimeError,			// 2
 	NerveNetThread_Error,	// 3
-	MasterThreadBlocked,
-	audioBufferError,
-	adcThreadError,
-	CS4270_DriverError,
-	UI_ThreadError,
-	PageManagerError,
-	AudioThreadError,
-	threadHalted,
+	MasterThreadBlocked,	// 4
+	audioBufferError, 		// 5
+	adcThreadError,			// 6
+	CS4270_DriverError,		// 7
+	UI_ThreadError,			// 8
+	PageManagerError,		// 9
+	AudioThreadError,		// 10
+	threadHalted,			// 11
 };
 
 // Delay loop
@@ -91,10 +91,10 @@ __attribute__((unused))
 static void CN_ReportFault(eErrorCodes faultCode)
 {
 	vTaskSuspendAll();
-//	uint32_t code = (uint32_t)faultCode;
+	uint32_t code = (uint32_t)faultCode;
 	for (;;)
 	{
-/*		if (code & 0x00000001)
+		if (code & 0x00000001)
 			HAL_GPIO_WritePin ( GPIOB, STATUS_LED_1_Pin, GPIO_PIN_RESET );
 		if (code & 0x00000002)
 			HAL_GPIO_WritePin ( GPIOB, STATUS_LED_2_Pin, GPIO_PIN_RESET );
@@ -105,7 +105,7 @@ static void CN_ReportFault(eErrorCodes faultCode)
 		CN_Delay();
 		HAL_GPIO_WritePin ( GPIOB, STATUS_LED_2_Pin | STATUS_LED_1_Pin, GPIO_PIN_SET );
 		HAL_GPIO_WritePin ( GPIOE, STATUS_LED_4_Pin | STATUS_LED_3_Pin, GPIO_PIN_SET );
-*/		CN_Delay();
+		CN_Delay();
 	}
 }
 

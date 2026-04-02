@@ -68,7 +68,7 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	// Only do this for the given ADC
 	if (hadc == gMultiplexed_adc)
 	{
-		setTimeMarker_4();				// ToDo remove this line
+//		setTimeMarker_4();				// ToDo remove this line
 
 		// Process ADC data, calculate average
 		for (auto i = 0; i < gNoOfMultiplexers; ++i)
@@ -134,7 +134,7 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 		if (res != HAL_OK)
 			CN_ReportFault(eErrorCodes::adcThreadError);
 
-		resetTimeMarker_4();			// ToDo remove this line
+//		resetTimeMarker_4();			// ToDo remove this line
 
 		return true;
 	} else

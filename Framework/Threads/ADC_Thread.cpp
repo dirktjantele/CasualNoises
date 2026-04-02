@@ -56,7 +56,6 @@ bool ADC_ConvCpltCallback ( ADC_HandleTypeDef* hadc )
 {
 	if ( hadc == gADC_adc )
 	{
-//		setTimeMarker_4 ();				// ToDo remove this line
 
 		if ( gADC_DataHandlerPtr != nullptr )
 			gADC_DataHandlerPtr->handle_ADC_Data ( TOTAL_NUM_CV_INPUTS, gADC_Data );
@@ -69,8 +68,6 @@ bool ADC_ConvCpltCallback ( ADC_HandleTypeDef* hadc )
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
 #endif
-
-//		resetTimeMarker_4 ();			// ToDo remove this line
 
 		return true;
 	} else

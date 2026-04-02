@@ -160,7 +160,7 @@ void AudioProcessorPlayer::runAudioProcessor (
 			CN_ReportFault(eErrorCodes::runtimeError);
 
 		// Mark start of audio processing
-		setTimeMarker_4();
+//		setTimeMarker_4();
 
 		// Counting is done for testing info only...
 		++loopCounter;
@@ -184,8 +184,8 @@ void AudioProcessorPlayer::runAudioProcessor (
 			float* ptr = nerveNetMessagePtr->audio.audioData;
 			for (uint32_t i = 0; i < numSamples; ++i)
 			{
-//				NN_audioInPointers.audioBuffer1[i] = *ptr++;
-//				NN_audioInPointers.audioBuffer2[i] = *ptr++;
+				NN_audioInPointers.audioBuffer1[i] = *ptr++;
+				NN_audioInPointers.audioBuffer2[i] = *ptr++;
 			}
 #endif
 
@@ -218,7 +218,7 @@ void AudioProcessorPlayer::runAudioProcessor (
 		checkForOverRun = true;
 
 		// Mark end of audio processing
-		resetTimeMarker_4();
+//		resetTimeMarker_4();
 
 	}
 }
