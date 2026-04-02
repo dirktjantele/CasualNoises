@@ -218,9 +218,6 @@ int main(void)
   /* MPU Configuration--------------------------------------------------------*/
   MPU_Config();
 
-	for ( ;; )							// ToDo remove debug code
-	{}
-
   /* Enable the CPU Cache */
 
   /* Enable I-Cache---------------------------------------------------------*/

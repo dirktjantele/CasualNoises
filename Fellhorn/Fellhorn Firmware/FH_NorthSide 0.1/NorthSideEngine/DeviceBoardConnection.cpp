@@ -19,13 +19,13 @@
 
 #include "EffectEngines/AbstractEffectEngine.h"
 
-#include <SynthEngineMessage.h>
+#include "SynthEngineMessage.h"
 
-#include <NerveNet/NerveNetSlaveThread.h>
-#include <NerveNet/NerveNetMasterThread.h>
-#include <NerveNet/NerveNetMessage.h>
+#include "NerveNet/NerveNetSlaveThread.h"
+#include "NerveNet/NerveNetMasterThread.h"
+#include "NerveNet/NerveNetMessage.h"
 
-#include <Utilities/ReportFault.h>
+#include "Utilities/ReportFault.h"
 
 namespace CasualNoises
 {
@@ -47,10 +47,10 @@ void DeviceBoardConnection::processNerveNetData ( uint32_t threadNo, uint32_t si
 	while ( size > 0 )
 	{
 
-		// Handle event
+		// Handle event on this side
 		tInitMessage* messagePtr = ( tInitMessage* ) ptr;
-
-		if ( messagePtr->header.destinationID == eNerveNetSourceId::FellhornNorthSide )
+		if ( ( messagePtr->header.destinationID == eNerveNetSourceId::FellhornNorthSide ) ||
+			 ( messagePtr->header.destinationID == eNerveNetSourceId::FellhornBothSides ) )
 		{
 
 			eSynthEngineMessageType type = ( eSynthEngineMessageType ) messagePtr->header.messageTag;
@@ -82,10 +82,14 @@ void DeviceBoardConnection::processNerveNetData ( uint32_t threadNo, uint32_t si
 				gAbstractEffectEnginePtr->processNerveNetMessage ( messagePtr );
 			}
 
-		} else
+		}
+
+		// Forward event to South Side
+		if ( messagePtr->header.destinationID == eNerveNetSourceId::FellhornBothSides )
 		{
 
 			// Forward event to the South Side
+			messagePtr->header.destinationID = eNerveNetSourceId::FellhornSouthSide;
 			gNerveNetMasterThreadPtr [ 0 ]->sendMessage( messagePtr, messagePtr->header.messageLength, true);
 
 		}

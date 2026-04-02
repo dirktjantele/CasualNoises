@@ -91,7 +91,9 @@ void NorthSideAudioProcessor::processNerveNetData ( uint32_t threadNo, uint32_t 
 //	CasualNoises    13/07/2025  NerveNet support added
 //	CasualNoises    13/03/2026  Adapted for Fellhorn
 //==============================================================================
-void NorthSideAudioProcessor::processBlock ( AudioBuffer* buffer, AudioBuffer* inputBuffer )
+void NorthSideAudioProcessor::processBlock (
+		AudioBuffer* buffer, 					// Audio from the codec and audio for the codec
+		AudioBuffer* inputBuffer ) noexcept		// Audio from NerveNet
 {
 
 	gProcessBlockCallCount += 1;

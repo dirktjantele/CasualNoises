@@ -14,14 +14,14 @@
 
 #include "SouthSideAudioProcessor.h"
 
-#include <Synthesizer/Basics/PulsarSynth.h>
-#include <Synthesizer/Basics/Wavetable_LFO.h>
+#include "Synthesizer/Basics/PulsarSynth.h"
+#include "Synthesizer/Basics/Wavetable_LFO.h"
 
-#include <NerveNet/NerveNetSlaveThread.h>
-#include <NerveNet/NerveNetMessageHeader.h>
-#include <NerveNet/NerveNetMessage.h>
+#include "NerveNet/NerveNetSlaveThread.h"
+#include "NerveNet/NerveNetMessageHeader.h"
+#include "NerveNet/NerveNetMessage.h"
 
-#include <SynthEngineMessage.h>
+#include "SynthEngineMessage.h"
 
 namespace CasualNoises
 {
@@ -180,7 +180,8 @@ void PulsarSynthEngine::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buff
 			mPulsarSynthPtr->setFrequency ( frequency );
 		}
 
-		float gain = mGain;
+//		float gain = mGain;															// ToDo restore this line
+		float gain = 1.0f;
 		float sample_1 = mPulsarSynthPtr->nextSample () * gain;
 		*lwptr++ = sample_1;
 		*rwptr++ = sample_1;

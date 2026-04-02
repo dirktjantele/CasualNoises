@@ -133,7 +133,9 @@ public:
 	//
 	//  CasualNoises    13/03/2026  First implementation
 	//==============================================================================
-	void processBlock ( AudioBuffer* outBuffer, AudioBuffer* inBuffer ) noexcept
+	void processBlock (
+			AudioBuffer* outBuffer, 					// Audio from the codec and audio for the codec
+			AudioBuffer* inBuffer ) noexcept			// Audio from NerveNet
 	{
 /*
 		// Simple all pass

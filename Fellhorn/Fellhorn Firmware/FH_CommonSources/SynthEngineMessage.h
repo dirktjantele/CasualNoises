@@ -59,7 +59,7 @@ typedef struct
 
 typedef struct
 {
-//	tNerveNetMessageHeader		header;
+	tNerveNetMessageHeader		header;
 	uint32_t					version;
 } tRequestSetupInfoReplyData;
 
