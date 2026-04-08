@@ -13,18 +13,17 @@
 #include "main.h"
 #include "SystemConfig.h"
 
-#include "NerveNet/NerveNetMessageHeader.h"
+//#include "NerveNet/NerveNetMessageHeader.h"
 
 namespace CasualNoises
 {
 
 // Thread source identification, part of any event send from any thread to the UI thread
-enum class eEventSourceDestinationID
+enum class eEventSourceID
 {
 	encoderThreadSourceID,
 	multiplexerADC_ThreadSourceID,
-	nerveNetNorthSideSourceID,
-	nerveNetSouthSideSourceID,
+	nerveNetSourceID,
 };
 
 // Multiplexer signature
@@ -43,7 +42,7 @@ typedef struct
 // Structure of a multiplexed ADC event
 typedef struct
 {
-	eEventSourceDestinationID	eventSourceID;
+	eEventSourceID				eventSourceID;
 	uint16_t	 				multiplexerNo;
 	uint16_t					multiplexerChannelNo;
 	uint32_t					value;
@@ -61,6 +60,7 @@ typedef struct
 	uint8_t		enc_A_PinNo;
 	uint8_t		enc_B_DevNo;
 	uint8_t		enc_B_PinNo;
+	bool		allChanges;
 } sEncoderSignature;
 
 // Encoder event types
@@ -73,17 +73,17 @@ enum class eEncoderEventType
 // Structure of an encoder event
 typedef struct
 {
-	eEventSourceDestinationID	eventSourceID;
+	eEventSourceID				eventSourceID;
 	eEncoderEventType 			eventType;
 	uint16_t					encoderNo;
 	int16_t						encoderCount;
-	int32_t						switchBitMap;
+	bool						newState;
 } sEncoderEvent;
 
 // Structure of a NerveNet event
 typedef struct
 {
-	eEventSourceDestinationID	eventSourceID;
+	eEventSourceID				eventSourceID;
 	uint32_t					eventLength;
 	uint8_t*					eventdataPtr;
 } sNerveNetEvent;

@@ -17,7 +17,7 @@
 
 #include "UI_Thread.h"
 
-#include <NerveNet/NerveNetMessage.h>
+#include "NerveNet/NerveNetMessage.h"
 
 namespace CasualNoises
 {
@@ -28,11 +28,12 @@ namespace CasualNoises
 //  CasualNoises    21/01/2026  First implementation
 //==============================================================================
 void NorthSideConnection::processNerveNetData (
-		 uint32_t count,
+		 uint32_t /*count*/,
 		 uint32_t size,
 		 uint8_t* ptr )
 {
-	handleNerveNetCallBacks ( size, ptr );
+	tNerveNetMessageHeader* messagePtr = ( tNerveNetMessageHeader* ) ptr;
+	handleNerveNetCallBacks ( messagePtr );
 }
 
 } // namespace CasualNoises

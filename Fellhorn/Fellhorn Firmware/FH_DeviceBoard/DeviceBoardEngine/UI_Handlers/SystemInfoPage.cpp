@@ -15,17 +15,17 @@
 
 #include "PageManager.h"
 #include "YellowPages.h"
-#include "../../DeviceBoardEngine/UI_Definitions.h"
+#include "../UI_Definitions.h"
 
-#include <SynthEngineMessage.h>
+#include "SynthEngineMessage.h"
 
-#include <Core/Text/String.h>
-#include <GUI/GUI_Basics/Components/Box.h>
-#include <GUI/GUI_Basics/Components/ViewPort.h>
-#include <GUI/GUI_Basics/Components/Label.h>
-#include <GUI/GUI_Basics/Components/LabelGroup.h>
-#include <GUI/GUI_Basics/Components/ProgressBar.h>
-#include <Graphics/Geometry/Rectangle.h>
+#include "Core/Text/String.h"
+#include "GUI/GUI_Basics/Components/Box.h"
+#include "GUI/GUI_Basics/Components/ViewPort.h"
+#include "GUI/GUI_Basics/Components/Label.h"
+#include "GUI/GUI_Basics/Components/LabelGroup.h"
+#include "GUI/GUI_Basics/Components/ProgressBar.h"
+#include "Graphics/Geometry/Rectangle.h"
 
 namespace CasualNoises
 {
@@ -80,25 +80,30 @@ SystemInfoPage::~SystemInfoPage()
 	if ( mLabelGroupPtr != nullptr )	delete mLabelGroupPtr;
 }
 
+//==============================================================================
+//          handleLocalUI_event()
+//
+// 	Handle page specific UI events
+//
+//  CasualNoises    04/01/2026  First implementation
+//  CasualNoises    08/04/2026  altSwitchState added
+//==============================================================================
 bool SystemInfoPage::handleLocalUI_event ( sIncommingUI_Event* uiEvent,
 									   	   bool altState, Graphics& g,
-										   sSystemSettings* settingsPtr )
+										   sSystemSettings* settingsPtr,
+										   bool altSwitchState)
 {
-//	if ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
-	if ( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID )
+	if ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
 	{
 		sNerveNetEvent* messagePtr = &uiEvent->nerveNetEvent;
 
 		return false;
-	} else if  ( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID )
+	} else if  ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID )
 	{
 		sEncoderEvent* eventPtr = &uiEvent->encoderEvent;
 		mViewPortPtr->applyVerticalScrolling( eventPtr->encoderCount * 10 );
 		return true;
 	}
-
-
-
 
 	return false;
 }

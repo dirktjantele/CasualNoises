@@ -95,18 +95,20 @@ void RootPage::addAndMakeVisible (Component* child)
 // 	Iterate over all child components & call handleUI_event
 //
 //  CasualNoises    26/12/2025  First implementation
+//  CasualNoises    08/04/2026  altSwitchState added
 //==============================================================================
 bool RootPage::handleUI_event ( sIncommingUI_Event* uiEvent,
 								bool altState,
 								Graphics& g,
-								sSystemSettings* settingsPtr )
+								sSystemSettings* settingsPtr,
+								bool altSwitchState )
 {
-	bool success = handleLocalUI_event ( uiEvent, altState, g, settingsPtr );
+	bool success = handleLocalUI_event ( uiEvent, altState, g, settingsPtr, altSwitchState );
 	if ( ! success )
 	{
 		for ( auto child : mChildren )
 		{
-			if ( child->handleUI_event ( uiEvent, altState, g ) )
+			if ( child->handleUI_event ( uiEvent, altState, g, altSwitchState ) )
 				return true;
 		}
 		return false;

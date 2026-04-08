@@ -15,7 +15,7 @@
 
 #include "RootPage.h"
 
-#include "NerveNet/NerveNetMessageHeader.h"
+//#include "NerveNet/NerveNetMessageHeader.h"
 
 #include "../UI_Thread.h"
 #include "Graphics/Contexts/Graphics.h"
@@ -48,7 +48,7 @@ public:
 	 PageManager ( SSD1309_Driver* oledDriverPt, QueueHandle_t driverQueueHandle );
 	~PageManager ();
 
-	void handleUI_event ( sIncommingUI_Event* uiEvent, sSystemSettings* settingsPtr );
+	void handleUI_event ( sIncommingUI_Event* uiEvent, sSystemSettings* settingsPtr, bool altSwitchState );
 	void saveContext ();
 
 	void createNewPage (ePageId pageId);
@@ -68,7 +68,7 @@ private:
 	void setExitSwitchLedIntensity ();
 	void handleExitSwitch ( bool altState, bool doPaint = true );
 
-	void forwardADC_Event ( sIncommingUI_Event* uiEvent, sSystemSettings* settingsPtr );
+	void forwardADC_Event ( sIncommingUI_Event* uiEvent, sSystemSettings* settingsPtr, bool altSwitchState );
 	void handleNerveNetEvent ( tNerveNetMessageHeader* eventPtr );
 
 };

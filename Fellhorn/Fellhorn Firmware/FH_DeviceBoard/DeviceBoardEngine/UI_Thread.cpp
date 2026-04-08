@@ -32,7 +32,7 @@
 namespace CasualNoises
 {
 
-// Sytem settings used during UI interaction
+// System settings used during UI interaction
 sSystemSettings gSystemSettings;
 
 //==============================================================================
@@ -42,15 +42,16 @@ sSystemSettings gSystemSettings;
 //
 //  CasualNoises    22/01/2026  First implementation
 //==============================================================================
-void handleNerveNetCallBacks ( uint32_t size, uint8_t* ptr )
+void handleNerveNetCallBacks ( tNerveNetMessageHeader* messagePtr )
 {
 
 	// Make a copy of the NerveNet data and place it on the UI message queue
+	uint32_t  size = messagePtr->messageLength;
 	uint8_t* copy = (uint8_t*) pvPortMalloc ( size );
-	memcpy ( copy, ptr, size );
+	memcpy ( copy, messagePtr, size );
 	sNerveNetEvent event;
-	event.eventSourceID = eEventSourceDestinationID::nerveNetNorthSideSourceID;
-	event.eventLength	= size;
+	event.eventSourceID = eEventSourceID::nerveNetSourceID;
+	event.eventLength	= messagePtr->messageLength;
 	event.eventdataPtr	= copy;
 	xQueueSend ( gYellowPages.gUI_ThreadQueueHandle, (const void*) &event, portMAX_DELAY );
 
@@ -125,8 +126,7 @@ void handleLocalEvent ( sIncommingUI_Event* uiEvent )
 {
 
 	// Handle only NerveNet events
-	if ( ( uiEvent->nerveNetEvent.eventSourceID != eEventSourceDestinationID::nerveNetNorthSideSourceID ) &&
-		 ( uiEvent->nerveNetEvent.eventSourceID != eEventSourceDestinationID::nerveNetSouthSideSourceID ) )
+	if ( uiEvent->nerveNetEvent.eventSourceID != eEventSourceID::nerveNetSourceID )
 		return;
 
 	// Process all data
@@ -140,13 +140,19 @@ void handleLocalEvent ( sIncommingUI_Event* uiEvent )
  		switch ( tag )
  		{
  		case eSynthEngineMessageType::requestSetupInfo:
- 		{
- 			tRequestSetupInfoReplyData* dataPtr = ( tRequestSetupInfoReplyData* ) ((uint8_t*) headerPtr + sizeof ( tNerveNetMessageHeader ) );
- 			if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID )
- 				gMCU_BoardInfo.NorthSide.version = dataPtr->version;
- 			else
- 				gMCU_BoardInfo.SouthSide.version = dataPtr->version;
- 		}
+			{
+				tRequestSetupInfoReplyData* dataPtr = ( tRequestSetupInfoReplyData* ) headerPtr;
+				if ( headerPtr->sourceID == eNerveNetSourceId::FellhornNorthSide )
+					gMCU_BoardInfo.NorthSide.version = dataPtr->version;
+				else
+					gMCU_BoardInfo.SouthSide.version = dataPtr->version;
+			}
+ 			break;
+ 		case eSynthEngineMessageType::ADC_DataReply:
+			{
+				tRequestADC_ReplyData* dataPtr = ( tRequestADC_ReplyData* ) headerPtr;
+				UNUSED ( dataPtr );
+			}
  			break;
  		default:
  			break;
@@ -168,13 +174,14 @@ void handleLocalEvent ( sIncommingUI_Event* uiEvent )
 //
 //  CasualNoises    15/02/2025  First implementation
 //  CasualNoises    08/01/2026  Adapted for Fellhorn
+//  CasualNoises    08/04/2026  altSwitchState added
 //==============================================================================
 void UI_Thread(void* pvParameters)
 {
 
 	// Get parameters
 	UI_ThreadData* params = (UI_ThreadData*)pvParameters;
-	void ( *funcPtr ) ( uint32_t size, uint8_t* ptr ) = &handleNerveNetCallBacks;
+	void ( *funcPtr ) ( tNerveNetMessageHeader* messagePtr ) = &handleNerveNetCallBacks;
 	params->nerveNetCallBackPtr = &funcPtr;
 
 	// Create an OLED driver
@@ -272,7 +279,7 @@ void UI_Thread(void* pvParameters)
 	// Create an encoder/switches thread
 	TaskHandle_t xEncoderThreadHandle;
 	params->spiEncoderThreadData.clientQueue = xUI_ThreadQueue;
-	res = startEncoderThread ( (void *)&params->spiEncoderThreadData, &xEncoderThreadHandle );
+	res = startEncoderThread ( ( void * ) &params->spiEncoderThreadData, &xEncoderThreadHandle );
 	if (res != pdPASS)
 		CN_ReportFault ( eErrorCodes::UI_ThreadError );
 
@@ -373,25 +380,10 @@ void UI_Thread(void* pvParameters)
 	while (res == pdPASS)
 	{
 		res = xQueueReceive ( xUI_ThreadQueue, (void *) &event, 1000 );
-		if ( res == pdPASS)
+		if ( res == pdPASS )
 		{
-			if ( event.encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID )
-			{
-				bool altState  = ! ( event.encoderEvent.switchBitMap & ( 0x00000001 << (uint32_t)eSwitchBitmapPos::ALT_SWITCH ) );
-				bool saveState = ! ( event.encoderEvent.switchBitMap & ( 0x00000001 << (uint32_t)eSwitchBitmapPos::SAVE_SWITCH ) );
-				if ( altState && saveState )
-				{
-					deleteAllTLVs ( driverQueueHandle );
-				}
-			} else if ( event.nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID )
-			{
-				eEventSourceDestinationID sourceId = event.nerveNetEvent.eventSourceID;
-				uint32_t size 					   = event.nerveNetEvent.eventLength;
-				uint8_t* dataPtr				   = event.nerveNetEvent.eventdataPtr;
-
-			}
+			handleLocalEvent ( &event );
 		}
-		osDelay ( pdMS_TO_TICKS ( 10 ) );
 	}
 
 	// Enter last saved display page
@@ -427,6 +419,7 @@ void UI_Thread(void* pvParameters)
 
 	// Main thread loop
 	uint32_t cycleCnt = 0;
+	bool altSwitchState = false;
 	for (;;)
 	{
 
@@ -436,16 +429,24 @@ void UI_Thread(void* pvParameters)
 		if ( res == pdPASS )
 		{
 
-			// Try to handle this event local
-			handleLocalEvent ( &event );
+			// Get state of ALT switch
+			if ( ( event.encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
+				 ( ( eSwitchNums ) event.encoderEvent.encoderNo == eSwitchNums::ALT_SWITCH ) )
+			{
+				altSwitchState = event.encoderEvent.newState;
+			} else
+			{
 
-			// Hand event to the PageManger
-			pageManagerPtr->handleUI_event ( &event, &gSystemSettings );
+				// Try to handle this event local
+				handleLocalEvent ( &event );
 
-			// Free memory if the event was a NerveNet event
-			if ( ( event.nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID ) ||
-			     ( event.nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID ) )
-				vPortFree ( event.nerveNetEvent.eventdataPtr );
+				// Hand event to the PageManger
+				pageManagerPtr->handleUI_event ( &event, &gSystemSettings, altSwitchState );
+
+				// Free memory if the event was a NerveNet event
+				if ( event.nerveNetEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
+					vPortFree ( event.nerveNetEvent.eventdataPtr );
+			}
 
 		} else
 		{

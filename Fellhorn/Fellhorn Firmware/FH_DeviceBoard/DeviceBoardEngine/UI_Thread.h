@@ -29,7 +29,7 @@ typedef struct
 	sSPI_LED_ThreadData			spi_LED_ThreadData;
 	sSSD1309_ConfigData			oledConfigData;
 	sADC_MultiplexerThreadData	ADC_MultiplexerThreadData;
-	void ( **nerveNetCallBackPtr ) ( uint32_t size, uint8_t* ptr );
+	void ( **nerveNetCallBackPtr ) ( tNerveNetMessageHeader* messagePtr );
 } UI_ThreadData;
 
 typedef struct
@@ -41,6 +41,6 @@ typedef struct
 // Start thread function
 BaseType_t Start_UI_Thread ( UI_ThreadData *argument );
 
-void handleNerveNetCallBacks ( uint32_t size, uint8_t* ptr );
+void handleNerveNetCallBacks ( tNerveNetMessageHeader* messagePtr );
 
 } // namespace CasualNoises

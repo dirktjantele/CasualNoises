@@ -17,14 +17,14 @@
 #include "YellowPages.h"
 #include "../../DeviceBoardEngine/UI_Definitions.h"
 
-#include <SynthEngineMessage.h>
+#include "SynthEngineMessage.h"
 
-#include <Core/Text/String.h>
-#include <GUI/GUI_Basics/Components/Box.h>
-#include <GUI/GUI_Basics/Components/ComboBox.h>
-#include <GUI/GUI_Basics/Components/Label.h>
-#include <GUI/GUI_Basics/Components/ProgressBar.h>
-#include <Graphics/Geometry/Rectangle.h>
+#include "Core/Text/String.h"
+#include "GUI/GUI_Basics/Components/Box.h"
+#include "GUI/GUI_Basics/Components/ComboBox.h"
+#include "GUI/GUI_Basics/Components/Label.h"
+#include "GUI/GUI_Basics/Components/ProgressBar.h"
+#include "Graphics/Geometry/Rectangle.h"
 
 #include "NerveNet/NerveNetMasterThread.h"
 
@@ -307,12 +307,14 @@ void CalibrationPage::resized()
 // 	Handle page specific UI events
 //
 //  CasualNoises    04/01/2026  First implementation
+//  CasualNoises    08/04/2026  altSwitchState added
 //==============================================================================
 bool CalibrationPage::handleLocalUI_event (
 		sIncommingUI_Event* uiEvent,
 		bool altState,
 		Graphics& g,
-		sSystemSettings* settingsPtr )
+		sSystemSettings* settingsPtr,
+		bool altSwitchState )
 {
 	return false;
 }
@@ -486,7 +488,7 @@ void PotentiometerCalibrationPage::processADC_Event ( sIncommingUI_Event* uiEven
 {
 
 	uint32_t value = uiEvent->multiplexed_ADC_Event.value;
-	if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
+	if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
 	{
 		String text;
 		if ( uiEvent->multiplexed_ADC_Event.multiplexerNo == 0 )
@@ -569,19 +571,21 @@ void PotentiometerCalibrationPage::processADC_Event ( sIncommingUI_Event* uiEven
 // 	Handle page specific UI events
 //
 //  CasualNoises    04/01/2026  First implementation
+//  CasualNoises    08/04/2026  altSwitchState added
 //==============================================================================
 bool PotentiometerCalibrationPage::handleLocalUI_event (
 		sIncommingUI_Event* uiEvent,
 		bool altState,
 		Graphics& g,
-		sSystemSettings* settingsPtr )
+		sSystemSettings* settingsPtr,
+		bool altSwitchState)
 {
 	switch ( mState )
 	{
 	case ePotentiometerCalibrationPageState::AwaitingMins:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::AwaitingMins );
-		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
+		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
 		{
 			dimSwitchLeds ();
 			mAwaitingMinLabelPtr->setVisible ( false );
@@ -594,7 +598,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::ProcessingMins:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::ProcessingMins );
-		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
+		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
 		{
 			processADC_Event ( uiEvent );
 			mCalibrationValues.minValues [uiEvent->multiplexed_ADC_Event.multiplexerNo]
@@ -612,7 +616,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::AwaitingMaxs:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::AwaitingMaxs );
-		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID ) &&
+		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
 			( uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::RIGTH_ARROW_SWITCH ) )
 		{
 			dimSwitchLeds ();
@@ -627,7 +631,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::ProcessingMaxs:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::ProcessingMaxs );
-		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
+		if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
 		{
 			mAwaitingMaxLabelPtr->setVisible ( false );
 			mProgressBarPtr->setVisible ( true );
@@ -648,7 +652,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 	case ePotentiometerCalibrationPageState::Completion:
 	{
 		mOuterBoxPtr->setCurrentTab( (uint8_t) ePotentiometerCalibrationPageState::Completion );
-		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID ) &&
+		if (( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
 			( uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::RIGTH_ARROW_SWITCH ) )
 		{
 			dimSwitchLeds ();
@@ -749,110 +753,6 @@ void PotentiometerCalibrationPage::loadContext()
 //  CasualNoises    04/01/2026  First implementation
 //==============================================================================
 void PotentiometerCalibrationPage::saveContext()
-{
-	// Nothing to save here
-}
-
-/*---------------------------- CV_CalibrationPage ----------------------------*/
-
-//==============================================================================
-//          CV_CalibrationPage() & ~CV_CalibrationPage()
-//
-// Main page initializer
-//
-//  CasualNoises    02/02/2026  First implementation
-//==============================================================================
-CV_CalibrationPage::CV_CalibrationPage (
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr ) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr )
-{
-
-	// Create a border component
-	mOuterBoxPtr = new Box( String( (char*) "Border" ) );
-	addAndMakeVisible ( mOuterBoxPtr );
-
-	// Send a NerveNet request for all ADC input data
-	tRequestADC_Data message;
-	message.header.messageTag		= (uint32_t) eSynthEngineMessageType::ADC_DataRequest;
-	message.header.messageLength	= sizeof ( tRequestADC_Data );
-	bool success = gNerveNetMasterThreadPtr[0]->sendMessage ( &message, sizeof ( tRequestADC_Data ) );
-	if ( ! success )
-		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
-
-}
-
-CV_CalibrationPage::~CV_CalibrationPage()
-{
-	if ( mOuterBoxPtr 	 			!= nullptr )		delete mOuterBoxPtr;
-}
-
-//==============================================================================
-//          paint()
-//
-// Show main page
-//
-//  CasualNoises    02/02/2026  First implementation
-//==============================================================================
-void CV_CalibrationPage::paint(Graphics& g)
-{
-	g.fillAll();
-}
-
-//==============================================================================
-//          resized()
-//
-// 	Set size and location of all components in the page
-//
-//  CasualNoises    01/02/2026  First implementation
-//==============================================================================
-void CV_CalibrationPage::resized()
-{
-
-    // Box around this page
-    Rectangle<int32_t> rect = getGlobalBounds();
-    mOuterBoxPtr->setBounds ( rect );
-
-
-}
-
-//==============================================================================
-//          handleLocalUI_event()
-//
-// 	Handle page specific UI events
-//
-//  CasualNoises    02/02/2026  First implementation
-//==============================================================================
-bool CV_CalibrationPage::handleLocalUI_event (
-		sIncommingUI_Event* uiEvent,
-		bool altState,
-		Graphics& g,
-		sSystemSettings* settingsPtr )
-{
-	return false;
-}
-
-//==============================================================================
-//          loadContext()
-//
-// 	Load context from flash
-//
-//  CasualNoises    02/02/2026  First implementation
-//==============================================================================
-void CV_CalibrationPage::loadContext()
-{
-	// Nothing to load here
-}
-
-//==============================================================================
-//          saveContext()
-//
-// 	Save context to flash
-//
-//  CasualNoises    02/02/2026  First implementation
-//==============================================================================
-void CV_CalibrationPage::saveContext()
 {
 	// Nothing to save here
 }

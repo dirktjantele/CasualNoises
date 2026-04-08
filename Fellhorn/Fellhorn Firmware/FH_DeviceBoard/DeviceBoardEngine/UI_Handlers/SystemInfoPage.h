@@ -38,7 +38,8 @@ public:
 
 	virtual bool handleLocalUI_event ( sIncommingUI_Event* uiEvent,
 									   bool altState, Graphics& g,
-									   sSystemSettings* settingsPtr ) override;
+									   sSystemSettings* settingsPtr,
+									   bool altSwitchState ) override;
 
 	void paint(Graphics& g) override;
 	void resized() override;

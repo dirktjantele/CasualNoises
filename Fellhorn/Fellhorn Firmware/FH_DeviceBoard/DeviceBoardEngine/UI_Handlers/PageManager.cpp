@@ -11,24 +11,26 @@
   ==============================================================================
 */
 
+#include <UI_Handlers/CalibrationPages/CV_InCalibration.h>
 #include "PageManager.h"
 
 #include "MainPage.h"
 #include "SetupPage.h"
 #include "LoadPage.h"
+#include "../UI_Definitions.h"
 
 #include "SystemInfoPage.h"
 
 #include "YellowPages.h"
 
-#include <SynthEngineMessage.h>
+#include "SynthEngineMessage.h"
 
-#include <Utilities/ReportFault.h>
-#include <Threads/TLV_DriverThread.h>
+#include "Utilities/ReportFault.h"
+#include "Threads/TLV_DriverThread.h"
 
-#include <NerveNet/NerveNetMasterThread.h>
+#include "NerveNet/NerveNetMasterThread.h"
 
-#include <Core/Maths/MathsFunctions.h>
+#include "Core/Maths/MathsFunctions.h"
 
 namespace CasualNoises
 {
@@ -227,24 +229,23 @@ void PageManager::createNewPage ( ePageId pageId )
 //		handle exit button events local
 //
 //  CasualNoises    24/12/2025  First implementation
+//  CasualNoises    08/04/2026  altSwitchState added
 //==============================================================================
 void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
-								   sSystemSettings* settingsPtr )
+								   sSystemSettings* settingsPtr,
+								   bool altSwitchState )
 {
 
 	// Handle encoder and switch events
-	if (( uiEvent->encoderEvent.eventSourceID == eEventSourceDestinationID::encoderThreadSourceID) &&
-		((uiEvent->encoderEvent.eventType == eEncoderEventType::encoderSwitch) ||
-		 (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderCount)))
+	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID) &&
+		 ( (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderSwitch ) ||
+		   (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderCount) ) )
 	{
-
-		// Get current 'ALT' switch state
-		bool altState = ! ( uiEvent->encoderEvent.switchBitMap & (0x00000001 << (uint32_t)eSwitchNums::ALT_SWITCH ) );
 
 		// Handle exit switch events local
 		if (uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::EXIT_SWITCH)
 		{
-			handleExitSwitch ( altState );
+			handleExitSwitch ( altSwitchState );
 		}
 
 		// Handle setup switch																		ToDo assign another function to the setup switch
@@ -266,7 +267,7 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 		// Skip 'ALT' switch events, but use the state
 		else if ( uiEvent->encoderEvent.encoderNo != (uint16_t)eSwitchNums::ALT_SWITCH )
 		{
-			mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event ( uiEvent, altState, *mGraphics, settingsPtr );
+			mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event ( uiEvent, altSwitchState, *mGraphics, settingsPtr, altSwitchState );
 		}
 
 		// Adjust exit switch led intensity & paint screen
@@ -274,11 +275,11 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 		mPageObjectStack[mPageIdStackPtr - 1]->paintAll ( *mGraphics );
 
 	// Handle ADC events
-	} else if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceDestinationID::multiplexerADC_ThreadSourceID )
+	} else if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
 	{
 
 		// Try current page to handle the event
-		if ( mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event ( uiEvent, false, *mGraphics, settingsPtr ) )
+		if ( mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event ( uiEvent, false, *mGraphics, settingsPtr, altSwitchState ) )
 		{
 			 mPageObjectStack[mPageIdStackPtr - 1]->paintAll ( *mGraphics );
 		}
@@ -288,13 +289,12 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 		{
 
 			// Send ADC data over NerveNet
-			forwardADC_Event ( uiEvent, settingsPtr );
+			forwardADC_Event ( uiEvent, settingsPtr, altSwitchState );
 
 		}
 
 	// Handle NerveNet events
-//	} else if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
-	} else if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceDestinationID::nerveNetNorthSideSourceID )
+	} else if ( uiEvent->nerveNetEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
 	{
 
 		// Get first event ptr and no of bytes to process
@@ -307,13 +307,12 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 
 			// Extract a single event
 			sIncommingUI_Event event;
-//			event.nerveNetEvent.eventSourceID = eEventSourceID::nerveNetSourceID;
-			event.nerveNetEvent.eventSourceID = eEventSourceDestinationID::nerveNetNorthSideSourceID;
+			event.nerveNetEvent.eventSourceID = eEventSourceID::nerveNetSourceID;
 			event.nerveNetEvent.eventLength	  = sizeof ( sIncommingUI_Event );
 			event.nerveNetEvent.eventdataPtr  = (uint8_t*) headerPtr;
 
 			// Try current page to handle the event
-			if ( ! mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event ( &event, false, *mGraphics, settingsPtr ) )
+			if ( ! mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event ( &event, false, *mGraphics, settingsPtr, false ) )
 
 			// Otherwise process the event here...
 			{
@@ -448,10 +447,13 @@ void PageManager::handleExitSwitch(bool altState, bool doPaint)									// ToDo:
 //          forwardADC_Event()
 //
 // Forward event to both North & South Side
+//
 //  CasualNoises    22/01/2026  First implementation
+//  CasualNoises    08/04/2026  altSwitchState added
 //==============================================================================
 void PageManager::forwardADC_Event ( sIncommingUI_Event* uiEvent,
-		   	   	   	   	   	   	   	 sSystemSettings* settingsPtr )
+		   	   	   	   	   	   	   	 sSystemSettings* settingsPtr,
+									 bool altSwitchState )
 {
 
 	// Apply calibration
@@ -475,6 +477,7 @@ void PageManager::forwardADC_Event ( sIncommingUI_Event* uiEvent,
 	message.multiplexerChannelNo	= eventPtr->multiplexerChannelNo;
 	message.potValue				= (uint32_t) value;
 	message.deviation				= eventPtr->deviation;
+	message.altSwitchState			= altSwitchState;
 	gNerveNetMasterThreadPtr[0]->sendMessage ( &message, sizeof ( tPotValueMessage ) );
 
 }

@@ -52,7 +52,8 @@ public:
 
 	bool handleUI_event ( sIncommingUI_Event* uiEvent,
 						  bool altState, Graphics& g,
-						  sSystemSettings* settingsPtr );
+						  sSystemSettings* settingsPtr,
+						  bool altSwitchState );
 
 protected:
 
@@ -72,7 +73,8 @@ protected:
 
 	virtual bool handleLocalUI_event ( sIncommingUI_Event* uiEvent,
 									   bool altState, Graphics& g,
-									   sSystemSettings* settingsPtr )
+									   sSystemSettings* settingsPtr,
+									   bool altSwitchState)
 			{ return false; }
 
 	void dimSwitchLeds ();
