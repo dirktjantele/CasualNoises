@@ -50,30 +50,32 @@ void encoderThread(void* pvParameters)
 	uint32_t noOfDevices  = dataPtr->noOfDevices;
 	sEncoderSignature* signatures = dataPtr->encoderSignatureArray;
 	uint32_t tableSize = noOfDevices << 3;
-	signalType* typeTablePtr  = new signalType[tableSize];
-	uint8_t*    encNoTablePtr = new uint8_t[tableSize];
-	for (uint32_t i = 0; i < tableSize; ++i)
+	signalType* typeTablePtr  = new signalType [ tableSize ];
+	uint8_t*    encNoTablePtr = new uint8_t [ tableSize ];
+	bool*		allChangesPtr = new bool [ tableSize ];
+	for ( uint32_t i = 0; i < tableSize; ++i )
 	{
 		typeTablePtr[i]  = signalType::unknown;
 		encNoTablePtr[i] = 0xff;
 	}
-	for (uint32_t encNo = 0; encNo < noOfEncoders; ++encNo)
+	for ( uint32_t encNo = 0; encNo < noOfEncoders; ++encNo )
 	{
 		uint32_t indx;
-		indx = (signatures[encNo].switchDevNo << 3) + signatures[encNo].switchPinNo;
+		indx = ( signatures[ encNo ].switchDevNo << 3 ) + signatures [ encNo ].switchPinNo;
 		typeTablePtr[indx]  = signalType::enc_sw;
 		encNoTablePtr[indx] = signatures[encNo].encoderNo;
-		if (signatures[encNo].enc_A_DevNo < 0xff)
+		if ( signatures[encNo].enc_A_DevNo < 0xff )
 		{
 			indx = (signatures[encNo].enc_A_DevNo << 3) + signatures[encNo].enc_A_PinNo;
 			typeTablePtr[indx]  = signalType::enc_a;
 			encNoTablePtr[indx] = signatures[encNo].encoderNo;
 		}
-		if (signatures[encNo].enc_B_DevNo < 0xff)
+		if ( signatures[encNo].enc_B_DevNo < 0xff )
 		{
-			indx = (signatures[encNo].enc_B_DevNo << 3) + signatures[encNo].enc_B_PinNo;
+			indx = ( signatures [ encNo ].enc_B_DevNo << 3 ) + signatures [ encNo ].enc_B_PinNo;
 			typeTablePtr[indx]  = signalType::enc_b;
 		}
+		allChangesPtr [ encNo ] = signatures[ encNo ].allChanges;
 	}
 
 	// Table of encoder increments
@@ -108,13 +110,10 @@ void encoderThread(void* pvParameters)
 
 	// Send initial switch bit map
 	sEncoderEvent event;
-	event.eventSourceID = eEventSourceDestinationID::encoderThreadSourceID;
+	event.eventSourceID = eEventSourceID::encoderThreadSourceID;
 	event.eventType     = eEncoderEventType::encoderSwitch;
 	event.encoderNo     = 0;
 	event.encoderCount  = 0;
-	event.switchBitMap	= 0x00000000;
-	for ( int32_t i = noOfDevices - 1; i >= 0; --i )
-		event.switchBitMap = ( event.switchBitMap << 8 ) + currentData[i];
 	BaseType_t _res = xQueueSendToBack ( clientQueue, (void*)&event, 10 );
 	if (_res != pdPASS)
 		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
@@ -148,11 +147,15 @@ void encoderThread(void* pvParameters)
 		{
 
 			// Act upon the type of the signal
-			bool    flag  = (newStateTable[signalNo] ^ curStateTable[signalNo]) & curStateTable[signalNo];
-			uint8_t encNo = encNoTablePtr[signalNo];
+			bool flag = false;
+			if ( allChangesPtr [ signalNo ] )
+				flag  = newStateTable [ signalNo ] != curStateTable [ signalNo ];
+			else
+				flag  = ( newStateTable [ signalNo ] ^ curStateTable [ signalNo ]) & curStateTable [ signalNo ];
+			uint8_t encNo = encNoTablePtr [ signalNo ];
 			if (flag)
 			{
-				switch ( typeTablePtr [signalNo] )
+				switch ( typeTablePtr [ signalNo ] )
 				{
 				case signalType::enc_sw:
 				{
@@ -160,13 +163,11 @@ void encoderThread(void* pvParameters)
 					if ( clientQueue != nullptr )
 					{
 						sEncoderEvent event;
-						event.eventSourceID = eEventSourceDestinationID::encoderThreadSourceID;
+						event.eventSourceID = eEventSourceID::encoderThreadSourceID;
 						event.eventType     = eEncoderEventType::encoderSwitch;
 						event.encoderNo     = signatures[encNo].encoderNo;
 						event.encoderCount  = 1;
-						event.switchBitMap	= 0x00000000;
-						for ( int32_t i = noOfDevices - 1; i >= 0; --i )
-							event.switchBitMap = ( event.switchBitMap << 8 ) + newData[i];
+						event.newState		= curStateTable [ signalNo ];
 						BaseType_t res = xQueueSendToBack ( clientQueue, (void*)&event, 10 );
 						if (res != pdPASS)
 							CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
@@ -206,13 +207,10 @@ void encoderThread(void* pvParameters)
 					if (clientQueue != nullptr)
 					{
 						sEncoderEvent event;
-						event.eventSourceID = eEventSourceDestinationID::encoderThreadSourceID;
+						event.eventSourceID = eEventSourceID::encoderThreadSourceID;
 						event.eventType     = eEncoderEventType::encoderCount;
 						event.encoderNo     = signatures[encNo].encoderNo;
 						event.encoderCount  = encIncTable[encNo];
-						event.switchBitMap	= 0x00000000;
-						for (int32_t i = noOfDevices - 1; i >= 0; --i)
-							event.switchBitMap = (event.switchBitMap << 8) + newData[i];
 						UBaseType_t count = uxQueueSpacesAvailable ( clientQueue );
 						while (count == 0)
 						{

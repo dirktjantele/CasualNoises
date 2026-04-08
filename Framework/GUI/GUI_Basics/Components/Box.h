@@ -30,7 +30,9 @@ public:
 	void paint ( Graphics& g ) noexcept override;
 
 	bool handleUI_event ( void* uiEvent,
-						  bool altState, Graphics& g ) override
+						  bool altState,
+						  Graphics& g,
+						  bool altSwichState) override
 		{ return false; }
 
 private:

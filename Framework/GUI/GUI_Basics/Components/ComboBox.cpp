@@ -142,10 +142,12 @@ void ComboBox::setFocus ( uint32_t focus ) noexcept
 //          handleUI_event()
 //
 //  CasualNoises    02/01/2026  First implementation
+//  CasualNoises    08/04/2026  altSwichState added
 //==============================================================================
 bool ComboBox::handleUI_event ( void* uiEvent,
 								bool altState,
-								Graphics& g )
+								Graphics& g,
+								bool altSwichState )
 {
 	sIncommingUI_Event* eventPtr = static_cast< sIncommingUI_Event* > ( uiEvent );
 	if ( eventPtr->encoderEvent.encoderNo == (uint16_t)eEncoderNums::MAIN_ENCODER )

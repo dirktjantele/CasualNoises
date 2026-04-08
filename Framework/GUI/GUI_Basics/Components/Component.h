@@ -44,7 +44,8 @@ public:
 
 	virtual bool handleUI_event ( void* uiEvent,
 								  bool altState,
-								  Graphics& g ) { return false; };
+								  Graphics& g,
+								  bool altSwichState ) { return false; };
 private:
 
 	String 					mComponentName;
