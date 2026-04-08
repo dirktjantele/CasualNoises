@@ -22,7 +22,7 @@
 #include "NerveNetMasterProcessor.h"
 
 #include "NerveNetMessage.h"
-#include "NerveNetMessageHeader.h"
+//#include "NerveNetMessageHeader.h"
 
 namespace CasualNoises
 {

@@ -77,7 +77,7 @@ bool NerveNetMasterThread::sendMessage( const void* messagePtr, uint32_t size, b
 	mConstructionBufferBusy = true;
 
 	// Add message to the construction buffer
-	uint8_t* ptr = (uint8_t*)messagePtr;
+	uint8_t* ptr = ( uint8_t* ) messagePtr;
 	for ( uint32_t i = 0; i < size; ++i )
 		*mConstructionDataPtr++ = *ptr++;
 	*mConstructionBufferSizePtr += size;
@@ -199,6 +199,9 @@ bool NerveNetMasterThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 				*mConstructionBufferSizePtr  = 0;
 				mConstructionDataPtr		 = &mConstructionBufferPtr->data[0];
 				mRemainingSpace 			 = NERVENET_DATA_SIZE;
+			} else
+			{
+				memset ( ( void* ) mTxMessageBuffers [mTxToBeSentBufferIndex], 0, NERVENET_DATA_SIZE );
 			}
 
 			// Start data exchange
@@ -298,17 +301,17 @@ void NerveNetMasterThread::mainNerveNetMasterThread ( void* pvParameters )
 	{
 		mTxMessageBuffers [i] = new sNerveNetMessage;
 		memset( mTxMessageBuffers[i], 0, sizeof ( sNerveNetMessage ) );
-		mTxMessageBuffers [i]->header.messageSourceID = eNerveNetSourceId::awaitingId;
+		mTxMessageBuffers [i]->header.sourceID 		= eNerveNetSourceId::awaitingId;
 		mTxMessageBuffers [i]->header.messageNumber = 0;
 		mTxMessageBuffers [i]->data.size			= 0;
 	}
 	for (uint32_t i = 0; i < cNoOfRxMessageBuffers; ++i)
 	{
 		mRxMessageBuffers [i] = new sNerveNetMessage;
-		mRxMessageBuffers [i]->header.messageSourceID 		= eNerveNetSourceId::awaitingId;
-		mRxMessageBuffers [i]->header.messageDestinationID 	= eNerveNetSourceId::awaitingId;
-		mRxMessageBuffers [i]->header.messageNumber 		= 0;
-		mRxMessageBuffers [i]->data.size					= 0;
+		mRxMessageBuffers [i]->header.sourceID 		= eNerveNetSourceId::awaitingId;
+		mRxMessageBuffers [i]->header.destinationID = eNerveNetSourceId::awaitingId;
+		mRxMessageBuffers [i]->header.messageNumber = 0;
+		mRxMessageBuffers [i]->data.size			= 0;
 	}
 
 	// Buffer used to build up data to be send on next exchange
