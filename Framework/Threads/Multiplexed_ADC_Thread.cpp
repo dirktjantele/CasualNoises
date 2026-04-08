@@ -68,7 +68,6 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	// Only do this for the given ADC
 	if (hadc == gMultiplexed_adc)
 	{
-//		setTimeMarker_4();				// ToDo remove this line
 
 		// Process ADC data, calculate average
 		for (auto i = 0; i < gNoOfMultiplexers; ++i)
@@ -95,8 +94,8 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 				// Signal thread that one cycle over all inputs has completed
 				BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 				if (gSemaphoreHandle != nullptr)
-					xSemaphoreGiveFromISR(gSemaphoreHandle, &xHigherPriorityTaskWoken);
-				portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+					xSemaphoreGiveFromISR ( gSemaphoreHandle, &xHigherPriorityTaskWoken );
+				portYIELD_FROM_ISR ( xHigherPriorityTaskWoken );
 
 				// Select next multiplexer channel
 				multiplexChannel = 0;
@@ -133,8 +132,6 @@ bool multiplexed_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 		res = HAL_ADC_Start_DMA(gMultiplexed_adc, (uint32_t *)gRawAdcData, gNoOfMultiplexers);
 		if (res != HAL_OK)
 			CN_ReportFault(eErrorCodes::adcThreadError);
-
-//		resetTimeMarker_4();			// ToDo remove this line
 
 		return true;
 	} else
@@ -228,21 +225,24 @@ void multiplexed_ADC_Thread ( void* pvParameters )
 					if (clientQueue != nullptr)
 					{
 						sMultiplexed_ADC_Event event;
-						event.eventSourceID 		= eEventSourceDestinationID::multiplexerADC_ThreadSourceID;
+						event.eventSourceID 		= eEventSourceID::multiplexerADC_ThreadSourceID;
 						event.multiplexerNo			= i;
 						event.multiplexerChannelNo	= j;
 						event.value					= gAverageAdcData[i][j];
 						event.deviation				= dev;
 						UBaseType_t count = uxQueueSpacesAvailable ( clientQueue );
-						while (count == 0)
+						while ( count == 0 )
 						{
-							osDelay(pdMS_TO_TICKS(10));
+							osDelay ( pdMS_TO_TICKS ( 10 ) );
 							count = uxQueueSpacesAvailable ( clientQueue );
 						}
 						BaseType_t res = xQueueSendToBack ( clientQueue, ( void* )&event, 10 );
 						if (res != pdPASS)
 							CN_ReportFault( eErrorCodes::FreeRTOS_ErrorRes );
 					}
+
+					// Give some time to other threads
+					osDelay ( pdMS_TO_TICKS ( 10 ) );
 
 				}
 				mask >>= 1;
@@ -263,8 +263,8 @@ BaseType_t startMultiplexed_ADC_Thread(void *argument, TaskHandle_t* xHandlePtr)
 {
 
 	// Create the thread to scan the multiplexed ADC convertions
-	BaseType_t res = xTaskCreate(multiplexed_ADC_Thread, "multiplexed_ADC_Thread", DEFAULT_STACK_SIZE, argument,
-			POT_THREAD_PRIORITY, xHandlePtr);
+	BaseType_t res = xTaskCreate ( multiplexed_ADC_Thread, "multiplexed_ADC_Thread", DEFAULT_STACK_SIZE, argument,
+			POT_THREAD_PRIORITY, xHandlePtr );
 	return res;
 
 }

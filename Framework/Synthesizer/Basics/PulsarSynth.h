@@ -83,12 +83,10 @@ public:
 		mPulsarWaveIndex += mPulsarStep;
 		if ( mPulsarWaveIndex >= mWaveLength )
 		{
-			setTimeMarker_1();												// ToDo remove this
 			mPulsarWaveIndex -= mWaveLength;
 			CachedWavetable_LFO::setMorphFactor ( mMorph );
 			refresh ();
 			mPulsarStep = mStep;
-			resetTimeMarker_1();											// ToDo remove this
 		}
 
 		return sample;

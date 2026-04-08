@@ -10,8 +10,8 @@
 
 #pragma once
 
-//#include "main.h"
 #include "SystemConfig.h"
+#include <stdint.h>
 
 namespace CasualNoises
 {
@@ -27,13 +27,24 @@ enum class eNerveNetSourceId
 	FellhornDeviceBoard,
 	FellhornBothSides,
 };
-
+/*
 typedef struct
 {
 	eNerveNetSourceId	messageSourceID;
 	eNerveNetSourceId	messageDestinationID;
 	uint32_t			messageNumber;
 } sNerveNetHeader;
+*/
+
+typedef struct
+{
+	eNerveNetSourceId 	sourceID;			// ID of the source used for any reply on an event
+	eNerveNetSourceId	destinationID;		// Used for forwarding messages
+	uint32_t			messageNumber;		// Optional
+	uint32_t			messageTag;			// Tags are implementation specific
+	uint32_t			messageLength;		// The total length of the message in bytes
+	// Any data to be send follows this header in memory as indicated by messageLength
+} tNerveNetMessageHeader;
 
 typedef struct
 {
@@ -48,11 +59,11 @@ typedef struct
 
 typedef struct
 {
-	sNerveNetHeader	header;
+	tNerveNetMessageHeader	header;
 //#ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
-	sNerveNetAudio	audio;
+	sNerveNetAudio			audio;
 //#endif
-	sNerveNetData	data;
+	sNerveNetData			data;
 } sNerveNetMessage;
 
 } // namespace CasualNoises

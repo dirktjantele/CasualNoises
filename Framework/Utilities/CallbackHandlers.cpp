@@ -167,19 +167,19 @@ void HAL_SPI_TxRxCpltCallback ( SPI_HandleTypeDef *hspi )
 //  CasualNoises    09/11/2024  First implementation
 //==============================================================================
 
-std::vector<ADC_ConvCpltCallback> ADC_ConvCpltCallbacks;
+std::vector < ADC_ConvCpltCallback > ADC_ConvCpltCallbacks;
 
-void add_ADC_ConvCpltCallback(ADC_ConvCpltCallback callback)
+void add_ADC_ConvCpltCallback ( ADC_ConvCpltCallback callback )
 {
-	ADC_ConvCpltCallbacks.push_back(callback);
+	ADC_ConvCpltCallbacks.push_back ( callback );
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+void HAL_ADC_ConvCpltCallback ( ADC_HandleTypeDef* hadc )
 {
-	for (auto callback : ADC_ConvCpltCallbacks)
+	for ( auto callback : ADC_ConvCpltCallbacks )
 	{
-		bool flag = callback(hadc);
-		if (flag)
+		bool flag = callback ( hadc );
+		if ( flag )
 			return;
 	}
 	return;

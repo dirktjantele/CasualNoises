@@ -38,11 +38,11 @@ uint16_t 			gADC_Data  [ TOTAL_NUM_CV_INPUTS ];			// Raw ADC data from DMA
 // Handler for adc data
 ADC_DataHandler*	gADC_DataHandlerPtr		= nullptr;
 
-#ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
+//#ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
 
 SemaphoreHandle_t	gADC_SemaphoreHandle 	= nullptr;
 
-#endif
+//#endif
 
 //==============================================================================
 //          ADC_ConvCpltCallback()
@@ -57,17 +57,10 @@ bool ADC_ConvCpltCallback ( ADC_HandleTypeDef* hadc )
 	if ( hadc == gADC_adc )
 	{
 
-		if ( gADC_DataHandlerPtr != nullptr )
-			gADC_DataHandlerPtr->handle_ADC_Data ( TOTAL_NUM_CV_INPUTS, gADC_Data );
-
-#ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
-
 		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 		if ( gADC_SemaphoreHandle != nullptr )
 			xSemaphoreGiveFromISR( gADC_SemaphoreHandle, &xHigherPriorityTaskWoken );
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-
-#endif
 
 		return true;
 	} else
@@ -96,6 +89,12 @@ void ADC_Thread ( void* pvParameters )
 	add_ADC_ConvCpltCallback ( ADC_ConvCpltCallback );
 	vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
 
+	// Create a binary semaphore to awake thread when new data is available
+	gADC_SemaphoreHandle = xSemaphoreCreateBinary();
+	if ( gADC_SemaphoreHandle == nullptr )
+		CN_ReportFault ( eErrorCodes::adcThreadError );
+//	xSemaphoreTake ( gADC_SemaphoreHandle, portMAX_DELAY );
+
 	// Calibrate the ADC converter used and start in DMA mode then start the timer to trigger conversions
 	HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start ( gADC_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED );
 	if ( res != HAL_OK )
@@ -104,47 +103,25 @@ void ADC_Thread ( void* pvParameters )
 	if ( res != HAL_OK )
 		CN_ReportFault ( eErrorCodes::adcThreadError );
 
-#ifdef CASUALNOISES_ADC_NERVENET_SUPPORT
-
-	// Create a binary semaphore to awake thread when new data is available
-	gADC_SemaphoreHandle = xSemaphoreCreateBinary();
-	if (gADC_SemaphoreHandle == nullptr)
-		CN_ReportFault(eErrorCodes::adcThreadError);
-	xSemaphoreTake(gADC_SemaphoreHandle, portMAX_DELAY);
-
 	// Main event loop
 	for (;;)
 	{
 
 		// Wait for new data
-		BaseType_t res = xSemaphoreTake(gADC_SemaphoreHandle, portMAX_DELAY);
+		BaseType_t res = xSemaphoreTake ( gADC_SemaphoreHandle, portMAX_DELAY );
 		if (res != pdTRUE)
 			CN_ReportFault(eErrorCodes::adcThreadError);
 
-		// Send NerveNet message
-		tADC_ValueMessage adcValueMessage;
-		adcValueMessage.header.messageTag 		= (uint32_t)eSynthEngineMessageType::ADC_Value;
-		adcValueMessage.header.messageLength	= sizeof(tADC_ValueMessage);
-		for (uint32_t i = 0; i < NUM_CV_INPUTS; ++i)
-			adcValueMessage.data[i] = gADC_Data[i];
+		// Process incoming ADC data
+		if ( gADC_DataHandlerPtr != nullptr )
+			gADC_DataHandlerPtr->handle_ADC_Data ( TOTAL_NUM_CV_INPUTS, gADC_Data );
 
-		if (gYellowPages.gNetMasterThreadRunning)
-		{
-			bool success = gNerveNetMasterThreadPtr[0]->sendMessage ( &adcValueMessage, sizeof ( tADC_ValueMessage ) );
-			if ( ! success )
-				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );		// This call should return success
-		}
-
-   		vTaskDelay(pdMS_TO_TICKS(1));
+		// Launch new conversion cycle
+		res = HAL_ADC_Start_DMA ( gADC_adc, (uint32_t *)gADC_Data, TOTAL_NUM_CV_INPUTS );
+		if ( res != HAL_OK )
+			CN_ReportFault ( eErrorCodes::adcThreadError );
 
 	}
-
-#else
-
-	// Suspend this task
-	vTaskSuspend(nullptr);
-
-#endif
 
 	// We should never reach this point
 	CN_ReportFault(eErrorCodes::runtimeError);

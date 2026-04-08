@@ -32,7 +32,6 @@ CasualNoises::NerveNetSlaveThread* gNerveNetSlaveThreadPtr [ MAX_NO_OF_NERVENET_
 namespace CasualNoises
 {
 
-
 struct sRunNerveNetSlaveThreadParams
 {
 	sNerveNetThreadData*				nerveNetThreadDataPtr;
@@ -48,8 +47,16 @@ struct sRunNerveNetSlaveThreadParams
 //  CasualNoises    18/07/2025  First implementation
 //  CasualNoises	25/07/2025	Made function thread save
 //==============================================================================
-bool NerveNetSlaveThread::sendMessage ( const void* messagePtr, uint32_t size)
+bool NerveNetSlaveThread::sendMessage ( tNerveNetMessageHeader* messagePtr, uint32_t size)
 {
+
+	// Number messages
+	static uint32_t	messageNumber = 0;
+	messagePtr->messageNumber = ++messageNumber;
+
+	// Wait until the thread is ready
+	while ( mThreadState == eNerveNetSlaveThreadState::awaitingReset )
+		osDelay ( pdMS_TO_TICKS ( 10 ) );
 
 	// Block if another thread is using this function
 	BaseType_t rtosRes = xSemaphoreTake ( mSyncSemaphoreHandle, portMAX_DELAY );
@@ -64,7 +71,7 @@ bool NerveNetSlaveThread::sendMessage ( const void* messagePtr, uint32_t size)
 	mConstructionBufferBusy = true;
 
 	// Add message to the construction buffer
-	uint8_t* ptr = (uint8_t*)messagePtr;
+	uint8_t* ptr = ( uint8_t* ) messagePtr;
 	for (uint32_t i = 0; i < size; ++i)
 		*mConstructionDataPtr++ = *ptr++;
 	*mConstructionBufferSizePtr += size;
@@ -106,8 +113,7 @@ bool NerveNetSlaveThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_SET );
 			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_RESET );
 			mThreadState = eNerveNetSlaveThreadState::idle;
-//			CN_ReportFault ( ( eErrorCodes ) 0x09 );
-	}
+		}
 		return true;
 	}
 
@@ -147,7 +153,6 @@ bool NerveNetSlaveThread::GPIO_EXTI_Callback ( uint16_t GPIO_Pin )
 
 			// Set ACK line low
 			HAL_GPIO_WritePin ( mNerveNet_ACK_Port, mNerveNet_ACK_Pin, GPIO_PIN_RESET );
-			resetTimeMarker_4 ();
 
 		}
 
@@ -196,7 +201,8 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 	{
 		mTxMessageBuffers[i] = new sNerveNetMessage;
 		memset(mTxMessageBuffers[i], 0x00, sizeof(sNerveNetMessage));
-		mTxMessageBuffers[i]->header.messageSourceID = eNerveNetSourceId::awaitingId;
+		mTxMessageBuffers[i]->header.sourceID 	   = eNerveNetSourceId::awaitingId;
+		mTxMessageBuffers[i]->header.destinationID = eNerveNetSourceId::awaitingId;
 		mTxMessageBuffers[i]->header.messageNumber = 0;
 	}
 	for (uint32_t i = 0; i < cNoOfRxMessageBuffers; ++i)
@@ -270,8 +276,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 
 			// Start of NerveNet cycle, the thread should be idle here
 			if ( mThreadState != eNerveNetSlaveThreadState::idle )
-//				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
-				CN_ReportFault ( ( eErrorCodes ) 0x07 );
+				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 
 			// If there is any data in the construction buffer, add it to current Tx message
 			mTxMessageBuffers [ mTxToBeSentBufferIndex ]->data.size = 0;
@@ -283,6 +288,9 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 				*mConstructionBufferSizePtr  = 0;
 				mConstructionDataPtr		 = &mConstructionBufferPtr->data[0];
 				mRemainingSpace 			 = NERVENET_DATA_SIZE;
+			} else
+			{
+				memset ( (void* ) &mTxMessageBuffers[mTxToBeSentBufferIndex]->data, 0, NERVENET_DATA_SIZE );
 			}
 
 			// Start SPI DMA in slave mode
@@ -294,8 +302,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 					(uint8_t *) mRxMessageBuffers [mRxReceivingBufferIndex],
 					size );
 			if ( res != HAL_OK )
-//				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
-				CN_ReportFault ( ( eErrorCodes ) 0x08 );
+				CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 
 			// Start of AudioProcessor::processBlock () call
 			uint32_t startOfProcessBlockTime = 0;
@@ -305,10 +312,6 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 				startOfProcessBlockTime = mPerformanceTestTimerPtr->Instance->CNT;
 			}
 
-			setTimeMarker_2();
-
-			setTimeMarker_4 ();
-			resetTimeMarker_4 ();
 
 			// Process any NerveNet data
 			if ( mRxMessageBuffers[mRxProcessingBufferIndex]->data.size > 0 )								// ToDo uniform NerveNet message handler
@@ -330,7 +333,6 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 							&mRxMessageBuffers[mRxProcessingBufferIndex]->data.data[0] );
 				}
 			}
-			setTimeMarker_4 ();
 
 			// Generate new audio in the current filling buffer using audio from the current processing buffer
 #ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
@@ -342,7 +344,6 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 			}
 #endif
 
-			resetTimeMarker_2();
 
 			// End of AudioProcessor::processBlock() call
 			uint32_t endOfProcessBlockTime = 0;
@@ -382,10 +383,10 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 //
 //  CasualNoises    11/07/2025  First implementation
 //==============================================================================
-void runNerveNetSlaveThread(void* pvParameters)
+void runNerveNetSlaveThread ( void* pvParameters )
 {
-	sRunNerveNetSlaveThreadParams* params = (sRunNerveNetSlaveThreadParams*)pvParameters;
-	params->threadPtr->mainNerveNetSlaveThread(pvParameters);
+	sRunNerveNetSlaveThreadParams* params = ( sRunNerveNetSlaveThreadParams* ) pvParameters;
+	params->threadPtr->mainNerveNetSlaveThread ( pvParameters );
 }
 
 //==============================================================================
@@ -395,7 +396,10 @@ void runNerveNetSlaveThread(void* pvParameters)
 //
 //  CasualNoises    11/07/2025  First implementation
 //==============================================================================
-BaseType_t startNerveNetSlaveThread(CasualNoises::NerveNetSlaveThread* threadPtr, void *argument, TaskHandle_t* xHandlePtr)
+BaseType_t startNerveNetSlaveThread (
+		CasualNoises::NerveNetSlaveThread* threadPtr,
+		void *argument,
+		TaskHandle_t* xHandlePtr)
 {
 
 	static sRunNerveNetSlaveThreadParams params;

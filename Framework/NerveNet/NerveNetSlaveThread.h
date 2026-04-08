@@ -42,11 +42,13 @@ public:
 
 	void mainNerveNetSlaveThread ( void* pvParameters );
 
-	bool sendMessage ( const void* messagePtr, uint32_t size ) noexcept;
+	bool sendMessage ( tNerveNetMessageHeader* messagePtr, uint32_t size ) noexcept;
 
 	bool GPIO_EXTI_Callback ( uint16_t GPIO_Pin );
 
 	void setNerveNetSlaveProcessorPtr ( NerveNetSlaveProcessor* ptr ) noexcept { mNerveNetSlaveProcessorPtr = ptr; };
+
+	eNerveNetSlaveThreadState getThreadState () const noexcept { return mThreadState; };
 
 private:
 
