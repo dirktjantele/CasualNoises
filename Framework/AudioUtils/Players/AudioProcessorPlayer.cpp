@@ -10,13 +10,14 @@
 
 #ifdef CASUALNOISES_AUDIO_PROCESSOR_PLAYER
 
-//#include <arm_math.h>
+//#include "AudioProcessorPlayer.h"
 
 #include "AudioProcessors/Processors/AudioProcessor.h"
 #include "AudioProcessorPlayer.h"
 #include "AudioBasics/Buffers/AudioBuffer.h"
 
 #include "NerveNet/NerveNetMasterThread.h"
+#include "NerveNet/NerveNetMessage.h"
 
 #include "SystemConfig.h"
 
@@ -49,7 +50,7 @@ static int64_t loopCounter = 0;
 // Interrupt callback for buffer half transfer completed
 void HAL_I2SEx_TxRxHalfCpltCallback (I2S_HandleTypeDef * hi2s)
 {
-	setTimeMarker_3();
+	setTimeMarker_2 ();
 
 	if ( doGenerateAudio && checkForOverRun )
 		CN_ReportFault(eErrorCodes::runtimeError);
@@ -61,13 +62,13 @@ void HAL_I2SEx_TxRxHalfCpltCallback (I2S_HandleTypeDef * hi2s)
 	xSemaphoreGiveFromISR( sAudioProcessorPlayerSemaphoreHandle, &xHigherPriorityTaskWoken );
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
-	resetTimeMarker_3();
+	resetTimeMarker_2 ();
 }
 
 // Interrupt callback for buffer full transfer completed
 void HAL_I2SEx_TxRxCpltCallback (I2S_HandleTypeDef * hi2s)
 {
-	setTimeMarker_3();
+	setTimeMarker_2 ();
 
 	if ( doGenerateAudio && checkForOverRun )
 		CN_ReportFault(eErrorCodes::runtimeError);
@@ -79,7 +80,7 @@ void HAL_I2SEx_TxRxCpltCallback (I2S_HandleTypeDef * hi2s)
 	xSemaphoreGiveFromISR( sAudioProcessorPlayerSemaphoreHandle, &xHigherPriorityTaskWoken );
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
-	resetTimeMarker_3();
+	resetTimeMarker_2 ();
 }
 
 // Global NerveNet master thread pointers
@@ -93,6 +94,37 @@ CasualNoises::AudioProcessorPlayer	AudioProcessorPlayer::mAudioProcessorPlayer;
 CasualNoises::AudioProcessor* 		AudioProcessorPlayer::mAudioProcessorPtr 		= nullptr;
 
 //==============================================================================
+//          handleNerveNetCallBacks ()
+//
+// Make a copy of the event and post it onto the queue
+//
+//  CasualNoises    22/01/2026  First implementation
+//==============================================================================
+void handleNerveNetCallBacks ( void* messagePtr )
+{
+
+	sNerveNetData* dataPtr = ( sNerveNetData* ) messagePtr;
+
+	uint32_t size = dataPtr->size;
+	while ( size > 0 )
+	{
+		--size;
+	}
+
+	/*
+	// Make a copy of the NerveNet data and place it on the UI message queue
+	uint32_t  size = messagePtr->messageLength;
+	uint8_t* copy = (uint8_t*) pvPortMalloc ( size );
+	memcpy ( copy, messagePtr, size );
+	sNerveNetEvent event;
+	event.eventSourceID = eEventSourceID::nerveNetSourceID;
+	event.eventLength	= messagePtr->messageLength;
+	event.eventdataPtr	= copy;
+	xQueueSend ( gYellowPages.gUI_ThreadQueueHandle, (const void*) &event, portMAX_DELAY );
+*/
+}
+
+//==============================================================================
 //          runAudioProcessor
 //
 // This is the main audio processor loop, this method never return
@@ -104,6 +136,9 @@ void AudioProcessorPlayer::runAudioProcessor (
 		AudioBuffer* audioBufferPtr,
 		void ( **nerveNetCallBackPtr )( CasualNoises::sNerveNetData* ) )
 {
+
+//	void ( *funcPtr ) ( tNerveNetMessageHeader* messagePtr ) = &handleNerveNetCallBacks;
+//	params->nerveNetCallBackPtr = &funcPtr;
 
 	// Create a binary semaphore for task/interrupt synchronisation
 	sAudioProcessorPlayerSemaphoreHandle = xSemaphoreCreateBinary();
@@ -160,7 +195,7 @@ void AudioProcessorPlayer::runAudioProcessor (
 			CN_ReportFault(eErrorCodes::runtimeError);
 
 		// Mark start of audio processing
-//		setTimeMarker_4();
+//		setTimeMarker_2();
 
 		// Counting is done for testing info only...
 		++loopCounter;
@@ -170,14 +205,16 @@ void AudioProcessorPlayer::runAudioProcessor (
 		sNerveNetMessage* nerveNetMessagePtr = gNerveNetMasterThreadPtr[AUDIO_NERVENET_THREAD_NO]->startNewDataExchange ();
 
 		// Handle NerveNet message
-		if ( ( nerveNetMessagePtr != nullptr ) && ( nerveNetMessagePtr->header.messageNumber != 0 ) )
+		if ( ( nerveNetMessagePtr != nullptr ) && ( nerveNetMessagePtr->header.messageLength != 0 ) )
 		{
 
+			handleNerveNetCallBacks ( ( void* ) &nerveNetMessagePtr->data  );
+
 			// Do we have a call back pointer to handle the incoming NerveNet data?
-			if ( nerveNetCallBackPtr != nullptr )
-			{
-				( **nerveNetCallBackPtr )( &nerveNetMessagePtr->data );
-			}
+//			if ( nerveNetCallBackPtr != nullptr )
+//			{
+//				( **nerveNetCallBackPtr )( &nerveNetMessagePtr->data );
+//			}
 
 #ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
 			// Fill NerveNet audio buffer with incoming audio
@@ -218,7 +255,7 @@ void AudioProcessorPlayer::runAudioProcessor (
 		checkForOverRun = true;
 
 		// Mark end of audio processing
-//		resetTimeMarker_4();
+//		resetTimeMarker_2();
 
 	}
 }

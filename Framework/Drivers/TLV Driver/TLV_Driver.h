@@ -80,7 +80,6 @@ public:
 
 private:
 	NVM_Driver* 			mNVM_DriverPtr;						// Driver used for NVM access
-//	uint32_t				mFreeTLV_Index { 0xffffffff };		// Index of the first free/empty TLV
 	uint32_t				mNVM_AfterEndIndex  { 0 };			// Index one after last available index
 
 	inline uint32_t 		getTag(uint32_t index) const noexcept						{ return (*mNVM_DriverPtr)[index + 0]; }
