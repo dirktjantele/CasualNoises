@@ -93,7 +93,6 @@ void ADC_Thread ( void* pvParameters )
 	gADC_SemaphoreHandle = xSemaphoreCreateBinary();
 	if ( gADC_SemaphoreHandle == nullptr )
 		CN_ReportFault ( eErrorCodes::adcThreadError );
-//	xSemaphoreTake ( gADC_SemaphoreHandle, portMAX_DELAY );
 
 	// Calibrate the ADC converter used and start in DMA mode then start the timer to trigger conversions
 	HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start ( gADC_adc, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED );

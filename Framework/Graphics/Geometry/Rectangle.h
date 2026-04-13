@@ -125,9 +125,11 @@ public:
 
     /** Returns the x coordinate of the rectangle's centre. */
     ValueType getCentreX() const noexcept                           { return pos.x + w / (ValueType) 2; }
+    ValueType getGlobalCentreX() const noexcept                     { return ( (ValueType) 2 * pos.x + w ) / (ValueType) 2; }
 
     /** Returns the y coordinate of the rectangle's centre. */
     ValueType getCentreY() const noexcept                           { return pos.y + h / (ValueType) 2; }
+    ValueType getGlobalCentreY() const noexcept                     { return ( (ValueType) 2 * pos.y + h ) / (ValueType) 2; }
 
     /** Returns the centre point of the rectangle. */
     Point<ValueType> getCentre() const noexcept                     { return { pos.x + w / (ValueType) 2,
@@ -380,8 +382,8 @@ public:
      void expand ( ValueType deltaX,
                    ValueType deltaY ) noexcept
      {
-         auto nw = jmax ( ValueType(), w + deltaX  * 2 );
-         auto nh = jmax ( ValueType(), h + deltaY  * 2 );
+         auto nw = jmax ( ValueType(), w + ( deltaX * 2) );
+         auto nh = jmax ( ValueType(), h + ( deltaY * 2) );
          setBounds (pos.x - deltaX, pos.y - deltaY, nw, nh);
      }
 

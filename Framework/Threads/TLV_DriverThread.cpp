@@ -267,8 +267,8 @@ bool addTLV_Bytes ( QueueHandle_t queueHandle, uint32_t tag, uint32_t length, ui
 bool updateTLV_Bytes ( QueueHandle_t queueHandle, uint32_t tag, uint32_t length, uint32_t* valuePtr )
 {
 	deleteTLV ( queueHandle, tag, true );
-	length = addTLV_Bytes ( queueHandle, tag, length, valuePtr );
-	return length > 0;
+	bool success = addTLV_Bytes ( queueHandle, tag, length, valuePtr );
+	return success;
 }
 
 //==============================================================================
@@ -370,8 +370,9 @@ void TLV_DriverThread ( void* pvParameters )
 	}
 
 	// Create a helper thread
+	UBaseType_t prio = uxTaskPriorityGet( nullptr );
 	BaseType_t res = xTaskCreate(TLV_DriverHelperThread, "TLV_Helper", DEFAULT_STACK_SIZE, nullptr,
-			UI_THREAD_PRIORITY - 1, nullptr);
+			prio - 1, nullptr);
 	if ( res != pdPASS)
 		CN_ReportFault ( eErrorCodes::UI_ThreadError );
 
@@ -471,8 +472,12 @@ void TLV_DriverThread ( void* pvParameters )
 //==============================================================================
 BaseType_t startTLV_DriverThread ( void* pvParameters, TaskHandle_t* xHandlePtr )
 {
-	BaseType_t res = xTaskCreate(TLV_DriverThread, "TLV_Driver", DEFAULT_STACK_SIZE, pvParameters,
-			UI_THREAD_PRIORITY, xHandlePtr);
+	BaseType_t res = xTaskCreate ( TLV_DriverThread,
+								   "TLV_Driver",
+								   DEFAULT_STACK_SIZE,
+								   pvParameters,
+								   TLV_DRIVER_THREAD_PRIORITY,
+								   xHandlePtr );
 	return res;
 }
 

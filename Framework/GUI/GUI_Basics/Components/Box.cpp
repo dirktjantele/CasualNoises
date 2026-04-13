@@ -70,7 +70,7 @@ IndexBox::IndexBox ( String name, uint8_t noOfTabs, uint8_t currentTab ) :
 //==============================================================================
 void IndexBox::paint ( Graphics& g )
 {
-	Box::paint(g);
+	Box::paint ( g );
 	SSD1309_Driver* screen = g.getScreen ();
 	Rectangle<int32_t> bounds = getLocalBounds ();
 	uint32_t x = 8;

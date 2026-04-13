@@ -20,7 +20,7 @@ namespace CasualNoises
 constexpr uint16_t	cMaxNoOfDevices 	  = 8;
 
 /*
- * Data structure used to initialise the driver
+ * Data structure used to initialize the driver
  */
 typedef struct
 {

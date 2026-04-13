@@ -34,11 +34,11 @@ public:
         }
     }
 
-    void start() {
+    void startTimer() {
         xTimerStart(_timer, 0);
     }
 
-    void stop() {
+    void stopTimer() {
         xTimerStop(_timer, 0);
     }
 

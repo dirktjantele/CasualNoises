@@ -118,7 +118,7 @@ bool TLV_Driver::addTLV ( uint32_t tag, uint32_t length, void* valuePtr, bool fl
 
 	// Find free TLV that is large enough
 	uint32_t index = findNextTLV ( cFreeTLV_Tag, 0 );
-	while (index != 0)
+	while ( index != 0 )
 	{
 		if (getLength ( index ) >= length + 2 )
 			break;
@@ -214,7 +214,7 @@ void TLV_Driver::deleteTLV ( uint32_t tag, bool deleteAll, bool flushFlag )
 {
 
 	bool proceed = true;
-	uint32_t index = findNextTLV (tag, 0);
+	uint32_t index = findNextTLV ( tag, 0 );
 	while ( ( index != 0 ) && proceed )
 	{
 		setTag ( index, cFreeTLV_Tag );
@@ -260,7 +260,7 @@ bool TLV_Driver::updateTLV ( uint32_t index, uint32_t length, void* valuePtr, bo
 //==============================================================================
 bool TLV_Driver::updateTLV_Tag(uint32_t tag, uint32_t length, void* valuePtr, bool flushFlag)
 {
-	deleteTLV ( tag, true, flushFlag );
+	deleteTLV ( tag, true, false );
 	bool res = addTLV ( tag, length, valuePtr, flushFlag );
 	return res;
 }

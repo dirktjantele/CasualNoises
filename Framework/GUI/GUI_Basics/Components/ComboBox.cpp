@@ -157,7 +157,8 @@ bool ComboBox::handleUI_event ( void* uiEvent,
 			onChange ();
 		} else if ( eventPtr->encoderEvent.eventType == eEncoderEventType::encoderCount )
 		{
-			int32_t focus = mFocus - eventPtr->encoderEvent.encoderCount;
+//			int32_t focus = mFocus - eventPtr->encoderEvent.encoderCount;
+			int32_t focus = mFocus + eventPtr->encoderEvent.encoderCount;
 			if ( focus < 0 )
 				focus = 0;
 			if ( focus >= (int32_t)mItemPtrs.size() )

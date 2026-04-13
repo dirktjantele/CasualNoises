@@ -20,13 +20,6 @@
 namespace CasualNoises
 {
 
-//#include "main.h"
-//#include "SystemConfig.h"
-
-//#include "CasualNoises.h"
-
-//#ifdef debugging
-
 //==============================================================================
 //          AudioThread
 //
@@ -70,8 +63,6 @@ BaseType_t StartAudioThread(void *argument)
 	return res;
 
 }
-
-//#endif
 
 } // namespace CasualNoises
 
