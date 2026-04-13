@@ -106,6 +106,26 @@ public:
    }
 
 	//==============================================================================
+	//          String(uint32_t in)
+	//
+	//  CasualNoises    11/04/2026  First implementation
+	//==============================================================================
+	/** Create a string from a int */
+	String ( int in )
+	{
+    	static char tmp[32];
+    	sprintf(tmp, "%d", in);
+    	std::string str (tmp);
+		mStringLength = str.length();
+		mStringPtr = (char*)pvPortMalloc(mStringLength + 1);
+		if (mStringPtr == nullptr)
+ 	 	 	 CN_ReportFault(eErrorCodes::unknowError);
+		for (uint16_t i = 0; i < mStringLength; ++i)
+			mStringPtr[i] = tmp[i];
+		mStringPtr[mStringLength] = 0;
+    }
+
+	//==============================================================================
 	//          length()
 	//
 	//  CasualNoises    02/08/2023  First implementation
