@@ -27,3 +27,14 @@ constexpr E next(E e) {
     return static_cast<E>(value);
 }
 
+template <typename E>
+constexpr bool operator<=(E a, E b) {
+    static_assert(std::is_enum_v<E>);
+    return static_cast<int>(a) <= static_cast<int>(b);
+}
+
+template <typename E>
+constexpr bool operator>=(E a, E b) {
+    static_assert(std::is_enum_v<E>);
+    return static_cast<int>(a) <= static_cast<int>(b);
+}
