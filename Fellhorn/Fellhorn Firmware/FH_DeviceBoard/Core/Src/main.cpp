@@ -23,15 +23,16 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include <UI_Definitions.h>
-#include <YellowPages.h>
+#include "UI_Definitions.h"
+#include "YellowPages.h"
 
 #include "SystemConfig.h"
 
 #include "UI_Thread.h"
 
-#include <NerveNet/NerveNetMasterThread.h>
-#include <NerveNet/NerveNetSlaveThread.h>
+//#include "NerveNet/NerveNetMessageHeader.h"
+#include "NerveNet/NerveNetMasterThread.h"
+#include "NerveNet/NerveNetSlaveThread.h"
 #include "NerveNet/NerveNetConfig.h"
 #include "Threads/TriggerThread.h"
 
@@ -930,6 +931,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 2;
 	encoderSignatures[num].enc_B_DevNo	= 0;
 	encoderSignatures[num].enc_B_PinNo	= 3;
+	encoderSignatures[num].allChanges	= false;
 	++num;													// Switch #1 (Alt)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 0;
@@ -938,6 +940,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 0xff;
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
+	encoderSignatures[num].allChanges	= true;
 	++num;													// Switch #2 (<)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 0;
@@ -946,6 +949,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 0xff;
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
+	encoderSignatures[num].allChanges	= false;
 	++num;													// Switch #3 (>)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
@@ -954,6 +958,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 0xff;
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
+	encoderSignatures[num].allChanges	= false;
 	++num;													// Switch #4 (Setup)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
@@ -962,6 +967,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 0xff;
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
+	encoderSignatures[num].allChanges	= false;
 	++num;													// Switch #5 (Load)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
@@ -970,6 +976,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 0xff;
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
+	encoderSignatures[num].allChanges	= false;
 	++num;													// Switch #6 (Save)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
@@ -978,6 +985,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 0xff;
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
+	encoderSignatures[num].allChanges	= false;
 	++num;													// Switch #7 (Exit)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 0;
@@ -986,6 +994,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_A_PinNo	= 0xff;
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
+	encoderSignatures[num].allChanges	= false;
 
 	// Create a signature map for all encoders/switches
 	constexpr uint32_t noADC_Multiplexers 	= 2;			// 2 multiplexers: 1 pots & 1 sliders
@@ -1010,7 +1019,8 @@ void StartDefaultTask(void *argument)
 	// Encoder #1 (Value)
 	// Create a UI thread and run it
 	// Note, part of the UI_ThreadData is filled in by the UI thread when starting up
-	void ( *nerveNetCallBackPtr ) ( uint32_t size, uint8_t* ptr ) = nullptr;
+	void ( *nerveNetCallBackPtr ) ( CasualNoises::tNerveNetMessageHeader* messagePtr ) = nullptr;
+
 	static CasualNoises::UI_ThreadData uiData;
 	// ... NVM Driver settings
 	uiData.nvmDriverInitData.noOfDevices				= 2;
@@ -1092,7 +1102,7 @@ void StartDefaultTask(void *argument)
 		osDelay ( pdMS_TO_TICKS (100) );
 		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
 		osDelay( pdMS_TO_TICKS ( 700) );
-		nerveNetMasterThread.checkCycleCount ();
+//		nerveNetMasterThread.checkCycleCount ();								// ToDo put this code back in after debug
 	}
 
   /* USER CODE END 5 */

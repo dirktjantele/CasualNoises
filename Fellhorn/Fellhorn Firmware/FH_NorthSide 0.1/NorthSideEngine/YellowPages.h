@@ -22,6 +22,8 @@
 namespace CasualNoises
 {
 
+class TLV_Driver;
+
 typedef struct
 {
 
@@ -44,6 +46,14 @@ typedef struct
 	TaskHandle_t 	gEventHandlerThreadTaskHandle;
 	QueueHandle_t	gEventHandlerThreadQueueHandle;
 	bool			gEventHandlerThreadRunning = false;
+
+	// Info about the TLV driver thread
+//	TaskHandle_t 	gTLV_DriverThreadTaskHandle;
+	QueueHandle_t	gTLV_DriverThreadQueueHandle;
+	bool			gTLV_DriverThreadThreadRunning = false;
+
+	// Pointer to the TLV driver
+//	TLV_Driver*		gTLV_DriverPtr = nullptr;						// ToDo remove this line
 
 } tYellowPages;
 

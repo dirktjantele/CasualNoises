@@ -109,7 +109,7 @@ void MainPage::onComboBoxChange ()
 //==============================================================================
 void MainPage::paint ( Graphics& g )
 {
-
+/*
 	// Activate SETUP & LOAD switch led's
 	eLED_BitNums leds[] = {
 		eLED_BitNums::SWITCH_4, eLED_BitNums::SWITCH_5
@@ -123,7 +123,7 @@ void MainPage::paint ( Graphics& g )
 		if (res != pdPASS)
 			CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 	}
-
+*/
 	// Clear the screen
 	g.fillAll ();
 
@@ -448,7 +448,6 @@ void PotentiometerCalibrationPage::paint(Graphics& g)
 void PotentiometerCalibrationPage::resized()
 {
 
-
     // Box around this page
     Rectangle<int32_t> rect = getGlobalBounds();
     mOuterBoxPtr->setBounds ( rect );
@@ -463,12 +462,13 @@ void PotentiometerCalibrationPage::resized()
     mCompletionLabelPtr->setJustification ( eJustificationFlags::centred );
 
     // Progress bar
+    Rectangle<int32_t> tmp;
     mLocalBounds = getGlobalBounds();
     mAwaitingMinLabelPtr->setBounds ( rect );
-    mLocalBounds.removeFromTop ( 10 );
+    tmp = mLocalBounds.removeFromTop ( 10 );
     rect = mLocalBounds.removeFromTop ( 25 );
-    rect.removeFromLeft ( 10 );
-    rect.removeFromRight ( 10 );
+    tmp = rect.removeFromLeft ( 10 );
+    tmp = rect.removeFromRight ( 10 );
     mProgressBarPtr->setBounds( rect );
 
     // Set text

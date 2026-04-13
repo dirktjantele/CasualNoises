@@ -19,7 +19,7 @@
 
 #include "CommonDefinitions.h"
 
-#include "NerveNet/NerveNetMessageHeader.h"
+#include "NerveNet/NerveNetMessage.h"
 
 namespace CasualNoises
 {
@@ -32,6 +32,8 @@ enum class eSynthEngineMessageType
 	setupInfoReply,
 	potentiometerValue,
 	ADC_DataRequest,
+	ADC_DataReply,
+	ADC_CalibrationData,
 	triggerEvent,
 	setFrequency,
 };
@@ -71,6 +73,7 @@ typedef struct
 	uint16_t					multiplexerChannelNo;
 	float						potValue;
 	float 						deviation;
+	bool						altSwitchState;
 } tPotValueMessage;
 
 /***************************************** tRequestADC_Data *******************************/
@@ -92,12 +95,15 @@ typedef struct
 	uint32_t					beatNo;
 } tTriggerMessage;
 
-/***************************************** tSetupInfoReplyMessageData *******************************/
+/************************************* tCV_InputCalibrationSettings***************************/
+// Used to send CV input calibration data to the North- and SouthSide
 typedef struct
 {
 	tNerveNetMessageHeader		header;
-	char						setupName[16];
-} tSetupInfoReplyMessageData;
+	float						openInputValues 	[ NUM_CV_INPUTS ];
+	float						min5V_InputValues 	[ NUM_CV_INPUTS ];
+	float						plus5V_InputValues 	[ NUM_CV_INPUTS ];
+} tCV_InputCalibrationSettings;
 
 /***************************************** tSetFrequencyMessage *******************************/
 typedef struct

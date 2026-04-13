@@ -137,24 +137,6 @@ public:
 			AudioBuffer* outBuffer, 					// Audio from the codec and audio for the codec
 			AudioBuffer* inBuffer ) noexcept			// Audio from NerveNet
 	{
-/*
-		// Simple all pass
-		const float* lrptr = outBuffer->getReadPointer ( 0 );
-		const float* rrptr = outBuffer->getReadPointer ( 1 );
-		float* lwptr = outBuffer->getWritePointer( 0 );
-		float* rwptr = outBuffer->getWritePointer( 1 );
-		uint32_t noSamples = inBuffer->getNumSamples();
-
-		float foo = 0.0f;
-		uint32_t i = 0;
-		for ( ; i < noSamples; ++i )
-        {
-			foo = *lrptr;
-        	*lwptr++ = *lrptr++;
-        	*rwptr++ = *rrptr++;
-        }
-*/
-
 
 		assert ( inBuffer->getNumChannels() == 2 );
 		const float* lrptr = inBuffer->getReadPointer ( 0 );						// ToDo: replace outBuffer with inBuffer

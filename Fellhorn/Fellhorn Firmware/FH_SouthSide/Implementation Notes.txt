@@ -1,4 +1,6 @@
 
+
+*** this seems no longer needed???
 Patch in port.c line 754				ToDo: find out why this solves a semaphore realted issue
 
 			uint8_t prio = 0x50;
@@ -6,6 +8,12 @@ Patch in port.c line 754				ToDo: find out why this solves a semaphore realted i
 				ucMaxSysCallPriority = prio;
 			configASSERT( ucCurrentPriority >= ucMaxSysCallPriority );
 
+
+
+TimeMarkers:
+------------
+
+TimeMarker_1 & TimeMarker_2: see CasualNoises framework
 
 
 Device allocation:

@@ -11,15 +11,15 @@
   ==============================================================================
 */
 
-//#ifdef debugging
-
 #pragma once
 
 #ifdef CASUALNOISES_NERVENET_THREAD
 
 #include <NerveNet/NerveNetSlaveProcessor.h>
 
-#include "main.h"
+#include "SynthEngineMessage.h"
+
+//#include "main.h"
 
 namespace CasualNoises
 {
@@ -36,12 +36,12 @@ public:
 
 private:
 
-	void handleRequestSetupInfo	( NerveNetSlaveThread* nerveNetThreadPtr );
+	void handleRequestSetupInfo		( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept;
+	void handleADC_DataRequest 		( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept;
+	void handleADC_CalibrationData 	( tInitMessage* messagePtr ) 			   const noexcept;
 
 };
 
 } // namespace CasualNoises
-
-//#endif
 
 #endif

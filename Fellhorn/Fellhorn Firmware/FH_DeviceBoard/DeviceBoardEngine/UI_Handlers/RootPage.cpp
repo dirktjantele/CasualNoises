@@ -32,6 +32,7 @@ RootPage::RootPage(SSD1309_Driver* m_oledDriverPtr,
 		m_oledDriverPtr ( m_oledDriverPtr ),
 		mTLV_DriverQueueHandle ( driverQueueHandle ),
 		mPageManagerPtr ( pageManagerPtr )
+	//	: TimerBase("Blinker", 500) {}
 {
 	mGlobalBounds.setPosition(0, 0);
 	mGlobalBounds.setWidth(DISPLY_WIDTH);
@@ -156,6 +157,23 @@ void RootPage::setSwitchLed  ( eLED_BitNums led )
 {
 	sLED_Event event;
 	event.ledIntensity = 100;
+	event.ledBitNum = (uint32_t)led;
+	BaseType_t res = xQueueSend(gYellowPages.gLED_ThreadQueueHandle, &event, 10);
+	if (res != pdPASS)
+		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
+}
+
+//==============================================================================
+//          dimSwitchLed()
+//
+// 	Set intensity of the given led to 5%
+//
+//  CasualNoises    10/04/2026  First implementation
+//==============================================================================
+void RootPage::dimSwitchLed  ( eLED_BitNums led )
+{
+	sLED_Event event;
+	event.ledIntensity = 5;
 	event.ledBitNum = (uint32_t)led;
 	BaseType_t res = xQueueSend(gYellowPages.gLED_ThreadQueueHandle, &event, 10);
 	if (res != pdPASS)

@@ -35,6 +35,7 @@
 #include "NorthSideEngine.h"
 #include "NorthSideAudioProcessor.h"
 #include "DeviceBoardConnection.h"
+#include "SouthSideConnection.h"
 
 #include "EventHandlerThread.h"
 
@@ -215,7 +216,7 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
-  MPU_Config();
+	MPU_Config();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -387,7 +388,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc1.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
+  hadc1.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DMA_ONESHOT;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
   hadc1.Init.OversamplingMode = DISABLE;
@@ -409,7 +410,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_18;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_16CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_32CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -905,6 +906,7 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
+  __HAL_RCC_DMA2_CLK_ENABLE();
 
   /* DMA interrupt init */
   /* DMA1_Stream0_IRQn interrupt configuration */
@@ -913,9 +915,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
-  /* DMA1_Stream2_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
   /* DMA1_Stream3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
@@ -928,6 +927,9 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream6_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+  /* DMA2_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
 
 }
 
@@ -1154,9 +1156,10 @@ void StartDefaultTask(void *argument)
 	synthEngineParams.frequency = 110.0;
 	synthEngineParams.bmp		= 60.0;
 
-	// Create an engine thread and run it
 	// Note, part of the sNorthSideEngineParams is filled in by the UI thread when starting up
 //	void ( *nerveNetCallBackPtr ) ( CasualNoises::sNerveNetData* ) = nullptr;
+
+	// Create an engine thread and run it
 	static CasualNoises::sNorthSideEngineParams engineParams;
 	// ... NVM Driver settings
 	engineParams.nvmDriverInitData.noOfDevices				= 4;
@@ -1170,7 +1173,7 @@ void StartDefaultTask(void *argument)
 	engineParams.nvmDriverInitData.deviceSelectPorts[3]		= NS_FLASH_CS_4_GPIO_Port;
 	engineParams.nvmDriverInitData.deviceSelectPins[3]		= NS_FLASH_CS_4_Pin;
 	// ... NerveNet data call back handler
-//	engineParams.nerveNetCallBackPtr   						= nerveNetCallBackPtr;
+//	engineParams.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
 	// Start North Side engine thread
 	res = CasualNoises::StartNorthSideEngineThread ( &engineParams );
 	if (res != pdPASS)
@@ -1193,7 +1196,7 @@ void StartDefaultTask(void *argument)
 	static CasualNoises::sAudioThreadInitData audioData;
 	audioData.audioProcessorPtr		= audioProcessorPtr;
 	audioData.hi2sHandlePtr 		= &hi2s1;
-	audioData.nerveNetCallBackPtr   = engineParams.nerveNetCallBackPtr;
+//	audioData.nerveNetCallBackPtr   = engineParams.nerveNetCallBackPtr;
 	CasualNoises::StartAudioThread ( &audioData );
 
 	// Create an ADC handler thread - CV inputs are also handled by the South Side
@@ -1230,6 +1233,8 @@ void StartDefaultTask(void *argument)
 	if ( res != pdPASS )
 		CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 	CasualNoises::gYellowPages.gNerveNetMasterThreadTaskHandle 	= xMasterHandlePtr;
+	CasualNoises::SouthSideConnection connection;
+	nerveNetMasterThread.setNerveNetMasterProcessorPtr ( &connection );
 
 	// Start NerveNet slave thread to interact with the Device Board
 	static CasualNoises::sNerveNetThreadData nerveNetSlaveThreadData;
@@ -1266,7 +1271,7 @@ void StartDefaultTask(void *argument)
 		osDelay ( pdMS_TO_TICKS ( 100 ) );
 		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
 		osDelay ( pdMS_TO_TICKS ( 700 ) );
-		nerveNetMasterThread.checkCycleCount ();
+//		nerveNetMasterThread.checkCycleCount ();					ToDo put code back in
 	}
   /* USER CODE END 5 */
 }

@@ -1,5 +1,10 @@
 ToDo: add noise to the wave table lfo
 
+TimeMarkers:
+------------
+
+TimeMarker_1 & TimeMarker_2: see CasualNoises framework
+
 Device allocation: 
 ------------------
 

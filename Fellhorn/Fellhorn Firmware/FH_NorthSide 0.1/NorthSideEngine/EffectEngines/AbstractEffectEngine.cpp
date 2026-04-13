@@ -15,8 +15,6 @@
 
 #include <CommonUtilities.h>
 
-//#ifdef debugging
-
 namespace CasualNoises
 {
 
@@ -52,17 +50,24 @@ void AbstractEffectEngine::applyControlVoltages (  uint32_t noOfEntries, uint16_
 //==============================================================================
 void AbstractEffectEngine::processNerveNetMessage ( tInitMessage* messagePtr )
 {
-	if ( messagePtr->header.messageTag == (uint32_t)eSynthEngineMessageType::potentiometerValue )
+
+	eSynthEngineMessageType type = (eSynthEngineMessageType)messagePtr->header.messageTag;
+	switch ( type )
 	{
-		tPotValueMessage* ptr 			= (tPotValueMessage*) messagePtr;
-		uint16_t multiplexerNo 			= ptr->multiplexerNo;
-		uint16_t multiplexerChannelNo 	= ptr->multiplexerChannelNo;
-		ePotentioMeterId potId  		= ( ePotentioMeterId )( ( multiplexerNo << 4	) + multiplexerChannelNo );
-		float potValue 					= ptr->potValue;
-		applyPotentiometerValue ( potId, potValue );
+	case eSynthEngineMessageType::potentiometerValue:
+		{
+			tPotValueMessage* ptr 			= (tPotValueMessage*) messagePtr;
+			uint16_t multiplexerNo 			= ptr->multiplexerNo;
+			uint16_t multiplexerChannelNo 	= ptr->multiplexerChannelNo;
+			ePotentioMeterId potId  		= ( ePotentioMeterId )( ( multiplexerNo << 4	) + multiplexerChannelNo );
+			float potValue 					= ptr->potValue;
+			applyPotentiometerValue ( potId, potValue );
+		}
+		break;
+	default:
+		break;
 	}
+
 };
 
 } // namespace CasualNoises
-
-//#endif

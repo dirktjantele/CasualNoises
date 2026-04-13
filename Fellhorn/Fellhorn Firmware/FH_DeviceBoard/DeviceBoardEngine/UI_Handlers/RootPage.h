@@ -18,10 +18,10 @@
 #include "../UI_Thread.h"
 #include "../../DeviceBoardEngine/UI_Definitions.h"
 
-#include <Threads/TLV_DriverThread.h>
+#include "Threads/TLV_DriverThread.h"
 
-#include <Graphics/Geometry/Rectangle.h>
-#include <Graphics/Geometry/Point.h>
+#include "Graphics/Geometry/Rectangle.h"
+#include "Graphics/Geometry/Point.h"
 
 namespace CasualNoises
 {
@@ -79,6 +79,7 @@ protected:
 
 	void dimSwitchLeds ();
 	void setSwitchLed  ( eLED_BitNums led );
+	void dimSwitchLed  ( eLED_BitNums led );
 
 private:
 	Rectangle< int32_t > 		mGlobalBounds;

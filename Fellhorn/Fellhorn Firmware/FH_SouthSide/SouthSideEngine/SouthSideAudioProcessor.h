@@ -10,9 +10,11 @@
 
 #pragma once
 
-#include <AudioProcessors/Processors/AudioProcessor.h>
-#include <Threads/ADC_Thread.h>
-#include <Utilities/ReportFault.h>
+#include "AudioProcessors/Processors/AudioProcessor.h"
+#include "Threads/ADC_Thread.h"
+#include "Utilities/ReportFault.h"
+
+#include "NerveNet/NerveNetMessage.h"
 
 namespace CasualNoises
 {
@@ -24,6 +26,7 @@ typedef struct
 
 class AbstractSynthEngine;
 class ADSR;
+
 class SouthSideAudioProcessor : public AudioProcessor, public ADC_DataHandler
 {
 public:
@@ -68,7 +71,11 @@ private:
 
 	// Pointer to synth engine
 	AbstractSynthEngine*			mAbstractSynthEnginePtr	{ nullptr };
-//	ADSR*							mADSR_Ptr				{ nullptr };
+
+	void handleRequestSetupInfo ( uint32_t threadNo ) const noexcept;
+	void handleADC_DataRequest  ( uint32_t threadNo ) const noexcept;
+
+	void handleADC_CalibrationData ( tNerveNetMessageHeader* headerPtr );
 
 };
 

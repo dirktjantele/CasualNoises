@@ -23,8 +23,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-//#include "CasualNoises.h"
-
 #include "Utilities/CallbackHandlers.h"
 
 #include "Threads/TriggerThread.h"
@@ -36,9 +34,9 @@
 #include "SouthSideAudioProcessor.h"
 
 #include "Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h"
-#include "Drivers/TLV Driver/TLV_Driver.h"
+#include "Threads/TLV_DriverThread.h"
 
-//#include "NorthSouthComThread.h"
+#include "YellowPages.h"
 
 /* USER CODE END Includes */
 
@@ -59,7 +57,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-ADC_HandleTypeDef hadc2;
 DMA_HandleTypeDef hdma_adc1;
 
 SPI_HandleTypeDef hspi1;
@@ -90,7 +87,6 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void PeriphCommonClock_Config(void);
 static void MPU_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
@@ -105,7 +101,6 @@ static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM15_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_ADC2_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -196,11 +191,11 @@ void resetTimeMarker_4()
 	HAL_GPIO_WritePin(GPIOF, TIME_MARKER_4_Pin, GPIO_PIN_RESET);
 }
 
-static CasualNoises::TLV_Driver* TLV_DriverPtr = nullptr;
-void* getTLV_DriverPtr()
-{
-	return TLV_DriverPtr;
-}
+//static CasualNoises::TLV_Driver* TLV_DriverPtr = nullptr;
+//void* getTLV_DriverPtr()
+//{
+//	return TLV_DriverPtr;
+//}
 
 /* USER CODE END 0 */
 
@@ -235,9 +230,6 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* Configure the peripherals common clocks */
-  PeriphCommonClock_Config();
-
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
@@ -256,7 +248,6 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM15_Init();
   MX_ADC1_Init();
-  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start_IT(&htim3);			// ToDo: do this in the appropriate gate/trigger thread
@@ -370,32 +361,6 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief Peripherals Common Clock Configuration
-  * @retval None
-  */
-void PeriphCommonClock_Config(void)
-{
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-
-  /** Initializes the peripherals clock
-  */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInitStruct.PLL2.PLL2M = 2;
-  PeriphClkInitStruct.PLL2.PLL2N = 16;
-  PeriphClkInitStruct.PLL2.PLL2P = 2;
-  PeriphClkInitStruct.PLL2.PLL2Q = 2;
-  PeriphClkInitStruct.PLL2.PLL2R = 2;
-  PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
-  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
-  PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
-  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-
-/**
   * @brief ADC1 Initialization Function
   * @param None
   * @retval None
@@ -427,7 +392,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc1.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DMA_CIRCULAR;
+  hadc1.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DMA_ONESHOT;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
   hadc1.Init.OversamplingMode = DISABLE;
@@ -533,66 +498,6 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
-
-}
-
-/**
-  * @brief ADC2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ADC2_Init(void)
-{
-
-  /* USER CODE BEGIN ADC2_Init 0 */
-
-  /* USER CODE END ADC2_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC2_Init 1 */
-
-  /* USER CODE END ADC2_Init 1 */
-
-  /** Common config
-  */
-  hadc2.Instance = ADC2;
-  hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV4;
-  hadc2.Init.Resolution = ADC_RESOLUTION_16B;
-  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  hadc2.Init.LowPowerAutoWait = DISABLE;
-  hadc2.Init.ContinuousConvMode = DISABLE;
-  hadc2.Init.NbrOfConversion = 1;
-  hadc2.Init.DiscontinuousConvMode = DISABLE;
-  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc2.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
-  hadc2.Init.Overrun = ADC_OVR_DATA_PRESERVED;
-  hadc2.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
-  hadc2.Init.OversamplingMode = DISABLE;
-  hadc2.Init.Oversampling.Ratio = 1;
-  if (HAL_ADC_Init(&hadc2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_2;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-  sConfig.OffsetSignedSaturation = DISABLE;
-  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC2_Init 2 */
-
-  /* USER CODE END ADC2_Init 2 */
 
 }
 
@@ -1060,6 +965,7 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
+  __HAL_RCC_DMA2_CLK_ENABLE();
 
   /* DMA interrupt init */
   /* DMA1_Stream0_IRQn interrupt configuration */
@@ -1068,9 +974,9 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
-  /* DMA1_Stream2_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+  /* DMA2_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
 
 }
 
@@ -1144,11 +1050,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : IN_CV_2_Pin */
-  GPIO_InitStruct.Pin = IN_CV_2_Pin;
+  /*Configure GPIO pins : IN_CV_2_Pin _1V_OCT_2b_Pin PF14 */
+  GPIO_InitStruct.Pin = IN_CV_2_Pin|_1V_OCT_2b_Pin|GPIO_PIN_14;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(IN_CV_2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   /*Configure GPIO pin : FLASH_CS_4_Pin */
   GPIO_InitStruct.Pin = FLASH_CS_4_Pin;
@@ -1265,7 +1171,14 @@ void StartDefaultTask(void *argument)
 		CN_ReportFault(eErrorCodes::runtimeError);
 #endif
 */
-	// Create a TLV driver
+	// There are no NerveNet threads running yet
+	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_MASTER_THREADS; ++i)
+		gNerveNetMasterThreadPtr[i] = nullptr;
+	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_SLAVE_THREADS; ++i)
+		gNerveNetSlaveThreadPtr[i] = nullptr;
+
+
+	// Create a thread to manage TLV's in flash memory
 	CasualNoises::sNVM_DriverInitData NVM_Data;
 	NVM_Data.noOfDevices 			= 8;
 	NVM_Data.hspix_ptr				= &hspi1;
@@ -1286,7 +1199,16 @@ void StartDefaultTask(void *argument)
 	NVM_Data.deviceSelectPorts[7]	= FLASH_CS_8_GPIO_Port;
 	NVM_Data.deviceSelectPins[7]	= FLASH_CS_8_Pin;
 	CasualNoises::W25Qxx_Driver* NVM_DriverPtr = new CasualNoises::W25Qxx_Driver ( &NVM_Data );
-	TLV_DriverPtr = new CasualNoises::TLV_Driver ( NVM_DriverPtr );
+	BaseType_t res;
+	CasualNoises::sTLV_DriverThreadParams _sTLV_DriverThreadParams;
+	TaskHandle_t xTLV_DriverThreadHandle;
+	_sTLV_DriverThreadParams.NVM_DriverPtr 	= NVM_DriverPtr;
+	_sTLV_DriverThreadParams.runningFlagPtr	= &CasualNoises::gYellowPages.gTLV_DriverThreadThreadRunning;
+	_sTLV_DriverThreadParams.queueHandlePtr	= &CasualNoises::gYellowPages.gTLV_DriverThreadQueueHandle;
+	res = startTLV_DriverThread ( &_sTLV_DriverThreadParams, &xTLV_DriverThreadHandle );
+	if ( res != pdPASS )
+		CN_ReportFault ( eErrorCodes::UI_ThreadError );
+
 
 	osDelay ( pdMS_TO_TICKS ( 100 ) );
 
@@ -1298,23 +1220,7 @@ void StartDefaultTask(void *argument)
 	static CasualNoises::SouthSideAudioProcessor* audioProcessorPtr = CasualNoises::SouthSideAudioProcessor::getSouthSideAudioProcessor ();
 	audioProcessorPtr->prepareToPlay(SAMPLE_FREQUENCY, NUM_SAMPLES, &synthParams);
 
-	// Create an ADC handler thread - CV inputs are also handled by the North Side
-	BaseType_t res;
-	TaskHandle_t xADC_ThreadHandle;
-	CasualNoises::sADC_ThreadData ADC_ThreadData;
-	ADC_ThreadData.hadc					= &hadc1;
-	ADC_ThreadData.ADC_DataHandlerPtr	= audioProcessorPtr;
-	res = CasualNoises::startADC_Thread((void *)&ADC_ThreadData, &xADC_ThreadHandle);
-	if (res != pdPASS)
-		CN_ReportFault(eErrorCodes::UI_ThreadError);
-
-	// There are no NerveNet threads running yet
-	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_MASTER_THREADS; ++i)
-		gNerveNetMasterThreadPtr[i] = nullptr;
-	for (uint32_t i = 0; i < MAX_NO_OF_NERVENET_SLAVE_THREADS; ++i)
-		gNerveNetSlaveThreadPtr[i] = nullptr;
-
-	// Start NerveNet slave thread connection to north side
+	// Start NerveNet slave thread connection to the North Side
 	uint32_t performanceResult = 0;
 	static CasualNoises::sNerveNetThreadData nerveNetThreadData;
 	nerveNetThreadData.NerveNetThreadNo			= 0;
@@ -1333,6 +1239,15 @@ void StartDefaultTask(void *argument)
 	res = CasualNoises::startNerveNetSlaveThread ( &nerveNetSlaveThread, &nerveNetThreadData, &xHandlePtr );
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
+
+	// Create an ADC handler thread - CV inputs are also handled by the North Side
+	TaskHandle_t xADC_ThreadHandle;
+	CasualNoises::sADC_ThreadData ADC_ThreadData;
+	ADC_ThreadData.hadc					= &hadc1;
+	ADC_ThreadData.ADC_DataHandlerPtr	= audioProcessorPtr;
+	res = CasualNoises::startADC_Thread((void *)&ADC_ThreadData, &xADC_ThreadHandle);
+	if (res != pdPASS)
+		CN_ReportFault(eErrorCodes::UI_ThreadError);
 
 	// Update status led's
 	displayStatus ( scReady );

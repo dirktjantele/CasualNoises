@@ -163,12 +163,12 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 		CN_ReportFault ( eErrorCodes::PageManagerError );
 
 	// Update page stack
-	mPageObjectStack[stackPtr]	= pagePtr;
-	if (updateIdStack)
+	mPageObjectStack [ stackPtr ] = pagePtr;
+	if ( updateIdStack )
 	{
-		mPageIdStack[stackPtr] 	= pageId;
+		mPageIdStack [ stackPtr ] = pageId;
 		++mPageIdStackPtr;
-		if (mPageIdStackPtr >= cPageIdStackSize)
+		if ( mPageIdStackPtr >= cPageIdStackSize )
 			CN_ReportFault(eErrorCodes::PageManagerError);
 	} else
 	{
@@ -367,7 +367,7 @@ void PageManager::setExitSwitchLedIntensity ()
 		event.ledIntensity = 5;
 	for ( auto led : leds )
 	{
-		event.ledBitNum = (uint32_t)led;
+		event.ledBitNum = ( uint32_t ) led;
 		BaseType_t res = xQueueSend ( gYellowPages.gLED_ThreadQueueHandle, &event, 10 );
 		if (res != pdPASS)
 			CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
@@ -403,7 +403,7 @@ void PageManager::handleExitSwitch(bool altState, bool doPaint)									// ToDo:
 
 	// Dim exit switch led when this is the top page
 	sLED_Event event;
-	event.ledBitNum    = (uint32_t)eLED_BitNums::EXIT_SWITCH;
+	event.ledBitNum    = ( uint32_t ) eLED_BitNums::EXIT_SWITCH;
 	event.ledIntensity = 100;
 	if (mPageIdStackPtr == 1)
 		event.ledIntensity = 5;
@@ -489,14 +489,7 @@ void PageManager::forwardADC_Event ( sIncommingUI_Event* uiEvent,
 //==============================================================================
 void PageManager::handleNerveNetEvent ( tNerveNetMessageHeader* eventPtr )
 {
-	eSynthEngineMessageType type = (eSynthEngineMessageType) eventPtr->messageTag;
-	switch ( type )
-	{
-	case eSynthEngineMessageType::requestSetupInfo:
-		break;
-	default:
-		break;		// Just ignore unhandled events
-	}
+// Just ignore all calls for now					//ToDo can this function be removed?
 }
 
 } // namespace CasualNoises

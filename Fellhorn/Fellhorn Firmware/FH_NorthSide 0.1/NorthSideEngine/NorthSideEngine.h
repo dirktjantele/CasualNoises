@@ -30,7 +30,7 @@ typedef struct
 {
 	sNVM_DriverInitData				nvmDriverInitData;
 	sADC_ThreadData					ADC_ThreadData;
-	void ( **nerveNetCallBackPtr ) 	( CasualNoises::sNerveNetData* );
+//	void ( **nerveNetCallBackPtr ) 	( CasualNoises::sNerveNetData* );
 } sNorthSideEngineParams;
 
 // Structure of incoming messages

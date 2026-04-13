@@ -22,16 +22,17 @@
 #include "task.h"
 #include "semphr.h"
 
-#include <Utilities/ReportFault.h>
-#include <NerveNet/NerveNetMasterThread.h>
-#include <Threads/ADC_Thread.h>
+#include "Utilities/ReportFault.h"
+#include "NerveNet/NerveNetMasterThread.h"
+#include "Threads/ADC_Thread.h"
 
 #include "YellowPages.h"
 
 #include "SynthEngineMessage.h"
 
-#include <Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h>
-#include <Drivers/TLV Driver/TLV_Driver.h>
+#include "Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h"
+//#include "Drivers/TLV Driver/TLV_Driver.h"
+#include "Threads/TLV_DriverThread.h"
 
 namespace CasualNoises
 {
@@ -63,10 +64,18 @@ void NorthSideEngineThread ( void* pvParameters )
 
 	// Create a TLV driver
 	CasualNoises::sNVM_DriverInitData* NVM_DataPtr = &params->nvmDriverInitData;
-	CasualNoises::W25Qxx_Driver* NVM_DriverPtr = new CasualNoises::W25Qxx_Driver ( NVM_DataPtr );
-	CasualNoises::TLV_Driver*	 TLV_DriverPtr = new CasualNoises::TLV_Driver ( NVM_DriverPtr );
+	CasualNoises::W25Qxx_Driver* NVM_DriverPtr = new CasualNoises::W25Qxx_Driver(NVM_DataPtr);
 
-	UNUSED ( TLV_DriverPtr );
+	// Create a thread to manage TLV's in flash memory
+	BaseType_t res;
+	sTLV_DriverThreadParams _sTLV_DriverThreadParams;
+	TaskHandle_t xTLV_DriverThreadHandle;
+	_sTLV_DriverThreadParams.NVM_DriverPtr 	= NVM_DriverPtr;
+	_sTLV_DriverThreadParams.runningFlagPtr	= &gYellowPages.gTLV_DriverThreadThreadRunning;
+	_sTLV_DriverThreadParams.queueHandlePtr	= &gYellowPages.gTLV_DriverThreadQueueHandle;
+	res = startTLV_DriverThread ( &_sTLV_DriverThreadParams, &xTLV_DriverThreadHandle );
+	if ( res != pdPASS )
+		CN_ReportFault ( eErrorCodes::UI_ThreadError );
 
 	// Create a queue to receive events other threads
 	const uint32_t cQueueLength = 10;

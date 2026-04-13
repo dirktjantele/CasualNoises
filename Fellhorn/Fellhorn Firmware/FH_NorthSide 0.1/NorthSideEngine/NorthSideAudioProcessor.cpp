@@ -28,6 +28,9 @@ AbstractEffectEngine* gAbstractEffectEnginePtr = nullptr;
 // Counter increments every +/- 6,144 ms, a 32bit counter overflows after more than 305 days
 uint32_t	gProcessBlockCallCount	= 0;
 
+// Space for globals
+sControlVoltages gControlVoltages;
+
 // Space for statics
 NorthSideAudioProcessor	NorthSideAudioProcessor::mNorthSideAudioProcessor;
 bool					NorthSideAudioProcessor::mIsAllocated = false;
@@ -116,7 +119,19 @@ void NorthSideAudioProcessor::processBlock (
 //==============================================================================
 void NorthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr )
 {
+
+	// Save unnormalized values
+	gControlVoltages._1V_OCT_1	= static_cast<float>( ( int16_t ) adcDataPtr[0] );
+	gControlVoltages._1V_OCT_2	= static_cast<float>( ( int16_t ) adcDataPtr[1] );
+	for (uint32_t i = 0; i < NUM_CV_INPUTS; ++i)
+	{
+		float f = 1.0f - ( static_cast<float>( adcDataPtr[i + 2] ) / 32767.5f );
+		gControlVoltages.CV_Inputs [ i ] = f;
+	}
+
+	// Apply voltages
 	mEffectEnginePtr->applyControlVoltages ( noOfEntries, adcDataPtr );
+
 }
 
 } // namespace CasualNoises

@@ -1,0 +1,50 @@
+Tuner using the McLeod Pitch Method
+
+
+float mpm(const float* x, int N, float sampleRate) {
+    std::vector<float> nsdf(N, 0.0f);
+
+    // Compute NSDF
+    for (int tau = 0; tau < N; tau++) {
+        float ac = 0.0f;
+        float norm = 0.0f;
+
+        for (int i = 0; i < N - tau; i++) {
+            ac += x[i] * x[i + tau];
+            norm += x[i] * x[i] + x[i + tau] * x[i + tau];
+        }
+
+        nsdf[tau] = (norm > 0.0f) ? (2.0f * ac / norm) : 0.0f;
+    }
+
+    // Find best peak
+    int bestTau = -1;
+    float bestVal = 0.0f;
+
+    for (int tau = 1; tau < N - 1; tau++) {
+        if (nsdf[tau] > 0 &&
+            nsdf[tau] > nsdf[tau - 1] &&
+            nsdf[tau] > nsdf[tau + 1] &&
+            nsdf[tau] > bestVal) {
+
+            bestVal = nsdf[tau];
+            bestTau = tau;
+        }
+    }
+
+    if (bestTau < 1) return -1.0f; // no pitch found
+
+    // Parabolic interpolation
+    float y1 = nsdf[bestTau - 1];
+    float y2 = nsdf[bestTau];
+    float y3 = nsdf[bestTau + 1];
+
+    float denom = (y1 - 2*y2 + y3);
+    float shift = (denom != 0) ? (0.5f * (y1 - y3) / denom) : 0.0f;
+
+    float tauInterp = bestTau + shift;
+
+    return sampleRate / tauInterp;
+}
+
+returns frequency in Hz

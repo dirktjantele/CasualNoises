@@ -11,19 +11,22 @@
   ==============================================================================
 */
 
-//#ifdef debugging
-
 #ifdef CASUALNOISES_NERVENET_THREAD
+
+#include "main.h"
 
 #include "DeviceBoardConnection.h"
 
 #include "EffectEngines/AbstractEffectEngine.h"
 
-#include "SynthEngineMessage.h"
-
 #include "NerveNet/NerveNetSlaveThread.h"
 #include "NerveNet/NerveNetMasterThread.h"
 #include "NerveNet/NerveNetMessage.h"
+
+#include "Threads/TLV_DriverThread.h"
+#include "TLV_Definitions.h"
+
+#include "YellowPages.h"
 
 #include "Utilities/ReportFault.h"
 
@@ -57,25 +60,23 @@ void DeviceBoardConnection::processNerveNetData ( uint32_t threadNo, uint32_t si
 			switch ( type )
 			{
 				case eSynthEngineMessageType::initSynthEngine:
-																												// ToDo: handle this event
 					break;
 				case eSynthEngineMessageType::requestSetupInfo:
 					handleRequestSetupInfo ( nerveNetThreadPtr );
 					break;
-				case eSynthEngineMessageType::potentiometerValue:
-				{																								// ToDo: handle this event
-					tPotValueMessage* _ptr = (tPotValueMessage*) messagePtr;
-					float value = _ptr->potValue;
-					UNUSED ( value );
-				}
-					break;
 				case eSynthEngineMessageType::ADC_DataRequest:
+					handleADC_DataRequest ( nerveNetThreadPtr );
+					break;
+				case eSynthEngineMessageType::potentiometerValue:
+					break;
+				case eSynthEngineMessageType::ADC_CalibrationData:
+					handleADC_CalibrationData ( messagePtr );
 					break;
 				default:
 					CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 			}
 
-			// ToDo forward event to the NorthSideAudioProcessor
+			// Let the NorthSide engine handle this event
 			extern AbstractEffectEngine* gAbstractEffectEnginePtr;
 			if ( gAbstractEffectEnginePtr != nullptr )
 			{
@@ -84,14 +85,11 @@ void DeviceBoardConnection::processNerveNetData ( uint32_t threadNo, uint32_t si
 
 		}
 
-		// Forward event to South Side
-		if ( messagePtr->header.destinationID == eNerveNetSourceId::FellhornBothSides )
+		// Forward event to other mcu's
+		if ( messagePtr->header.destinationID != eNerveNetSourceId::FellhornNorthSide )
 		{
-
-			// Forward event to the South Side
 			messagePtr->header.destinationID = eNerveNetSourceId::FellhornSouthSide;
 			gNerveNetMasterThreadPtr [ 0 ]->sendMessage( messagePtr, messagePtr->header.messageLength, true);
-
 		}
 
 		// Goto next event
@@ -107,19 +105,64 @@ void DeviceBoardConnection::processNerveNetData ( uint32_t threadNo, uint32_t si
 //
 //  CasualNoises    21/01/2026  First implementation
 //==============================================================================
-void DeviceBoardConnection::handleRequestSetupInfo ( NerveNetSlaveThread* nerveNetThreadPtr )
+void DeviceBoardConnection::handleRequestSetupInfo ( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept
 {
 	tRequestSetupInfoReplyData reply;
 	reply.header.sourceID 		= eNerveNetSourceId::FellhornNorthSide;
 	reply.header.destinationID	= eNerveNetSourceId::FellhornDeviceBoard;
 	reply.header.messageTag 	= (uint32_t)eSynthEngineMessageType::requestSetupInfo;
 	reply.header.messageLength 	= sizeof ( tRequestSetupInfoReplyData );
-	reply.version				= 0x3130534e;				// 'NS01'
-	nerveNetThreadPtr->sendMessage( &reply, reply.header.messageLength );			// ToDo remove multiple events
+	reply.version				= 0x00010001;				// #1.1
+	nerveNetThreadPtr->sendMessage( ( tNerveNetMessageHeader* ) &reply, reply.header.messageLength );
+}
+
+//==============================================================================
+//          handleADC_DataRequest ()
+//
+//	CasualNoises    05/04/2026  First implementation
+//==============================================================================
+extern sControlVoltages gControlVoltages;
+void DeviceBoardConnection::handleADC_DataRequest ( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept
+{
+	tRequestADC_ReplyData reply;
+	reply.header.sourceID		= eNerveNetSourceId::FellhornNorthSide;
+	reply.header.destinationID	= eNerveNetSourceId::FellhornDeviceBoard;
+	reply.header.messageTag		= ( uint32_t ) eSynthEngineMessageType::ADC_DataReply;
+	reply.header.messageLength	= sizeof ( tRequestADC_ReplyData );
+	reply.data [ 0 ] = gControlVoltages._1V_OCT_1;
+	reply.data [ 1 ] = gControlVoltages._1V_OCT_2;
+	for ( uint32_t i = 2; i < TOTAL_NUM_CV_INPUTS; ++i)
+		reply.data [ i ] = gControlVoltages.CV_Inputs [ i - 2 ];
+	nerveNetThreadPtr->sendMessage( ( tNerveNetMessageHeader* ) &reply, reply.header.messageLength );
+}
+
+//==============================================================================
+//          handleADC_CalibrationData()
+//
+//  CasualNoises    12/04/2026  First implementation
+//==============================================================================
+void DeviceBoardConnection::handleADC_CalibrationData ( tInitMessage* messagePtr ) const noexcept
+{
+
+	// Get calibration values
+	tCV_InputCalibrationSettings* settingsPtr = ( tCV_InputCalibrationSettings* ) messagePtr;
+	tCV_CalibrationValues values;
+	float* openValuesPtr    = settingsPtr->openInputValues;
+	float* min5V_ValuesPtr  = settingsPtr->min5V_InputValues;
+	float* plus5V_ValuesPtr = settingsPtr->plus5V_InputValues;
+	for ( uint32_t i = 0; i < NUM_CV_INPUTS; ++i )
+	{
+		values.openInputValues    [ i ] = openValuesPtr [ i ];
+		values.min5V_InputValues  [ i ] = min5V_ValuesPtr [ i ];
+		values.plus5V_InputValues [ i ] = plus5V_ValuesPtr [ i ];
+	}
+
+	// Save calibration values to the flash memory
+	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
+			(uint32_t)eTLV_Tag::CV_CalibrationValues, sizeof ( tCV_CalibrationValues ), (uint32_t*) &values );
+
 }
 
 } // namespace CasualNoises
 
 #endif
-
-//#endif

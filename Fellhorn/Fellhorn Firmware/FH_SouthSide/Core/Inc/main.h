@@ -69,7 +69,7 @@ void displayStatus(uint32_t status);
 
 void Error_Handler(void);
 
-void* getTLV_DriverPtr();
+//void* getTLV_DriverPtr();
 
 /* USER CODE END EFP */
 

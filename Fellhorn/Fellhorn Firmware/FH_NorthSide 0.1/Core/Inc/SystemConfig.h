@@ -32,9 +32,10 @@ constexpr uint32_t	ENGINE_THREAD_PRIORITY				= AUDIO_THREAD_PRIORITY - 20;
 constexpr uint32_t	EVENT_THREAD_PRIORITY				= AUDIO_THREAD_PRIORITY - 20;
 constexpr uint32_t	CV_IN_THREAD_PRIORITY				= ENGINE_THREAD_PRIORITY;
 constexpr uint32_t	TRIGGER_THREAD_PRIORITY				= 1;
+constexpr uint32_t	TLV_DRIVER_THREAD_PRIORITY			= ENGINE_THREAD_PRIORITY - 1;
 
 constexpr uint32_t	MAX_NO_OF_NERVENET_MASTER_THREADS 	= 1;			// Only 1 master thread is supported
-constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  	= 1;			// 1 slave for the Device Board
+constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  	= 1;			// 1 slave for the NorthSide MCU
 constexpr uint32_t	AUDIO_NERVENET_THREAD_NO		  	= 0;
 constexpr uint32_t	NERVENET_DATA_SIZE				  	= 1024;
 

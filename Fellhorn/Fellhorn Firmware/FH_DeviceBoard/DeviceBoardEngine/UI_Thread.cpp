@@ -235,7 +235,7 @@ void UI_Thread(void* pvParameters)
 		oledDriverPtr->drawText(20, 40, "erasing flash", &CasualNoises::font_7x10);
 		oledDriverPtr->refreshDisplay();
 		deleteAllTLVs ( driverQueueHandle );
-		osDelay(pdMS_TO_TICKS(5000));
+		osDelay ( pdMS_TO_TICKS( 5000 ) );
 	}
 
 	// Create initial TLV's
@@ -291,7 +291,7 @@ void UI_Thread(void* pvParameters)
 
 	// Set all led's to there initial state
 	constexpr eLED_BitNums initial_leds[] = {
-			eLED_BitNums::SWITCH_1, eLED_BitNums::SWITCH_4, eLED_BitNums::SWITCH_5
+			eLED_BitNums::SWITCH_1
 	};
 	for (auto led : initial_leds)
 	{
@@ -316,7 +316,8 @@ void UI_Thread(void* pvParameters)
 			CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 	}
 	constexpr eLED_BitNums intensity_leds2[] = {
-			eLED_BitNums::SWITCH_2, eLED_BitNums::SWITCH_3, eLED_BitNums::SWITCH_6,
+			eLED_BitNums::SWITCH_2, eLED_BitNums::SWITCH_3, eLED_BitNums::SWITCH_4,
+			eLED_BitNums::SWITCH_5, eLED_BitNums::SWITCH_6,
 			eLED_BitNums::EXIT_SWITCH
 	};
 	for (auto led : intensity_leds2)

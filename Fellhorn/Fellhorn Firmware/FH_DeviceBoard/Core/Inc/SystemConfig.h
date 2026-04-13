@@ -22,6 +22,7 @@ constexpr uint32_t	UI_THREAD_STACK_SIZE 				= DEFAULT_STACK_SIZE * 16;
 
 constexpr uint32_t	NERVENET_THREAD_PRIORITY			= configMAX_PRIORITIES - 1;
 constexpr uint32_t	UI_THREAD_PRIORITY					= configMAX_PRIORITIES - 10;
+constexpr uint32_t	TLV_DRIVER_THREAD_PRIORITY			= UI_THREAD_PRIORITY   - 1;
 constexpr uint32_t	ENCODER_THREAD_PRIORITY				= configMAX_PRIORITIES - 15;
 constexpr uint32_t	POT_THREAD_PRIORITY					= configMAX_PRIORITIES - 15;
 constexpr uint32_t	TRIGGER_THREAD_PRIORITY				= 1;

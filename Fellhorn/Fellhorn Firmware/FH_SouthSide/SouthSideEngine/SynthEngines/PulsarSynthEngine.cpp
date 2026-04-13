@@ -18,7 +18,6 @@
 #include "Synthesizer/Basics/Wavetable_LFO.h"
 
 #include "NerveNet/NerveNetSlaveThread.h"
-#include "NerveNet/NerveNetMessageHeader.h"
 #include "NerveNet/NerveNetMessage.h"
 
 #include "SynthEngineMessage.h"
@@ -82,11 +81,13 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 	{
 	case eSynthEngineMessageType::requestSetupInfo:		// Set-up info request
 	{
-		tSetupInfoReplyMessageData reply;
-		reply.header.messageTag = (uint32_t)eSynthEngineMessageType::setupInfoReply;
-		reply.header.messageLength = sizeof(tSetupInfoReplyMessageData);
-		sprintf(reply.setupName, "Pulsar");
-		threadPtr->sendMessage( (void*) &reply, sizeof ( tSetupInfoReplyMessageData ) );
+		tRequestSetupInfoReplyData reply;
+		reply.header.sourceID 		= eNerveNetSourceId::FellhornNorthSide;
+		reply.header.destinationID	= eNerveNetSourceId::FellhornSouthSide;
+		reply.header.messageTag 	= (uint32_t)eSynthEngineMessageType::requestSetupInfo;
+		reply.header.messageLength 	= sizeof ( tRequestSetupInfoReplyData );
+		reply.version				= 0x00010001;				// #1.1
+		threadPtr->sendMessage( ( tNerveNetMessageHeader* ) &reply, reply.header.messageLength );
 	}
 		break;
 	case eSynthEngineMessageType::setFrequency:			// Set oscillator frequency
@@ -180,8 +181,8 @@ void PulsarSynthEngine::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buff
 			mPulsarSynthPtr->setFrequency ( frequency );
 		}
 
-//		float gain = mGain;															// ToDo restore this line
-		float gain = 1.0f;
+		float gain = mGain;															// ToDo restore this line
+//		float gain = 1.0f;
 		float sample_1 = mPulsarSynthPtr->nextSample () * gain;
 		*lwptr++ = sample_1;
 		*rwptr++ = sample_1;
