@@ -216,16 +216,19 @@ void AudioProcessorPlayer::runAudioProcessor (
 //				( **nerveNetCallBackPtr )( &nerveNetMessagePtr->data );
 //			}
 
+		}
+#endif
+
 #ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
-			// Fill NerveNet audio buffer with incoming audio
+		// Fill NerveNet audio buffer with incoming audio
+		if ( nerveNetMessagePtr != nullptr )
+		{
 			float* ptr = nerveNetMessagePtr->audio.audioData;
 			for (uint32_t i = 0; i < numSamples; ++i)
 			{
 				NN_audioInPointers.audioBuffer1[i] = *ptr++;
 				NN_audioInPointers.audioBuffer2[i] = *ptr++;
 			}
-#endif
-
 		}
 #endif
 

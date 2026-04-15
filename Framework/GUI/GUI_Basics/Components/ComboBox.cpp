@@ -46,8 +46,6 @@ ComboBox::~ComboBox()
 //==============================================================================
 //          paint()
 //
-//	Paint the component
-//
 //  CasualNoises    29/12/2025  First implementation
 //==============================================================================
 void ComboBox::paint ( Graphics& g )
@@ -154,7 +152,8 @@ bool ComboBox::handleUI_event ( void* uiEvent,
 	{
 		if ( eventPtr->encoderEvent.eventType == eEncoderEventType::encoderSwitch )
 		{
-			onChange ();
+			if ( onChange )
+				onChange ();
 		} else if ( eventPtr->encoderEvent.eventType == eEncoderEventType::encoderCount )
 		{
 //			int32_t focus = mFocus - eventPtr->encoderEvent.encoderCount;

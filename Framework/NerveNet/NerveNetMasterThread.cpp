@@ -331,13 +331,6 @@ void NerveNetMasterThread::mainNerveNetMasterThread ( void* pvParameters )
 
 	}
 
-	// Signal that thread is up and running
-	if ( nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetRunningFlagPtr != nullptr )
-	{
-		*nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetRunningFlagPtr = true;
-	}
-	mNerveNetMasterReady = true;
-
 	// Reset NerveNet slave
 	uint32_t retryCnt = 0;
 	while ( mThreadState == eNerveNetMasterThreadState::resetSlave )
@@ -349,6 +342,13 @@ void NerveNetMasterThread::mainNerveNetMasterThread ( void* pvParameters )
 //		if ( retryCnt >= 1000 ) // Fail if no connection is made after 10 sec
 //			CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 	}
+
+	// Signal that thread is up and running
+	if ( nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetRunningFlagPtr != nullptr )
+	{
+		*nerveNetThreadDataPtr->nerveNetThreadDataPtr->NerveNetRunningFlagPtr = true;
+	}
+	mNerveNetMasterReady = true;
 
 	for (;;)
 	{
@@ -386,7 +386,7 @@ BaseType_t startNerveNetMasterThread ( CasualNoises::NerveNetMasterThread* threa
 	params.threadPtr = threadPtr;
 
 	// Create the thread to scan the ADC convertions
-	BaseType_t res = xTaskCreate ( runNerveNetMasterThread, "NerveNetMaster", DEFAULT_STACK_SIZE, &params,
+	BaseType_t res = xTaskCreate ( runNerveNetMasterThread, "NerveNetMaster", DEFAULT_STACK_SIZE * 8, &params,
 			NERVENET_THREAD_PRIORITY, xHandlePtr );
 	return res;
 

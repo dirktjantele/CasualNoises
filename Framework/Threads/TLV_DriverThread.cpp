@@ -301,8 +301,8 @@ uint32_t readTLV_TagBytes ( QueueHandle_t queueHandle, uint32_t tag, uint32_t le
 //
 //  CasualNoises    12/01/2026  First implementation
 //==============================================================================
-CasualNoises::TLV_Driver* lTLV_DriverPtr 		= nullptr;
-SemaphoreHandle_t lTLV_ThreadSyncSemaphorePtr 	= nullptr;
+static CasualNoises::TLV_Driver* lTLV_DriverPtr 		= nullptr;
+static SemaphoreHandle_t lTLV_ThreadSyncSemaphorePtr 	= nullptr;
 
 //==============================================================================
 //          TLV_DriverHelperThread()

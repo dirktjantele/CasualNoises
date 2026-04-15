@@ -33,7 +33,7 @@ public:
 
 	virtual void paint ( Graphics& g ) noexcept {};
 	virtual void setBounds ( int32_t x, int32_t y, int32_t w, int32_t h ) noexcept;
-	virtual void setBounds ( Rectangle<int32_t>& bounds ) noexcept;
+	virtual void setBounds ( Rectangle<int32_t> bounds ) noexcept;
 	virtual Rectangle<int32_t>& getLocalBounds () noexcept
 		{ return mLocalBounds; }
 

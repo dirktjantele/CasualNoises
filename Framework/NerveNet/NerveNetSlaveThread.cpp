@@ -407,8 +407,8 @@ BaseType_t startNerveNetSlaveThread (
 	params.threadPtr = threadPtr;
 
 	// Create the thread to scan the ADC convertions
-	BaseType_t res = xTaskCreate(runNerveNetSlaveThread, "NerveNetSlaveThread", DEFAULT_STACK_SIZE / 2, &params,
-			NERVENET_THREAD_PRIORITY, xHandlePtr);
+	BaseType_t res = xTaskCreate ( runNerveNetSlaveThread, "NerveNetSlaveThread", DEFAULT_STACK_SIZE * 8, &params,
+			NERVENET_THREAD_PRIORITY, xHandlePtr );
 	return res;
 
 }

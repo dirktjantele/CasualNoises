@@ -17,8 +17,8 @@
 
 #include "Component.h"
 
-#include <Graphics/Fonts/Font.h>
-#include <Graphics/Placement/Justification.h>
+#include "Graphics/Fonts/Font.h"
+#include "Graphics/Placement/Justification.h"
 
 namespace CasualNoises
 {

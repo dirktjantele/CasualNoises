@@ -80,8 +80,8 @@ public:
 	//==============================================================================
 	 ~String ()
 	{
-		if (mStringPtr != nullptr)
-			vPortFree(mStringPtr);
+		if ( mStringPtr != nullptr )
+			vPortFree ( mStringPtr );
 		mStringPtr = nullptr;
 	}
 
@@ -148,7 +148,7 @@ public:
     	uint16_t length = mStringLength + other.mStringLength;
     	String tmp = String ();
     	tmp.mStringPtr = (char*)pvPortMalloc ( length + 1 );
-		if (mStringPtr == nullptr)
+		if (tmp.mStringPtr == nullptr)
  	 	 	 CN_ReportFault(eErrorCodes::unknowError);
     	tmp.mStringLength = length;
     	uint16_t i;
@@ -158,6 +158,34 @@ public:
 			tmp.mStringPtr[i] = other.mStringPtr[j];
 		tmp.mStringPtr[i] = 0x00;
     	return tmp;
+    }
+
+	//==============================================================================
+	//          operator+=
+	//
+	//  CasualNoises    13/04/2026  First implementation
+	//==============================================================================
+    /** Adds two strings together */
+    String operator+= (const String& other) noexcept
+    {
+    	uint16_t length = mStringLength + other.mStringLength;
+    	String tmp = String ();
+    	tmp.mStringPtr = (char*)pvPortMalloc ( length + 1 );
+		if (tmp.mStringPtr == nullptr)
+ 	 	 	 CN_ReportFault(eErrorCodes::unknowError);
+    	tmp.mStringLength = length;
+    	uint16_t i;
+		for (i = 0; i < mStringLength; ++i)
+			tmp.mStringPtr[i] = mStringPtr[i];
+		for (uint16_t j = 0; j < other.mStringLength; ++i, ++j)
+			tmp.mStringPtr[i] = other.mStringPtr[j];
+		tmp.mStringPtr[i] = 0x00;
+		if ( mStringPtr != nullptr )
+			vPortFree ( mStringPtr );
+		mStringPtr 	   = tmp.mStringPtr;
+		mStringLength  = tmp.mStringLength;
+		tmp.mStringPtr = nullptr;
+    	return *this;
     }
 
 	//==============================================================================

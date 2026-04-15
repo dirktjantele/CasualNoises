@@ -29,11 +29,28 @@ public:
 
 	void paint(Graphics& g) noexcept;
 
-	void setlevels ( float target, float l1 = 2.0f, float l2 = 2.0f )
+	void setAllLevels ( float target, float l1 = 2.0f, float l2 = 2.0f ) noexcept
 	{
 		mTargetLevel	= target;
 		mLevel_1		= l1;
 		mLevel_2		= l2;
+	}
+
+	void setTargetLevel ( float target ) noexcept
+	{
+		mTargetLevel = target;
+	}
+
+	void setLevels ( float l1, float l2 ) noexcept
+	{
+		mLevel_1		= l1;
+		mLevel_2		= l2;
+	}
+
+	void setLevels ( float l1 ) noexcept
+	{
+		mLevel_1		= l1;
+		mLevel_2		= l1;
 	}
 
 private:

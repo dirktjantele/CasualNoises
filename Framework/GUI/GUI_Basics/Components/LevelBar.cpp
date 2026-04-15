@@ -69,19 +69,22 @@ void LevelBar::paint ( Graphics& g )
 	}
 
     // Draw level 2 marker
-    if ( ( mLevel_2 >= -1.0f ) && ( mLevel_2 <= 1.0f ) )
-	{
-		int32_t tX = midX + ( halfWidth * mLevel_2);
-		screen->drawCharacter ( tX - 3, posY + 2, '^', fontPtr );
-	} else if ( mLevel_2 > 1.0f )
-	{
-		int32_t tX = midX + halfWidth;
-		screen->drawCharacter ( tX - 3, posY + 2, '>', fontPtr );
-	} else
-	{
-		int32_t tX = midX - halfWidth;
-		screen->drawCharacter ( tX - 3, posY + 2, '<', fontPtr );
-	}
+    if ( mLevel_2 != mLevel_1 )
+    {
+		if ( ( mLevel_2 >= -1.0f ) && ( mLevel_2 <= 1.0f ) )
+		{
+			int32_t tX = midX + ( halfWidth * mLevel_2);
+			screen->drawCharacter ( tX - 3, posY + 2, '^', fontPtr );
+		} else if ( mLevel_2 > 1.0f )
+		{
+			int32_t tX = midX + halfWidth;
+			screen->drawCharacter ( tX - 3, posY + 2, '>', fontPtr );
+		} else
+		{
+			int32_t tX = midX - halfWidth;
+			screen->drawCharacter ( tX - 3, posY + 2, '<', fontPtr );
+		}
+    }
 
 }
 
