@@ -124,20 +124,6 @@ void SystemInfoPage::startDataCollection ( )
 	uint32_t numTasks = uxTaskGetNumberOfTasks();
 	std::string result = " -" + std::to_string ( numTasks ) + " threads:";
 	mLabelGroupPtr->addLabel ( result );
-/*
-	char buf[32];
-	TaskStatus_t *taskStatusArray = (TaskStatus_t *) pvPortMalloc( numTasks * sizeof ( TaskStatus_t ) );
-	uint32_t totalRuntTime = 0;
-	uxTaskGetSystemState( taskStatusArray, numTasks, &totalRuntTime );
-	for (uint32_t i = 0; i < numTasks; i++) {
-		uint32_t stackHighWaterMark = taskStatusArray[i].usStackHighWaterMark;
-		eTaskState state = taskStatusArray[i].eCurrentState;
-	    sprintf ( buf, taskStatusArray[i].pcTaskName);
-	    Label* ptr = new Label ( buf );
-	    ptr->setJustification( eJustificationFlags::right );
-	    mLabelGroupPtr->addLabel( ptr );
-	}
-*/
 
 	TaskStatus_t *taskStatusArray = (TaskStatus_t *) pvPortMalloc( numTasks * sizeof ( TaskStatus_t ) );
 	uxTaskGetSystemState( taskStatusArray, numTasks, nullptr );
@@ -214,7 +200,15 @@ void SystemInfoPage::resized()
 
 }
 
-
+//==============================================================================
+//          updateLEDs()
+//
+//  CasualNoises    13/04/2026  First implementation
+//==============================================================================
+void SystemInfoPage::updateLEDs ()
+{
+	dimSwitchLeds ();
+}
 
 } // namespace CasualNoises
 

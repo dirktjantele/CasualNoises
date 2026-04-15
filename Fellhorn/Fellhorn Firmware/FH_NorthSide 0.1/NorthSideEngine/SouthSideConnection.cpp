@@ -45,7 +45,7 @@ void SouthSideConnection::processNerveNetData (
 				gNerveNetSlaveThreadPtr [ i ]->sendMessage( messagePtr, messagePtr->messageLength );
 		} else
 
-		// Destination = NothSide?
+		// Destination = DeviceBoard?
 		if ( messagePtr->destinationID == eNerveNetSourceId::FellhornDeviceBoard )
 		{
 		} else

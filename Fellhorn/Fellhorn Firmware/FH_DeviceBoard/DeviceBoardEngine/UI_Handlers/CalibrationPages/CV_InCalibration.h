@@ -22,7 +22,7 @@
 namespace CasualNoises
 {
 
-class IndexBox;
+class Box;
 class Label;
 class LevelBar;
 
@@ -65,6 +65,8 @@ public:
 	void paint(Graphics& g) override;
 	void resized() override;
 
+	void updateLEDs () override;
+
 	void loadContext() override { };
 	void saveContext() override { };
 
@@ -79,7 +81,7 @@ protected:
 
 private:
 
-	IndexBox*				mOuterBoxPtr			{ nullptr };
+	Box*					mOuterBoxPtr			{ nullptr };
 
 	Label*					mContLabelPtr			{ nullptr };
 	Label*					mMessageLabelPtr		{ nullptr };
@@ -91,7 +93,7 @@ private:
 	tCV_InputCalibrationSettings	mSouthSideSettings;
 
 	void			requestADC_Data	( eNerveNetSourceId target = eNerveNetSourceId::FellhornBothSides );
-	bool			ProcessData ( eCV_CalibrationPhase phase, eNerveNetSourceId sourceId, float* sourceDataPtr );
+	bool			processData ( eCV_CalibrationPhase phase, eNerveNetSourceId sourceId, float* sourceDataPtr );
 
 };
 

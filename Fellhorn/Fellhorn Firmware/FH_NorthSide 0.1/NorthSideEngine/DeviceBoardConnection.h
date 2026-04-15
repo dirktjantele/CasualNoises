@@ -36,9 +36,10 @@ public:
 
 private:
 
-	void handleRequestSetupInfo		( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept;
-	void handleADC_DataRequest 		( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept;
-	void handleADC_CalibrationData 	( tInitMessage* messagePtr ) 			   const noexcept;
+	void handleRequestSetupInfo			( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept;
+	void handleADC_DataRequest 			( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept;
+	void handleADC_CalibrationData 		( tInitMessage* messagePtr ) 			   const noexcept;
+	void handle_1V_OCT_CalibrationData	( tInitMessage* messagePtr ) 			   const noexcept;
 
 };
 

@@ -50,10 +50,10 @@ public:
 			  PageManager* pageManagerPtr);
 	~MainPage() override;
 
-	void onComboBoxChange();
-
 	void paint(Graphics& g) override;
 	void resized() override;
+
+	void updateLEDs () override;
 
 	void loadContext() override;
 	void saveContext() override;
@@ -64,6 +64,8 @@ private:
 	ComboBox*		mComboBoxPtr		{ nullptr };
 
 	sMainPageState	mPreviousSavedContext;
+
+	void 			onComboBoxChange() noexcept;
 
 };
 
@@ -85,6 +87,8 @@ public:
 
 	void paint(Graphics& g) override;
 	void resized() override;
+
+	void updateLEDs () override;
 
 	void loadContext() override;
 	void saveContext() override;
@@ -130,6 +134,8 @@ public:
 
 	void paint ( Graphics& g ) override;
 	void resized() override;
+
+	void updateLEDs () override;
 
 	void loadContext () override;
 	void saveContext () override;

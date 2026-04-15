@@ -72,6 +72,9 @@ void DeviceBoardConnection::processNerveNetData ( uint32_t threadNo, uint32_t si
 				case eSynthEngineMessageType::ADC_CalibrationData:
 					handleADC_CalibrationData ( messagePtr );
 					break;
+				case eSynthEngineMessageType::_1V_OCT_CalibrationData:
+					handle_1V_OCT_CalibrationData ( messagePtr );
+					break;
 				default:
 					CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 			}
@@ -160,6 +163,24 @@ void DeviceBoardConnection::handleADC_CalibrationData ( tInitMessage* messagePtr
 	// Save calibration values to the flash memory
 	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
 			(uint32_t)eTLV_Tag::CV_CalibrationValues, sizeof ( tCV_CalibrationValues ), (uint32_t*) &values );
+
+}
+
+//==============================================================================
+//          handle_1V_OCT_CalibrationData()
+//
+//  CasualNoises    15/04/2026  First implementation
+//==============================================================================
+void DeviceBoardConnection::handle_1V_OCT_CalibrationData ( tInitMessage* messagePtr ) const noexcept
+{
+
+	// Get calibration values
+	t1V_OctCalibrationSettings* settingsPtr = ( t1V_OctCalibrationSettings* ) messagePtr;
+	float* valuesPtr = settingsPtr->calibrationValues;
+
+	// Save calibration values to the flash memory
+	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
+			(uint32_t)eTLV_Tag::_1V_OCT_CalibrationValues, sizeof ( t1V_OctCalibrationValues ), (uint32_t*) valuesPtr );
 
 }
 

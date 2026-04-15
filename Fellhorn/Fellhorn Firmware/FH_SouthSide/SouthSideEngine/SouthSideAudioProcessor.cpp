@@ -114,6 +114,9 @@ void SouthSideAudioProcessor::processNerveNetData (
 		case eSynthEngineMessageType::ADC_CalibrationData:	// Calibration data to be saved in flash
 			handleADC_CalibrationData ( headerPtr );
 			break;
+		case eSynthEngineMessageType::_1V_OCT_CalibrationData:
+			handle_1V_OCT_CalibrationData ( headerPtr );
+			break;
 		default:
 			CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 		}
@@ -261,6 +264,24 @@ void SouthSideAudioProcessor::handleADC_CalibrationData ( tNerveNetMessageHeader
 	// Save calibration values to the flash memory
 	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
 			(uint32_t)eTLV_Tag::CV_CalibrationValues, sizeof ( tCV_CalibrationValues ), (uint32_t*) &values );
+
+}
+
+//==============================================================================
+//          handle_1V_OCT_CalibrationData ()
+//
+//	CasualNoises    15/04/2026  First implementation
+//==============================================================================
+void SouthSideAudioProcessor::handle_1V_OCT_CalibrationData ( tNerveNetMessageHeader* headerPtr )
+{
+
+	// Get calibration values
+	t1V_OctCalibrationSettings* settingsPtr = ( t1V_OctCalibrationSettings* ) headerPtr;
+	float* valuesPtr = settingsPtr->calibrationValues;
+
+	// Save calibration values to the flash memory
+	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
+			(uint32_t)eTLV_Tag::_1V_OCT_CalibrationValues, sizeof ( t1V_OctCalibrationValues ), (uint32_t*) valuesPtr );
 
 }
 

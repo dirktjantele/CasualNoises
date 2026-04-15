@@ -44,6 +44,8 @@ public:
 	void paint(Graphics& g) override;
 	void resized() override;
 
+	void updateLEDs () override;
+
 	void loadContext() override {};
 	void saveContext() override {};
 

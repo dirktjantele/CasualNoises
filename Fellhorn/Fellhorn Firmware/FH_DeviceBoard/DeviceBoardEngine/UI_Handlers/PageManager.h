@@ -29,14 +29,15 @@ namespace CasualNoises
 
 enum class ePageId
 {
-	empty				= 0x00000000,
-	mainPage			= 0x6e69616d,			// 'main' main page
-	setupPage			= 0x75707473,			// 'stpu' setup pag
-	loadPage			= 0x64616f6c,			// 'load' load page
-	calibrationPage		= 0x62696c63,			// 'clib' calibration page
-	potCalibrationPage	= 0x626c6370,			// 'pclb' calibration page
-	CV_CalibrationPage	= 0x62637663,			// 'cvcb' calibration page
-	systemInfoPage		= 0x69737973,			// 'sysi' system information page
+	empty					= 0x00000000,
+	mainPage				= 0x6e69616d,			// 'main' main page
+	setupPage				= 0x75707473,			// 'stpu' setup pag
+	loadPage				= 0x64616f6c,			// 'load' load page
+	calibrationPage			= 0x62696c63,			// 'clib' calibration page
+	potCalibrationPage		= 0x626c6370,			// 'pclb' calibration page
+	CV_CalibrationPage		= 0x62637663,			// 'cvcb' calibration page
+	_1V_OctCalibrationPage 	= 0x434f5631,			// '1VOC' calibration page
+	systemInfoPage			= 0x69737973,			// 'sysi' system information page
 
 };
 

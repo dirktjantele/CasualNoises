@@ -55,10 +55,10 @@ enum class eLED_BitNums
 	FADER_7				= 23,
 	FADER_8				= 24,
 	SWITCH_2			= 25,
-	SWITCH_6			= 26,
+	SWITCH_6			= 26,	// 'Save'
 	SWITCH_5			= 27,
 	SWITCH_4			= 28,
-	SWITCH_3			= 29,
+	SWITCH_3			= 29,	// '>'
 	SWITCH_1			= 30,
 	EXIT_SWITCH			= 31,
 };

@@ -34,6 +34,7 @@ enum class eSynthEngineMessageType
 	ADC_DataRequest,
 	ADC_DataReply,
 	ADC_CalibrationData,
+	_1V_OCT_CalibrationData,
 	triggerEvent,
 	setFrequency,
 };
@@ -95,7 +96,7 @@ typedef struct
 	uint32_t					beatNo;
 } tTriggerMessage;
 
-/************************************* tCV_InputCalibrationSettings***************************/
+/************************************* tCV_InputCalibrationSettings ***************************/
 // Used to send CV input calibration data to the North- and SouthSide
 typedef struct
 {
@@ -104,6 +105,16 @@ typedef struct
 	float						min5V_InputValues 	[ NUM_CV_INPUTS ];
 	float						plus5V_InputValues 	[ NUM_CV_INPUTS ];
 } tCV_InputCalibrationSettings;
+
+/************************************* t1V_OctCalibrationSettings ***************************/
+// Used to send 1V/OCT input calibration data to the North- and SouthSide
+static constexpr uint32_t cTotalNoOfNotes = ( 10 * 12 ) + 1 ;
+
+typedef struct
+{
+	tNerveNetMessageHeader		header;
+	float						calibrationValues [ cTotalNoOfNotes ];
+} t1V_OctCalibrationSettings;
 
 /***************************************** tSetFrequencyMessage *******************************/
 typedef struct

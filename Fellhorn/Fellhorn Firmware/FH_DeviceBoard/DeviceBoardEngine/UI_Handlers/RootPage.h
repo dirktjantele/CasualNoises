@@ -45,7 +45,9 @@ public:
 	void paintAll(Graphics& g);
 
 	virtual void paint ( Graphics& g ) 	= 0;
-	virtual void resized() 				= 0;
+	virtual void resized () 			= 0;
+
+	virtual void updateLEDs () 			= 0;
 
 	virtual void loadContext() 			= 0;
 	virtual void saveContext() 			= 0;

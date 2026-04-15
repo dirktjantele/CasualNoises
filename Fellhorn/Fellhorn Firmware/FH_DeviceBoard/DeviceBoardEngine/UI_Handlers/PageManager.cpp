@@ -11,7 +11,8 @@
   ==============================================================================
 */
 
-#include <UI_Handlers/CalibrationPages/CV_InCalibration.h>
+#include "UI_Handlers/CalibrationPages/CV_InCalibration.h"
+#include "UI_Handlers/CalibrationPages/1V-OctCalibration.h"
 #include "PageManager.h"
 
 #include "MainPage.h"
@@ -152,6 +153,9 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 		break;
 	case ePageId::CV_CalibrationPage:
 		pagePtr = new CV_CalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		break;
+	case ePageId::_1V_OctCalibrationPage:
+		pagePtr = new _1V_OctCalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
 		break;
 	case ePageId::systemInfoPage:
 		pagePtr = new SystemInfoPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
@@ -435,10 +439,11 @@ void PageManager::handleExitSwitch(bool altState, bool doPaint)									// ToDo:
 		CN_ReportFault ( eErrorCodes::UI_ThreadError );
 
 	// Show new top page
-	if (doPaint)
+	if ( doPaint )
 	{
-		mPageObjectStack[mPageIdStackPtr - 1]->resized();
-		mPageObjectStack[mPageIdStackPtr - 1]->paintAll(*mGraphics);
+		mPageObjectStack[mPageIdStackPtr - 1]->resized ();
+		mPageObjectStack[mPageIdStackPtr - 1]->paintAll ( *mGraphics );
+		mPageObjectStack[mPageIdStackPtr - 1]->updateLEDs ();
 	}
 
 }

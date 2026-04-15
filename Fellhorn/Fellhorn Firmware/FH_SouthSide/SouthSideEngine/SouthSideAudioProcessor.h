@@ -75,7 +75,8 @@ private:
 	void handleRequestSetupInfo ( uint32_t threadNo ) const noexcept;
 	void handleADC_DataRequest  ( uint32_t threadNo ) const noexcept;
 
-	void handleADC_CalibrationData ( tNerveNetMessageHeader* headerPtr );
+	void handleADC_CalibrationData 		( tNerveNetMessageHeader* headerPtr );
+	void handle_1V_OCT_CalibrationData 	( tNerveNetMessageHeader* headerPtr );
 
 };
 

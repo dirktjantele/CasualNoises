@@ -11,14 +11,12 @@
   ==============================================================================
 */
 
-#include "UI_Handlers/CalibrationPages/CV_InCalibration.h"
+#include "CV_InCalibration.h"
 
 #include "Graphics/Contexts/Graphics.h"
 #include "GUI/GUI_Basics/Components/Box.h"
 #include "GUI/GUI_Basics/Components/Label.h"
 #include "GUI/GUI_Basics/Components/LevelBar.h"
-
-#include "SynthEngineMessage.h"
 
 #include "NerveNet/NerveNetMasterThread.h"
 
@@ -29,8 +27,6 @@ namespace CasualNoises
 
 //==============================================================================
 //          CV_CalibrationPage() & ~CV_CalibrationPage()
-//
-// Main page initializer
 //
 //  CasualNoises    09/04/2026  First implementation
 //==============================================================================
@@ -46,7 +42,7 @@ CV_CalibrationPage::CV_CalibrationPage (
 	dimSwitchLeds ();
 
 	// Create a border component
-	mOuterBoxPtr = new IndexBox( String( (char*) "Border" ), 5, 0 );
+	mOuterBoxPtr = new Box( String( (char*) "Border" ) );
 	addAndMakeVisible ( mOuterBoxPtr );
 
 	// Create labels
@@ -134,16 +130,23 @@ void CV_CalibrationPage::resized()
 
     // Place labels
     rect.reduce (2, 2);
-    Rectangle<int32_t> tmp;
-    tmp = rect.removeFromTop( 15 );
-    mMessageLabelPtr->setBounds ( tmp );
-    tmp = rect.removeFromBottom( 15 );
-    mContLabelPtr->setBounds ( tmp );
+    mMessageLabelPtr->setBounds ( rect.removeFromTop ( 15 ) );
+    mContLabelPtr->setBounds ( rect.removeFromBottom ( 15 ) );
 
     // Place level bar
     rect.reduce ( 4, 0 );
     mLevelBarPtr->setBounds ( rect );
 
+}
+
+//==============================================================================
+//          updateLEDs()
+//
+//  CasualNoises    13/04/2026  First implementation
+//==============================================================================
+void CV_CalibrationPage::updateLEDs ()
+{
+	dimSwitchLeds ();
 }
 
 //==============================================================================
@@ -200,7 +203,7 @@ bool CV_CalibrationPage::handleLocalUI_event (
 			case eCV_CalibrationPhase::cv5_plus5:
 			case eCV_CalibrationPhase::cv6_plus5:
 			case eCV_CalibrationPhase::cv7_plus5:
-				if ( ProcessData ( mCurrentPhase, headerPtr->sourceID, dataPtr ) )
+				if ( processData ( mCurrentPhase, headerPtr->sourceID, dataPtr ) )
 				{
 					mContLabelPtr->setVisible( true );
 					setSwitchLed ( eLED_BitNums::SWITCH_3 );
@@ -292,13 +295,13 @@ bool CV_CalibrationPage::handleLocalUI_event (
 }
 
 //==============================================================================
-//          ProcessData()
+//          processData()
 //
 // 	Process CV input values and validate them according to the calibration phase
 //
 //  CasualNoises    10/04/2026  First implementation
 //==============================================================================
-bool CV_CalibrationPage::ProcessData (
+bool CV_CalibrationPage::processData (
 		eCV_CalibrationPhase phase,
 		eNerveNetSourceId sourceId,
 		float* sourceDataPtr )
@@ -321,7 +324,7 @@ bool CV_CalibrationPage::ProcessData (
 				if ( fabs ( value ) > fabs ( max ) )
 					max = value;
 			}
-			mLevelBarPtr->setlevels ( 0.0f, max, max );
+			mLevelBarPtr->setAllLevels ( 0.0f, max, max );
 			return fabs ( max ) < 0.05f;
 		}
 		break;
@@ -336,7 +339,7 @@ bool CV_CalibrationPage::ProcessData (
 			uint32_t index = static_cast<uint32_t> ( phase ) - static_cast<uint32_t> ( eCV_CalibrationPhase::cv1_min5 );
 			float value = sourceDataPtr [ index + 2 ];
 			settingsPtr->min5V_InputValues [ index ] = value;
-			mLevelBarPtr->setlevels ( -1.0f, value, value );
+			mLevelBarPtr->setAllLevels ( -1.0f, value, value );
 			return value < -0.8f;
 		}
 		break;
@@ -351,7 +354,7 @@ bool CV_CalibrationPage::ProcessData (
 			uint32_t index = static_cast<uint32_t> ( phase ) - static_cast<uint32_t> ( eCV_CalibrationPhase::cv1_plus5 );
 			float value = sourceDataPtr [ index + 2 ];
 			settingsPtr->plus5V_InputValues [ index ] = value;
-			mLevelBarPtr->setlevels ( 1.0f, value, value );
+			mLevelBarPtr->setAllLevels ( 1.0f, value, value );
 			return value > 0.8f;
 		}
 		break;

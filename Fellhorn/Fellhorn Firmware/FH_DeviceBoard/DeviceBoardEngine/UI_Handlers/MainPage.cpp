@@ -82,7 +82,7 @@ MainPage::~MainPage()
 //
 //  CasualNoises    03/01/2026  First implementation
 //==============================================================================
-void MainPage::onComboBoxChange ()
+void MainPage::onComboBoxChange () noexcept
 {
 	uint32_t id = mComboBoxPtr->getSelectedId ();
 	switch (id)
@@ -103,30 +103,24 @@ void MainPage::onComboBoxChange ()
 //==============================================================================
 //          paint()
 //
-// Show main page
-//
 //  CasualNoises    26/12/2025  First implementation
 //==============================================================================
 void MainPage::paint ( Graphics& g )
 {
-/*
-	// Activate SETUP & LOAD switch led's
-	eLED_BitNums leds[] = {
-		eLED_BitNums::SWITCH_4, eLED_BitNums::SWITCH_5
-	};
-	sLED_Event event;
-	event.ledIntensity = 100;
-	for (auto led : leds)
-	{
-		event.ledBitNum = (uint32_t) led;
-		BaseType_t res = xQueueSend ( gYellowPages.gLED_ThreadQueueHandle, &event, 10 );
-		if (res != pdPASS)
-			CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
-	}
-*/
+
 	// Clear the screen
 	g.fillAll ();
 
+}
+
+//==============================================================================
+//          updateLEDs()
+//
+//  CasualNoises    13/04/2026  First implementation
+//==============================================================================
+void MainPage::updateLEDs ()
+{
+	dimSwitchLeds ();
 }
 
 //==============================================================================
@@ -149,18 +143,6 @@ void MainPage::resized()
 
 }
 
-//==============================================================================
-//          sMainPageState
-//
-// 	Struct used to save/load main page state
-//
-//  CasualNoises    08/01/2026  First implementation
-//==============================================================================
-/*typedef struct
-{
-	uint32_t	comboBoxSelection;
-} sMainPageState;
-*/
 //==============================================================================
 //          loadContext()
 //
@@ -228,6 +210,7 @@ CalibrationPage::CalibrationPage(
 	{
 	    String( (char*) "Pots & Sliders" ),
 		String( (char*) "Control Volts." ),
+		String( (char*) "1V/Oct" ),
 	};
 	mComboBoxPtr = new ComboBox( String( (char*) "ComboBox" ) );
 	uint32_t itemNo = 0;
@@ -264,6 +247,9 @@ void CalibrationPage::onComboBoxChange ()
 	case 2:								// Control Voltages
 		mPageManagerPtr->createNewPage ( ePageId::CV_CalibrationPage );
 		break;
+	case 3:								// 1V/Oct
+		mPageManagerPtr->createNewPage ( ePageId::_1V_OctCalibrationPage );
+		break;
 	default:
 		CN_ReportFault ( eErrorCodes::runtimeError );
 	}
@@ -299,6 +285,16 @@ void CalibrationPage::resized()
     rect.reduce ( 2, 2 );
     mComboBoxPtr->setBounds ( rect );
 
+}
+
+//==============================================================================
+//          updateLEDs()
+//
+//  CasualNoises    13/04/2026  First implementation
+//==============================================================================
+void CalibrationPage::updateLEDs ()
+{
+	dimSwitchLeds ();
 }
 
 //==============================================================================
@@ -475,6 +471,16 @@ void PotentiometerCalibrationPage::resized()
     mContLabelPtr->setBounds ( mLocalBounds );
     mContLabelPtr->setJustification ( eJustificationFlags::centred );
 
+}
+
+//==============================================================================
+//          updateLEDs()
+//
+//  CasualNoises    13/04/2026  First implementation
+//==============================================================================
+void PotentiometerCalibrationPage::updateLEDs ()
+{
+	dimSwitchLeds ();
 }
 
 //==============================================================================

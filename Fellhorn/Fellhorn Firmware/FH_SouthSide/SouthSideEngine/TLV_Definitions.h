@@ -17,6 +17,7 @@ namespace CasualNoises
 enum class eTLV_Tag
 {
 	CV_CalibrationValues		= 0x76637663,			// 'cvcv'
+	_1V_OCT_CalibrationValues	= 0x4f2f5631,			// '1V/O'
 };
 
 typedef struct
@@ -25,6 +26,11 @@ typedef struct
 	float						min5V_InputValues 	[ NUM_CV_INPUTS ];
 	float						plus5V_InputValues 	[ NUM_CV_INPUTS ];
 } tCV_CalibrationValues;
+
+typedef struct
+{
+	float						calibrationValues 	[ cTotalNoOfNotes ];
+} t1V_OctCalibrationValues;
 
 } // namespace CasualNoises
 

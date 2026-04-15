@@ -225,6 +225,8 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
+//  for (;;) {}										// ToDo remove!!!
+
   /* USER CODE END Init */
 
   /* Configure the system clock */

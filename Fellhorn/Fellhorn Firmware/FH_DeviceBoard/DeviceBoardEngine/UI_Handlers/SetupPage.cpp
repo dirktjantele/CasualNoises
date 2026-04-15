@@ -28,34 +28,6 @@ SetupPage::SetupPage(SSD1309_Driver* oledDriverPt,
 					 PageManager* pageManagerPtr) :
 	RootPage(oledDriverPt, driverQueueHandle, pageManagerPtr)
 {
-/*
-	eTLV_Tag tag = eTLV_Tag::UI_SetupPageState;
-
-	// Set initial state, will be overwritten if state data is found in flash memory
-	mPageState.version = mVersion;
-
-	// Load state from flash when found, create it if it does not exists yet
-	bool saveState = false;
-	uint32_t index = TLV_DriverPtr->findNextTLV((uint32_t)tag, 0);
-	if (index == 0)				// TLV does not exists, create new one
-	{
-		saveState = true;
-	}
-	else if (TLV_DriverPtr->getTLV_LengthBytes(index) != sizeof(sSetupPageState))
-	{
-		TLV_DriverPtr->deleteTLV((uint32_t)tag, true);	// Delete existing TLV
-		saveState = true;
-	}
-	if (saveState)
-	{
-		TLV_DriverPtr->deleteTLV((uint32_t)tag, true);
-		if ( ! TLV_DriverPtr->addTLV_Bytes((uint32_t)tag, sizeof(sSetupPageState), (uint32_t*) &mPageState) )
-			CN_ReportFault(eErrorCodes::UI_ThreadError);
-	}
-	uint32_t stateIndex    	= TLV_DriverPtr->findNextTLV ((uint32_t)tag, 0);									// ToDo remove debug lines
-	uint32_t stateCnt		= TLV_DriverPtr->readTLV_Bytes(stateIndex, sizeof(sSetupPageState), (uint32_t*) &mPageState);
-	UNUSED(stateCnt);
-*/
 }
 
 //==============================================================================
@@ -87,6 +59,16 @@ void SetupPage::paint(Graphics& g)
 void SetupPage::resized()
 {
 
+}
+
+//==============================================================================
+//          updateLEDs()
+//
+//  CasualNoises    13/04/2026  First implementation
+//==============================================================================
+void SetupPage::updateLEDs ()
+{
+	dimSwitchLeds ();
 }
 
 //==============================================================================

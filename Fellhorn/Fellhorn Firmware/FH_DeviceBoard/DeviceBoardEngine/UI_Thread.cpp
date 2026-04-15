@@ -341,6 +341,12 @@ void UI_Thread(void* pvParameters)
 	gYellowPages.gUI_ThreadRunning = true;
 
 	// Wait for the NerveNet thread to become online
+	oledDriverPtr->clearDisplay();
+	oledDriverPtr->drawRect(0, 0, 127, 63);
+	oledDriverPtr->drawText(10, 10, "Starting-up...", &CasualNoises::font_7x10);
+	oledDriverPtr->drawText(10, 20, "Awaiting MCU", &CasualNoises::font_7x10);
+	oledDriverPtr->drawText(10, 30, "NorthSide", &CasualNoises::font_7x10);
+	oledDriverPtr->refreshDisplay();
 	while ( ! gYellowPages.gNetMasterThreadRunning )
 		vTaskDelay ( pdMS_TO_TICKS ( 1 )  );
 

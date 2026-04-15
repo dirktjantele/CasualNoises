@@ -1,0 +1,585 @@
+saturatedSine
+=============
+
+#include <vector>
+#include <cmath>
+
+std::vector<float> saturatedSine(
+    int numSamples = 1024,
+    float frequency = 1.0f,
+    float saturation = 1.0f)
+{
+    std::vector<float> buffer(numSamples);
+
+    const float twoPi = 6.28318530718f;
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float t = (twoPi * frequency * i) / numSamples;
+        float pure = std::sin(t);
+
+        // Soft saturation using tanh
+        float saturated = std::tanh(saturation * pure);
+
+        buffer[i] = saturated;
+    }
+
+    return buffer;
+}
+
+use: auto wave = saturatedSine(1024, 3.0f, 2.5f);
+
+frequency = number of cycles inside the 1024‑sample buffer
+saturation = 0 → pure sine
+saturation = 1 → gentle saturation
+saturation = 5 → almost square wave
+
+
+General-purpose polynomial waveshaper
+=====================================
+
+#include <vector>
+#include <cmath>
+
+// Waveshaper: y = a0 + a1*x + a2*x^2 + ... + aN*x^N
+float polynomialShape(float x, const std::vector<float>& coeffs)
+{
+    float y = 0.0f;
+    float xn = 1.0f; // x^0
+
+    for (float c : coeffs)
+    {
+        y += c * xn;
+        xn *= x;
+    }
+
+    return y;
+}
+
+// Generate a shaped sine wave
+std::vector<float> polynomialWaveshapedSine(
+    int numSamples,
+    float frequency,
+    const std::vector<float>& coeffs)
+{
+    std::vector<float> buffer(numSamples);
+    const float twoPi = 6.28318530718f;
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float t = (twoPi * frequency * i) / numSamples;
+        float pure = std::sin(t);
+
+        buffer[i] = polynomialShape(pure, coeffs);
+    }
+
+    return buffer;
+}
+
+use:
+
+Example: cubic soft clip
+------------------------
+
+auto wave = polynomialWaveshapedSine(
+    1024,
+    1.0f,
+    {0.0f, 1.0f, 0.0f, -1.0f/3.0f} // a0, a1, a2, a3
+);
+
+Example: Chebyshev 3rd harmonic generator
+-----------------------------------------
+
+auto wave = polynomialWaveshapedSine(
+    1024,
+    1.0f,
+    {0.0f, -3.0f, 0.0f, 4.0f}
+);
+
+C++ Polynomial Waveshaper with Normalized Output
+================================================
+
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+// Evaluate polynomial: y = a0 + a1*x + a2*x^2 + ... + aN*x^N
+float polynomialShape(float x, const std::vector<float>& coeffs)
+{
+    float y = 0.0f;
+    float xn = 1.0f; // x^0
+
+    for (float c : coeffs)
+    {
+        y += c * xn;
+        xn *= x;
+    }
+
+    return y;
+}
+
+// Generate a normalized polynomial-shaped sine wave
+std::vector<float> polynomialWaveshapedSineNormalized(
+    int numSamples,
+    float frequency,
+    const std::vector<float>& coeffs)
+{
+    std::vector<float> buffer(numSamples);
+    const float twoPi = 6.28318530718f;
+
+    // First pass: generate raw shaped samples
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float t = (twoPi * frequency * i) / numSamples;
+        float pure = std::sin(t);
+
+        buffer[i] = polynomialShape(pure, coeffs);
+    }
+
+    // Find peak absolute value
+    float maxAbs = 0.0f;
+    for (float v : buffer)
+        maxAbs = std::max(maxAbs, std::fabs(v));
+
+    // Normalize if needed
+    if (maxAbs > 0.000001f)
+    {
+        float scale = 1.0f / maxAbs;
+        for (float& v : buffer)
+            v *= scale;
+    }
+
+    return buffer;
+}
+
+Example: cubic soft clip
+------------------------
+
+auto wave = polynomialWaveshapedSineNormalized(
+    1024,
+    1.0f,
+    {0.0f, 1.0f, 0.0f, -1.0f/3.0f}
+);
+
+C++ Polynomial Waveshaper With Morphing
+=======================================
+
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+// Evaluate polynomial: y = a0 + a1*x + a2*x^2 + ... + aN*x^N
+float evalPoly(float x, const std::vector<float>& coeffs)
+{
+    float y = 0.0f;
+    float xn = 1.0f;
+
+    for (float c : coeffs)
+    {
+        y += c * xn;
+        xn *= x;
+    }
+    return y;
+}
+
+// Morph between two polynomials and apply to a sine wave
+std::vector<float> polynomialWaveshapedSineMorph(
+    int numSamples,
+    float frequency,
+    const std::vector<float>& polyA,
+    const std::vector<float>& polyB,
+    float morph) // 0 = A, 1 = B
+{
+    std::vector<float> buffer(numSamples);
+    const float twoPi = 6.28318530718f;
+
+    // Clamp morph to [0,1]
+    morph = std::clamp(morph, 0.0f, 1.0f);
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float t = (twoPi * frequency * i) / numSamples;
+        float pure = std::sin(t);
+
+        float yA = evalPoly(pure, polyA);
+        float yB = evalPoly(pure, polyB);
+
+        // Linear interpolation between the two shapes
+        buffer[i] = (1.0f - morph) * yA + morph * yB;
+    }
+
+    return buffer;
+}
+
+Example: Morph between soft clip and hard-ish clip
+--------------------------------------------------
+
+auto wave = polynomialWaveshapedSineMorph(
+    1024,
+    1.0f,
+    {0.0f, 1.0f, 0.0f, -1.0f/3.0f},          // poly A
+    {0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.5f},   // poly B
+    0.5f                                     // halfway morph
+);
+
+C++ Polynomial Waveshaper with Asymmetric Normalization
+=======================================================
+
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+// Evaluate polynomial: y = a0 + a1*x + a2*x^2 + ... + aN*x^N
+float polynomialShape(float x, const std::vector<float>& coeffs)
+{
+    float y = 0.0f;
+    float xn = 1.0f;
+
+    for (float c : coeffs)
+    {
+        y += c * xn;
+        xn *= x;
+    }
+
+    return y;
+}
+
+// Generate a polynomial-shaped sine wave with asymmetric normalization
+std::vector<float> polynomialWaveshapedSineAsymmetric(
+    int numSamples,
+    float frequency,
+    const std::vector<float>& coeffs)
+{
+    std::vector<float> buffer(numSamples);
+    const float twoPi = 6.28318530718f;
+
+    // First pass: generate raw shaped samples
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float t = (twoPi * frequency * i) / numSamples;
+        float pure = std::sin(t);
+        buffer[i] = polynomialShape(pure, coeffs);
+    }
+
+    // Find separate positive and negative peaks
+    float maxPos = 0.0f;
+    float maxNeg = 0.0f;
+
+    for (float v : buffer)
+    {
+        if (v > maxPos) maxPos = v;
+        if (v < maxNeg) maxNeg = v;
+    }
+
+    // Normalize each side independently
+    for (float& v : buffer)
+    {
+        if (v > 0.0f && maxPos > 1e-6f)
+            v /= maxPos;
+        else if (v < 0.0f && maxNeg < -1e-6f)
+            v /= -maxNeg; // divide by magnitude of negative peak
+    }
+
+    return buffer;
+}
+
+Example: Asymmetric diode‑style curve
+-------------------------------------
+
+auto wave = polynomialWaveshapedSineAsymmetric(
+    1024,
+    1.0f,
+    {0.0f, 1.0f, 0.5f}
+);
+
+C++ Polynomial Waveshaper With Morphing + Normalized Output
+===========================================================
+
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+// Evaluate polynomial: y = a0 + a1*x + a2*x^2 + ... + aN*x^N
+float evalPoly(float x, const std::vector<float>& coeffs)
+{
+    float y = 0.0f;
+    float xn = 1.0f;
+
+    for (float c : coeffs)
+    {
+        y += c * xn;
+        xn *= x;
+    }
+    return y;
+}
+
+// Morph between two polynomials and normalize output
+std::vector<float> polynomialWaveshapedSineMorphNormalized(
+    int numSamples,
+    float frequency,
+    const std::vector<float>& polyA,
+    const std::vector<float>& polyB,
+    float morph) // 0 = A, 1 = B
+{
+    std::vector<float> buffer(numSamples);
+    const float twoPi = 6.28318530718f;
+
+    morph = std::clamp(morph, 0.0f, 1.0f);
+
+    // First pass: generate raw shaped samples
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float t = (twoPi * frequency * i) / numSamples;
+        float pure = std::sin(t);
+
+        float yA = evalPoly(pure, polyA);
+        float yB = evalPoly(pure, polyB);
+
+        buffer[i] = (1.0f - morph) * yA + morph * yB;
+    }
+
+    // Find peak absolute value
+    float maxAbs = 0.0f;
+    for (float v : buffer)
+        maxAbs = std::max(maxAbs, std::fabs(v));
+
+    // Normalize if needed
+    if (maxAbs > 1e-6f)
+    {
+        float scale = 1.0f / maxAbs;
+        for (float& v : buffer)
+            v *= scale;
+    }
+
+    return buffer;
+}
+
+Example: Morph between soft clip and wavefolder‑ish curve
+---------------------------------------------------------
+
+auto wave = polynomialWaveshapedSineMorphNormalized(
+    1024,
+    1.0f,
+    {0.0f, 1.0f, 0.0f, -1.0f/3.0f},          // poly A
+    {0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.5f},   // poly B
+    0.5f                                     // morph halfway
+);
+
+C++ Polynomial Waveshaper — Coefficient Morphing + Normalized Output
+====================================================================
+
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+// Evaluate polynomial: y = a0 + a1*x + a2*x^2 + ... + aN*x^N
+float evalPoly(float x, const std::vector<float>& coeffs)
+{
+    float y = 0.0f;
+    float xn = 1.0f;
+
+    for (float c : coeffs)
+    {
+        y += c * xn;
+        xn *= x;
+    }
+    return y;
+}
+
+// Morph coefficients between two polynomials
+std::vector<float> morphCoefficients(
+    const std::vector<float>& A,
+    const std::vector<float>& B,
+    float morph)
+{
+    morph = std::clamp(morph, 0.0f, 1.0f);
+
+    size_t maxOrder = std::max(A.size(), B.size());
+    std::vector<float> C(maxOrder, 0.0f);
+
+    for (size_t i = 0; i < maxOrder; ++i)
+    {
+        float a = (i < A.size()) ? A[i] : 0.0f;
+        float b = (i < B.size()) ? B[i] : 0.0f;
+
+        C[i] = (1.0f - morph) * a + morph * b;
+    }
+
+    return C;
+}
+
+// Generate a sine wave shaped by morphed polynomial, normalized
+std::vector<float> polynomialWaveshapedSineMorphCoeffs(
+    int numSamples,
+    float frequency,
+    const std::vector<float>& polyA,
+    const std::vector<float>& polyB,
+    float morph)
+{
+    // Step 1: morph the coefficients
+    std::vector<float> coeffs = morphCoefficients(polyA, polyB, morph);
+
+    std::vector<float> buffer(numSamples);
+    const float twoPi = 6.28318530718f;
+
+    // Step 2: generate shaped samples
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float t = (twoPi * frequency * i) / numSamples;
+        float pure = std::sin(t);
+        buffer[i] = evalPoly(pure, coeffs);
+    }
+
+    // Step 3: normalize output
+    float maxAbs = 0.0f;
+    for (float v : buffer)
+        maxAbs = std::max(maxAbs, std::fabs(v));
+
+    if (maxAbs > 1e-6f)
+    {
+        float scale = 1.0f / maxAbs;
+        for (float& v : buffer)
+            v *= scale;
+    }
+
+    return buffer;
+}
+
+Example: Morph between soft clip and wavefolder‑ish curve
+---------------------------------------------------------
+
+auto wave = polynomialWaveshapedSineMorphCoeffs(
+    1024,
+    1.0f,
+    {0.0f, 1.0f, 0.0f, -1.0f/3.0f},          // poly A
+    {0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.5f},   // poly B
+    0.5f                                     // morph halfway
+);
+
+Stereo Time‑Varying Polynomial Waveshaper (Coefficient Morphing + Normalized)
+=============================================================================
+
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+// Evaluate polynomial: y = a0 + a1*x + a2*x^2 + ... + aN*x^N
+float evalPoly(float x, const std::vector<float>& coeffs)
+{
+    float y = 0.0f;
+    float xn = 1.0f;
+
+    for (float c : coeffs)
+    {
+        y += c * xn;
+        xn *= x;
+    }
+    return y;
+}
+
+// Morph coefficients between two polynomials
+std::vector<float> morphCoefficients(
+    const std::vector<float>& A,
+    const std::vector<float>& B,
+    float morph)
+{
+    morph = std::clamp(morph, 0.0f, 1.0f);
+
+    size_t maxOrder = std::max(A.size(), B.size());
+    std::vector<float> C(maxOrder, 0.0f);
+
+    for (size_t i = 0; i < maxOrder; ++i)
+    {
+        float a = (i < A.size()) ? A[i] : 0.0f;
+        float b = (i < B.size()) ? B[i] : 0.0f;
+
+        C[i] = (1.0f - morph) * a + morph * b;
+    }
+
+    return C;
+}
+
+// Stereo version with per-sample morphing and normalization
+struct StereoBuffer {
+    std::vector<float> left;
+    std::vector<float> right;
+};
+
+StereoBuffer polynomialWaveshapedSineMorphCoeffsLFO_Stereo(
+    int numSamples,
+    float frequencyL,
+    float frequencyR,
+    const std::vector<float>& polyA,
+    const std::vector<float>& polyB,
+    const std::vector<float>& morphL,
+    const std::vector<float>& morphR)
+{
+    StereoBuffer out;
+    out.left.resize(numSamples);
+    out.right.resize(numSamples);
+
+    const float twoPi = 6.28318530718f;
+
+    // Generate stereo shaped samples
+    for (int i = 0; i < numSamples; ++i)
+    {
+        float mL = std::clamp(morphL[i], 0.0f, 1.0f);
+        float mR = std::clamp(morphR[i], 0.0f, 1.0f);
+
+        auto coeffsL = morphCoefficients(polyA, polyB, mL);
+        auto coeffsR = morphCoefficients(polyA, polyB, mR);
+
+        float tL = (twoPi * frequencyL * i) / numSamples;
+        float tR = (twoPi * frequencyR * i) / numSamples;
+
+        float pureL = std::sin(tL);
+        float pureR = std::sin(tR);
+
+        out.left[i]  = evalPoly(pureL, coeffsL);
+        out.right[i] = evalPoly(pureR, coeffsR);
+    }
+
+    // Normalize both channels independently
+    auto normalize = [&](std::vector<float>& buf)
+    {
+        float maxAbs = 0.0f;
+        for (float v : buf)
+            maxAbs = std::max(maxAbs, std::fabs(v));
+
+        if (maxAbs > 1e-6f)
+        {
+            float scale = 1.0f / maxAbs;
+            for (float& v : buf)
+                v *= scale;
+        }
+    };
+
+    normalize(out.left);
+    normalize(out.right);
+
+    return out;
+}
+
+Example: Stereo LFO morphing
+----------------------------
+
+std::vector<float> morphL(1024);
+std::vector<float> morphR(1024);
+
+for (int i = 0; i < 1024; ++i)
+{
+    morphL[i] = 0.5f + 0.5f * std::sin(2.0f * 3.14159f * i / 1024.0f);
+    morphR[i] = 0.5f + 0.5f * std::sin(6.0f * 3.14159f * i / 1024.0f);
+}
+
+auto stereo = polynomialWaveshapedSineMorphCoeffsLFO_Stereo(
+    1024,
+    1.0f,  // left sine frequency
+    1.0f,  // right sine frequency
+    {0.0f, 1.0f, 0.0f, -1.0f/3.0f},          // poly A
+    {0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.5f},   // poly B
+    morphL,
+    morphR
+);
+
+This produces a wide, evolving stereo timbre with independent morphing on each side.
