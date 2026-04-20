@@ -26,6 +26,16 @@ namespace CasualNoises
 {
 
 //==============================================================================
+//          ~PulsarSynthEngine()
+//
+//  CasualNoises    16/04/2026  First implementation
+//==============================================================================
+PulsarSynthEngine::~PulsarSynthEngine()
+{
+	if ( mPulsarSynthPtr != nullptr ) delete mPulsarSynthPtr;
+}
+
+//==============================================================================
 //          prepareToPlay
 //
 // this method is called before the first call to processBlock()
@@ -34,16 +44,15 @@ namespace CasualNoises
 //==============================================================================
 void PulsarSynthEngine::prepareToPlay (
 		float sampleRate,
-		uint32_t maximumExpectedSamplesPerBlock,
-		void* /*inSynthParams*/)
+		uint32_t maximumExpectedSamplesPerBlock )
 {
 
 	// store settings
 	mSampleRate 					    = sampleRate;
 	mMaximumExpectedSamplesPerBlock     = maximumExpectedSamplesPerBlock;
-	float frequency = 220.0f;														// ToDo implement presets in flash
+	float frequency = 220.0f;														// ToDo load presets from flash
 
-	mPulsarSynthPtr	  = new PulsarSynth(mSampleRate, frequency);
+	mPulsarSynthPtr	  = new PulsarSynth( mSampleRate, frequency );
 
 }
 
@@ -52,11 +61,24 @@ void PulsarSynthEngine::prepareToPlay (
 //
 // This method is called after the last call to processBlock()
 //
-//  CasualNoises    24/07/2025  First implementation
+//  CasualNoises    16/04/2026  First implementation
 //==============================================================================
-void PulsarSynthEngine::releaseResources()											// ToDo save current state to flash
+void PulsarSynthEngine::releaseResources()
 {
-	CN_ReportFault(eErrorCodes::runtimeError);			// Not implemented yet
+	if ( mPulsarSynthPtr != nullptr ) delete mPulsarSynthPtr;
+}
+
+//==============================================================================
+//          updateFrequency
+//
+//  CasualNoises    19/04/2026  First implementation
+//==============================================================================
+inline void PulsarSynthEngine::updateFrequency () noexcept
+{
+	mFrequency = mTargetFrequency + mFrequencyCourse + mFrequencyFine;
+	constexpr double f0 = 8.1757989156;
+	float frequency = f0 * std::pow ( 2.0, mFrequency );
+	mPulsarSynthPtr->setFrequency ( frequency );
 }
 
 //==============================================================================
@@ -79,72 +101,63 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 
 	switch (messageType)
 	{
-	case eSynthEngineMessageType::requestSetupInfo:		// Set-up info request
-	{
-		tRequestSetupInfoReplyData reply;
-		reply.header.sourceID 		= eNerveNetSourceId::FellhornNorthSide;
-		reply.header.destinationID	= eNerveNetSourceId::FellhornSouthSide;
-		reply.header.messageTag 	= (uint32_t)eSynthEngineMessageType::requestSetupInfo;
-		reply.header.messageLength 	= sizeof ( tRequestSetupInfoReplyData );
-		reply.version				= 0x00010001;				// #1.1
-		threadPtr->sendMessage( ( tNerveNetMessageHeader* ) &reply, reply.header.messageLength );
-	}
-		break;
 	case eSynthEngineMessageType::setFrequency:			// Set oscillator frequency
-	{
-		tSetFrequencyMessage* messagePtr = (tSetFrequencyMessage*)ptr;
-		mPulsarSynthPtr->setFrequency(messagePtr->frequency);
-	}
+		{
+			tSetFrequencyMessage* messagePtr = (tSetFrequencyMessage*)ptr;
+			mPulsarSynthPtr->setFrequency(messagePtr->frequency);
+		}
 		break;
 	case eSynthEngineMessageType::potentiometerValue:	// Update potentiometer values
-	{
-		tPotValueMessage* messagePtr = (tPotValueMessage*)ptr;
-		uint8_t multiplexerNo 		 = messagePtr->multiplexerNo;
-		uint8_t multiplexerChannelNo = messagePtr->multiplexerChannelNo;
-		ePotentioMeterId potId  = ( ePotentioMeterId )( ( multiplexerNo << 4	) + multiplexerChannelNo );
-		float potValue = (float)messagePtr->potValue / 0x0000ffff;
-		switch ( potId )
 		{
-		case ePotentioMeterId::pot_1:
-			mFrequencyOffset = potValue * 5;
-			break;
-		case ePotentioMeterId::pot_2:
-			mFormantGain = potValue;
-			break;
-		case ePotentioMeterId::pot_3:
-			mClusterGain = potValue;
-			break;
-		case ePotentioMeterId::pot_4:
-			mWaveFoldGain = potValue;
-			break;
-		case ePotentioMeterId::slider_1:
-		{
-			mTragetFormant = potValue;
-			float formant = mTragetFormant + ( mFormant_CV * mFormantGain );
-			mPulsarSynthPtr->setFormant ( formant );
+			tPotValueMessage* messagePtr = (tPotValueMessage*)ptr;
+			uint8_t multiplexerNo 		 = messagePtr->multiplexerNo;
+			uint8_t multiplexerChannelNo = messagePtr->multiplexerChannelNo;
+			ePotentioMeterId potId  = ( ePotentioMeterId )( ( multiplexerNo << 4	) + multiplexerChannelNo );
+			float potValue = (float)messagePtr->potValue / 0x0000ffff;
+			switch ( potId )
+			{
+			case ePotentioMeterId::pot_1:
+				mFrequencyCourse = potValue * 8;
+				updateFrequency ();
+				break;
+			case ePotentioMeterId::pot_2:
+				mFrequencyFine = potValue / 4.0f;
+				updateFrequency ();
+				break;
+			case ePotentioMeterId::pot_3:
+				mFormantGain = potValue;
+				break;
+			case ePotentioMeterId::pot_4:
+				mClusterGain = potValue;
+				break;
+			case ePotentioMeterId::slider_1:
+				{
+					mTragetFormant = potValue;
+					float formant = mTragetFormant + ( mFormant_CV * mFormantGain );
+					mPulsarSynthPtr->setFormant ( formant );
+				}
+				break;
+			case ePotentioMeterId::slider_2:
+				{
+					mTargetCluster = potValue;
+					float cluster = mTargetCluster + ( mCluster_CV * mClusterGain );
+					mPulsarSynthPtr->setCluster ( cluster );
+				}
+				break;
+			case ePotentioMeterId::slider_3:
+				{
+					mTargetWaveFold = potValue;
+					float waveFold = mTargetWaveFold + ( mWaveFold_CV * mWaveFoldGain );
+					mPulsarSynthPtr->setWaveFolder ( waveFold );
+				}
+				break;
+			case ePotentioMeterId::slider_4:
+				mPulsarSynthPtr->setMorphFactor ( potValue );
+				break;
+			default:
+				break;
+			}
 		}
-			break;
-		case ePotentioMeterId::slider_2:
-		{
-			mTargetCluster = potValue;
-			float cluster = mTargetCluster + ( mCluster_CV * mClusterGain );
-			mPulsarSynthPtr->setCluster ( cluster );
-		}
-			break;
-		case ePotentioMeterId::slider_3:
-		{
-			mTargetWaveFold = potValue;
-			float waveFold = mTargetWaveFold + ( mWaveFold_CV * mWaveFoldGain );
-			mPulsarSynthPtr->setWaveFolder ( waveFold );
-		}
-			break;
-		case ePotentioMeterId::slider_4:
-			mPulsarSynthPtr->setMorphFactor ( potValue );
-			break;
-		default:
-			break;
-		}
-	}
 		break;
 	case eSynthEngineMessageType::triggerEvent:
 		// ToDo handle trigger events
@@ -152,6 +165,37 @@ void PulsarSynthEngine::processNerveNetData(uint32_t threadNo, uint32_t size, ui
 	default:
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 	}
+
+}
+
+//==============================================================================
+//          applyControlVoltages
+//
+// Apply control voltage values
+//
+//  CasualNoises    11/03/2026  First implementation
+//==============================================================================
+void PulsarSynthEngine::applyControlVoltages ( sControlVoltages* voltages )
+{
+
+	mTargetFrequency = voltages->_1V_OCT_1;
+	updateFrequency ();
+
+	mGain = voltages->CV_Inputs [ CV_INPUT_4 ];
+	if ( mGain < 0.0f )
+		mGain = 0.0f;
+
+	mFormant_CV = voltages->CV_Inputs [ CV_INPUT_5 ];
+	float formant = mTragetFormant + ( mFormant_CV * mFormantGain );
+	mPulsarSynthPtr->setFormant ( formant );
+
+	mCluster_CV = voltages->CV_Inputs [ CV_INPUT_6 ];
+	float cluster = mTargetCluster + ( mCluster_CV * mClusterGain );
+	mPulsarSynthPtr->setCluster ( cluster );
+
+	mWaveFold_CV = voltages->CV_Inputs [ CV_INPUT_7 ];
+	float waveFold = mTargetWaveFold + ( mWaveFold_CV * mWaveFoldGain );
+	mPulsarSynthPtr->setWaveFolder ( waveFold );
 
 }
 
@@ -171,15 +215,15 @@ void PulsarSynthEngine::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buff
 	uint32_t noSamples = NN_buffer->getNumSamples();
 
 	constexpr double f0 = 8.1757989156;
-	float frequency = f0 * std::pow(2.0, mTargetFrequency + mFrequencyOffset);
+//	float frequency = f0 * std::pow ( 2.0, mTargetFrequency + mFrequencyOffset );
 
 	for ( uint32_t i = 0; i < noSamples; ++i )
 	{
-		if ( mCurrentFrequency != ( mTargetFrequency + mFrequencyOffset ) )
-		{
-			mCurrentFrequency = mTargetFrequency + mFrequencyOffset;
-			mPulsarSynthPtr->setFrequency ( frequency );
-		}
+//		if ( mCurrentFrequency != ( mTargetFrequency + mFrequencyOffset ) )
+//		{
+//			mCurrentFrequency = mTargetFrequency + mFrequencyOffset;
+//			mPulsarSynthPtr->setFrequency ( frequency );
+//		}
 
 		float gain = mGain;															// ToDo restore this line
 //		float gain = 1.0f;
@@ -187,36 +231,6 @@ void PulsarSynthEngine::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buff
 		*lwptr++ = sample_1;
 		*rwptr++ = sample_1;
 	}
-
-}
-
-//==============================================================================
-//          applyControlVoltages
-//
-// Apply control voltage values
-//
-//  CasualNoises    11/03/2026  First implementation
-//==============================================================================
-void PulsarSynthEngine::applyControlVoltages ( sControlVoltages* voltages )
-{
-
-	mTargetFrequency = voltages->_1V_OCT_1;
-
-	mGain = voltages->CV_Inputs [ CV_INPUT_4 ];
-	if ( mGain < 0.0f )
-		mGain = 0.0f;
-
-	mFormant_CV = voltages->CV_Inputs [ CV_INPUT_5 ];
-	float formant = mTragetFormant + ( mFormant_CV * mFormantGain );
-	mPulsarSynthPtr->setFormant ( formant );
-
-	mCluster_CV = voltages->CV_Inputs [ CV_INPUT_6 ];
-	float cluster = mTargetCluster + ( mCluster_CV * mClusterGain );
-	mPulsarSynthPtr->setCluster ( cluster );
-
-	mWaveFold_CV = voltages->CV_Inputs [ CV_INPUT_7 ];
-	float waveFold = mTargetWaveFold + ( mWaveFold_CV * mWaveFoldGain );
-	mPulsarSynthPtr->setWaveFolder ( waveFold );
 
 }
 

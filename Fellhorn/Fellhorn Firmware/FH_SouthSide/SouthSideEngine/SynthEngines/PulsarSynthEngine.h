@@ -11,22 +11,20 @@
 #pragma once
 
 #include "AbstractSynthEngine.h"
-#include "Utilities/ReportFault.h"
 
 namespace CasualNoises
 {
 
 class PulsarSynth;
 class Wavetable_LFO;
-class PulsarSynthEngine : public AbstractSynthEngine
+class PulsarSynthEngine final : public AbstractSynthEngine
 {
 public:
 	 PulsarSynthEngine() = default;
-	~PulsarSynthEngine() = default;
+	~PulsarSynthEngine();
 
 	void 	prepareToPlay (float sampleRate,
-						   uint32_t maximumExpectedSamplesPerBlock,
-						   void* inSynthParams) noexcept override;
+						   uint32_t maximumExpectedSamplesPerBlock ) noexcept override;
 	void 	releaseResources() noexcept override;
 	void 	processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) noexcept override;
 	void 	processBlock (AudioBuffer* buffer, AudioBuffer* NN_buffer) noexcept override;
@@ -40,23 +38,30 @@ private:
 
 	PulsarSynth*		mPulsarSynthPtr					{ nullptr };
 
-	float				mFrequencyOffset				{ 0.0f };			// From P1
-	float				mTargetFrequency				{ 220.0f };			// From CV1 - 1V/OCT
-	float				mCurrentFrequency				{ 220.0f };
+//	float				mFrequencyOffset				{ 0.0f };			// From P1
+//	float				mTargetFrequency				{ 220.0f };			// From CV1 - 1V/OCT
+//	float				mCurrentFrequency				{ 220.0f };
+
+	float				mTargetFrequency				{ 0.0f };				// From 1V/OCT 1
+	float				mFrequency						{ 0.0f };
+	float				mFrequencyCourse				{ 0.0f }; 				// From P1
+	float				mFrequencyFine					{ 0.0f }; 				// From P2
 
 	float				mGain							{ 1.0f };			// From CV4
 
-	float				mFormantGain					{ 1.0f };			// From P2
+	float				mFormantGain					{ 1.0f };			// From P3
 	float				mTragetFormant					{ 0.0f };			// From Slider 1
 	float				mFormant_CV						{ 0.0f };			// From CV5
 
-	float				mClusterGain					{ 1.0f };			// From P3
+	float				mClusterGain					{ 1.0f };			// From P4
 	float				mTargetCluster					{ 0.0f };			// From Slider 2
 	float				mCluster_CV						{ 0.0f };			// From CV6
 
-	float				mWaveFoldGain					{ 1.0f };			// From P4
+	float				mWaveFoldGain					{ 1.0f };			// NC
 	float				mTargetWaveFold					{ 0.0f };			// From Slider 3
 	float				mWaveFold_CV					{ 0.0f };			// From CV7
+
+	inline void	 updateFrequency () noexcept;
 
 };
 
