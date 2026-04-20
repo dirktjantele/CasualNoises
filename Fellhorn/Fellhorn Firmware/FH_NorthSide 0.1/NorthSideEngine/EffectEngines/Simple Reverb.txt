@@ -1,3 +1,163 @@
+Mono to stereo reverb
+_____________________
+
+#pragma once
+#include <vector>
+#include <cmath>
+
+class StereoReverb
+{
+public:
+    StereoReverb(float sampleRate)
+        : fs(sampleRate)
+    {
+        init();
+    }
+
+    // mono in → stereo out
+    void process(const float* in, float* outL, float* outR, int numSamples)
+    {
+        for (int n = 0; n < numSamples; ++n)
+        {
+            float x = in[n];
+
+            float l = processChannel(x, combL, allpassL);
+            float r = processChannel(x, combR, allpassR);
+
+            outL[n] = dry * x + wet * l;
+            outR[n] = dry * x + wet * r;
+        }
+    }
+
+    void setWet(float w)      { wet = w; dry = 1.0f - w; }
+    void setRoomSize(float r) { roomSize = r; updateCombFeedback(); }
+    void setDamping(float d)  { damp = d; updateCombDamping(); }
+
+private:
+    struct Comb {
+        std::vector<float> buf;
+        int idx = 0;
+        float feedback = 0.7f;
+        float damp = 0.2f;
+        float filterStore = 0.0f;
+    };
+
+    struct Allpass {
+        std::vector<float> buf;
+        int idx = 0;
+        float feedback = 0.5f;
+    };
+
+    float fs;
+    float wet = 0.3f;
+    float dry = 0.7f;
+    float roomSize = 0.7f;
+    float damp = 0.2f;
+
+    std::vector<Comb> combL, combR;
+    std::vector<Allpass> allpassL, allpassR;
+
+    // -------------------------------------------------------------
+
+    void init()
+    {
+        const float scale = fs / 44100.0f;
+
+        const int combDelaysL[] = { 1116, 1188, 1277, 1356 };
+        const int combDelaysR[] = { 1139, 1211, 1300, 1380 };
+        const int allpassDelays[] = { 556, 441 };
+
+        for (int d : combDelaysL) {
+            Comb c;
+            c.buf.assign(int(d * scale), 0.0f);
+            combL.push_back(c);
+        }
+        for (int d : combDelaysR) {
+            Comb c;
+            c.buf.assign(int(d * scale), 0.0f);
+            combR.push_back(c);
+        }
+
+        for (int d : allpassDelays) {
+            Allpass a;
+            a.buf.assign(int(d * scale), 0.0f);
+            allpassL.push_back(a);
+        }
+        for (int d : allpassDelays) {
+            Allpass a;
+            a.buf.assign(int(d * scale), 0.0f);
+            allpassR.push_back(a);
+        }
+
+        updateCombFeedback();
+        updateCombDamping();
+    }
+
+    void updateCombFeedback()
+    {
+        for (auto& c : combL) c.feedback = roomSize;
+        for (auto& c : combR) c.feedback = roomSize;
+    }
+
+    void updateCombDamping()
+    {
+        for (auto& c : combL) c.damp = damp;
+        for (auto& c : combR) c.damp = damp;
+    }
+
+    // -------------------------------------------------------------
+
+    static float processComb(Comb& c, float x)
+    {
+        float y = c.buf[c.idx];
+        float filtered = (y * (1.0f - c.damp)) + (c.filterStore * c.damp);
+        c.filterStore = filtered;
+
+        c.buf[c.idx] = x + filtered * c.feedback;
+
+        if (++c.idx >= (int)c.buf.size())
+            c.idx = 0;
+
+        return y;
+    }
+
+    static float processAllpass(Allpass& a, float x)
+    {
+        float bufOut = a.buf[a.idx];
+        float y = -x + bufOut;
+        a.buf[a.idx] = x + bufOut * a.feedback;
+
+        if (++a.idx >= (int)a.buf.size())
+            a.idx = 0;
+
+        return y;
+    }
+
+    float processChannel(float x, std::vector<Comb>& combs, std::vector<Allpass>& allpasses)
+    {
+        float sum = 0.0f;
+        for (auto& c : combs)
+            sum += processComb(c, x);
+
+        for (auto& a : allpasses)
+            sum = processAllpass(a, sum);
+
+        return sum;
+    }
+};
+
+Use
+___
+
+tereoReverb reverb(48000.0f);
+reverb.setWet(0.35f);
+reverb.setRoomSize(0.8f);
+reverb.setDamping(0.25f);
+
+reverb.process(monoIn, stereoL, stereoR, numSamples);
+
+Simple Reverb
+_____________
 
 #pragma once
 #include <vector>
