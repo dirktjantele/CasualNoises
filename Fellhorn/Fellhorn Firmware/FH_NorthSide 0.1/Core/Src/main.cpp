@@ -27,12 +27,15 @@
 
 #include "Drivers/Codec/CS4270_Driver.h"
 
+#include "Drivers/NVM Drivers/NVM Driver/NVM_Driver.h"
+#include "Drivers/NVM Drivers/W25Q64 Driver/W25Qxx_Driver.h"
+#include "Threads/TLV_DriverThread.h"
+
 #include "Threads/AudioThread.h"
 #include "Threads/TriggerThread.h"
 
 #include "YellowPages.h"
 
-#include "NorthSideEngine.h"
 #include "NorthSideAudioProcessor.h"
 #include "DeviceBoardConnection.h"
 #include "SouthSideConnection.h"
@@ -216,7 +219,7 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
-	MPU_Config();
+  MPU_Config();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -412,7 +415,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_18;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_32CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_64CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -1157,7 +1160,7 @@ void StartDefaultTask(void *argument)
 	memset(&synthEngineParams, 0, sizeof(CasualNoises::tSynthEngineParams));
 	synthEngineParams.frequency = 110.0;
 	synthEngineParams.bmp		= 60.0;
-
+/*
 	// Create an engine thread and run it
 	static CasualNoises::sNorthSideEngineParams engineParams;
 	// ... NVM Driver settings
@@ -1180,6 +1183,31 @@ void StartDefaultTask(void *argument)
 	// Wait until engine thread is running
 	while ( ! CasualNoises::gYellowPages.gEngineThreadRunning )
 		vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
+*/
+
+	// Create a NVM driver
+	static CasualNoises::sNVM_DriverInitData nvmDriverInitData;
+	nvmDriverInitData.noOfDevices				= 4;
+	nvmDriverInitData.hspix_ptr				= &hspi2;
+	nvmDriverInitData.deviceSelectPorts[0]		= NS_FLASH_CS_1_GPIO_Port;
+	nvmDriverInitData.deviceSelectPins[0]		= NS_FLASH_CS_1_Pin;
+	nvmDriverInitData.deviceSelectPorts[1]		= NS_FLASH_CS_2_GPIO_Port;
+	nvmDriverInitData.deviceSelectPins[1]		= NS_FLASH_CS_2_Pin;
+	nvmDriverInitData.deviceSelectPorts[2]		= NS_FLASH_CS_3_GPIO_Port;
+	nvmDriverInitData.deviceSelectPins[2]		= NS_FLASH_CS_3_Pin;
+	nvmDriverInitData.deviceSelectPorts[3]		= NS_FLASH_CS_4_GPIO_Port;
+	nvmDriverInitData.deviceSelectPins[3]		= NS_FLASH_CS_4_Pin;
+	CasualNoises::W25Qxx_Driver* NVM_DriverPtr = new CasualNoises::W25Qxx_Driver ( &nvmDriverInitData );
+
+	// Create a thread to manage TLV's in flash memory
+	static CasualNoises::sTLV_DriverThreadParams _sTLV_DriverThreadParams;
+	TaskHandle_t xTLV_DriverThreadHandle;
+	_sTLV_DriverThreadParams.NVM_DriverPtr 	= NVM_DriverPtr;
+	_sTLV_DriverThreadParams.runningFlagPtr	= &CasualNoises::gYellowPages.gTLV_DriverThreadThreadRunning;
+	_sTLV_DriverThreadParams.queueHandlePtr	= &CasualNoises::gYellowPages.gTLV_DriverThreadQueueHandle;
+	res = startTLV_DriverThread ( &_sTLV_DriverThreadParams, &xTLV_DriverThreadHandle );
+	if ( res != pdPASS )
+		CN_ReportFault ( eErrorCodes::UI_ThreadError );
 
 	// Start event handler thread
 	CasualNoises::EventHandlerThread::sEventHandlerThreadData eventHandlerData;
@@ -1194,7 +1222,6 @@ void StartDefaultTask(void *argument)
 	static CasualNoises::sAudioThreadInitData audioData;
 	audioData.audioProcessorPtr		= audioProcessorPtr;
 	audioData.hi2sHandlePtr 		= &hi2s1;
-//	audioData.nerveNetCallBackPtr   = engineParams.nerveNetCallBackPtr;
 	CasualNoises::StartAudioThread ( &audioData );
 
 	// Create an ADC handler thread - CV inputs are also handled by the South Side
@@ -1253,7 +1280,7 @@ void StartDefaultTask(void *argument)
 	if ( res != pdPASS )
 		CN_ReportFault ( eErrorCodes::NerveNetThread_Error );
 	CasualNoises::gYellowPages.gNerveNetSlaveThreadTaskHandle 	= xSlaveHandlePtr;
-	CasualNoises::DeviceBoardConnection deviceBoardConnection;
+	CasualNoises::DeviceBoardConnection deviceBoardConnection ( audioProcessorPtr );
 	gNerveNetSlaveThreadPtr [ nerveNetSlaveThreadData.NerveNetThreadNo ]->setNerveNetSlaveProcessorPtr( &deviceBoardConnection );
 
 	/* Infinite loop */
