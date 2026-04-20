@@ -29,10 +29,10 @@ public:
 	//
 	//  CasualNoises    14/12/2024  First implementation
 	//==============================================================================
-	LFO(float sampleRate, float frequency = 440.0f)
-	: mSampleRate (sampleRate)
+	LFO( float sampleRate, float frequency = 440.0f )
+	: mSampleRate ( sampleRate )
 	{
-		setFrequency(frequency);
+		setFrequency ( frequency );
 	};
 
 	//==============================================================================
@@ -42,9 +42,8 @@ public:
 	//==============================================================================
 	inline void setFrequency(float frequency) noexcept
 	{
-//		constexpr float pi  = 3.14159265358979323846f;
 		mFrequency	= frequency;
-		mStep = (2 * pi * mFrequency) / mSampleRate;
+		mStep = ( twoPi * mFrequency ) / mSampleRate;
 	}
 
 	//==============================================================================
@@ -62,13 +61,12 @@ public:
 	//
 	//  CasualNoises    14/12/2024  First implementation
 	//==============================================================================
-	const float nextSample() noexcept
+	const float nextSample () noexcept
 	{
-//		constexpr float pi  = 3.14159265358979323846f;
-		float sample = sin(mAngle);
+		float sample = sin ( mAngle );
 		mAngle += mStep;
-		if (mAngle > (2 * pi))
-			mAngle -= 2 * pi;
+		if ( mAngle > twoPi )
+			mAngle -= twoPi;
 		return sample;
 	}
 

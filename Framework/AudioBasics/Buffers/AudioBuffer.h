@@ -37,7 +37,7 @@ public:
 	  inline uint32_t		getFullBufferSize() const noexcept		{ return FULL_AUDIO_BUFFER_SIZE; }
 
 	  void					clearAudioBuffer() noexcept;
-	  void					copyAudio(AudioBuffer& buffer) noexcept;
+	  void					copyAudio ( AudioBuffer& buffer ) noexcept;
 
 	  void					importAudio(float* ptr) noexcept;
 	  void					exportAudio(float* ptr) noexcept;

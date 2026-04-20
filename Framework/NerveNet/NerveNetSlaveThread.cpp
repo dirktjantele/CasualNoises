@@ -312,7 +312,6 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 				startOfProcessBlockTime = mPerformanceTestTimerPtr->Instance->CNT;
 			}
 
-
 			// Process any NerveNet data
 			if ( mRxMessageBuffers[mRxProcessingBufferIndex]->data.size > 0 )								// ToDo uniform NerveNet message handler
 			{
@@ -338,6 +337,7 @@ void NerveNetSlaveThread::mainNerveNetSlaveThread(void* pvParameters)
 #ifdef CASUALNOISES_NERVENET_SLAVE_AUDIO_SUPPORT
 			if ( mSouthSideAudioProcessorPtr != nullptr )
 			{
+				toggleTimeMarker_2 ();							// ToDo timing marker
 				inBufferPtr->importAudio ( mRxMessageBuffers [mRxProcessingBufferIndex] ->audio.audioData );
 				mSouthSideAudioProcessorPtr->processBlock ( inBufferPtr, outBufferPtr );
 				outBufferPtr->exportAudio ( mTxMessageBuffers [mTxFillingBufferIndex] ->audio.audioData );
@@ -407,7 +407,7 @@ BaseType_t startNerveNetSlaveThread (
 	params.threadPtr = threadPtr;
 
 	// Create the thread to scan the ADC convertions
-	BaseType_t res = xTaskCreate ( runNerveNetSlaveThread, "NerveNetSlaveThread", DEFAULT_STACK_SIZE * 8, &params,
+	BaseType_t res = xTaskCreate ( runNerveNetSlaveThread, "NerveNetSlaveThread", DEFAULT_STACK_SIZE * 16, &params,
 			NERVENET_THREAD_PRIORITY, xHandlePtr );
 	return res;
 

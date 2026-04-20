@@ -18,7 +18,7 @@
 
 namespace CasualNoises {
 
-const uint32_t			cMagicCode 		= 0x20260315;		// Current date
+const uint32_t			cMagicCode 		= 0x20260417;		// Current date
 const uint32_t			cFreeTLV_Tag 	= 0x65657246;		// "Free"
 
 /*

@@ -28,7 +28,7 @@
 bool								CasualNoises::AudioProcessorPlayer::mIsAllocated 			= false;
 //CasualNoises::AudioProcessor* 		CasualNoises::mAudioProcessorPtr 		= nullptr;
 I2S_HandleTypeDef*  				CasualNoises::AudioProcessorPlayer::m_hi2sHandlePtr 		= nullptr;
-void*								CasualNoises::AudioProcessorPlayer::mSynthesiserParamsPtr	= nullptr;
+//void*								CasualNoises::AudioProcessorPlayer::mSynthesiserParamsPtr	= nullptr;
 
 // Binary semaphore used for interrupt/task synchronisation
 static SemaphoreHandle_t sAudioProcessorPlayerSemaphoreHandle = nullptr;
@@ -176,7 +176,7 @@ void AudioProcessorPlayer::runAudioProcessor (
 #endif
 
 	// Prepare the audio processor
-	mAudioProcessorPtr->prepareToPlay ( SAMPLE_FREQUENCY, numSamples, mSynthesiserParamsPtr );
+	mAudioProcessorPtr->prepareToPlay ( SAMPLE_FREQUENCY, numSamples );
 /*
 	while ( ( gNerveNetMasterThreadPtr [AUDIO_NERVENET_THREAD_NO] == nullptr ) ||
 			( ! gNerveNetMasterThreadPtr [AUDIO_NERVENET_THREAD_NO]->isThreadRunning() ) )

@@ -17,7 +17,8 @@
 namespace CasualNoises
 {
 
-constexpr float pi  = 3.14159265358979323846f;
+constexpr float pi  	= 3.14159265358979323846f;
+constexpr float twoPi  	= pi * 2;
 
 /*
  * Imported from the juce framework
