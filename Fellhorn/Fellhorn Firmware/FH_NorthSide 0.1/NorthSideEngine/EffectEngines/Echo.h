@@ -34,7 +34,7 @@ public:
 	//
 	//  CasualNoises    13/03/2026  First implementation
 	//==============================================================================
-	void prepareToPlay ( float sampleRate, uint32_t maximumExpectedSamplesPerBlock, void* /*synthParams*/ ) noexcept
+	void prepareToPlay ( float sampleRate, uint32_t maximumExpectedSamplesPerBlock ) noexcept
 	{
 
 		// Save parameters
@@ -100,6 +100,7 @@ public:
 	//==============================================================================
 	void applyPotentiometerValue ( ePotentioMeterId potId, float value )
 	{
+
 		switch ( potId )
 		{
 			case ePotentioMeterId::slider_5:	// Delay time
@@ -139,7 +140,8 @@ public:
 	{
 
 		assert ( inBuffer->getNumChannels() == 2 );
-		const float* lrptr = inBuffer->getReadPointer ( 0 );						// ToDo: replace outBuffer with inBuffer
+
+		const float* lrptr = inBuffer->getReadPointer ( 0 );
 		const float* rrptr = inBuffer->getReadPointer ( 1 );
 		float* lwptr = outBuffer->getWritePointer( 0 );
 		float* rwptr = outBuffer->getWritePointer( 1 );

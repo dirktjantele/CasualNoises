@@ -1158,9 +1158,6 @@ void StartDefaultTask(void *argument)
 	synthEngineParams.frequency = 110.0;
 	synthEngineParams.bmp		= 60.0;
 
-	// Note, part of the sNorthSideEngineParams is filled in by the UI thread when starting up
-//	void ( *nerveNetCallBackPtr ) ( CasualNoises::sNerveNetData* ) = nullptr;
-
 	// Create an engine thread and run it
 	static CasualNoises::sNorthSideEngineParams engineParams;
 	// ... NVM Driver settings
@@ -1175,9 +1172,8 @@ void StartDefaultTask(void *argument)
 	engineParams.nvmDriverInitData.deviceSelectPorts[3]		= NS_FLASH_CS_4_GPIO_Port;
 	engineParams.nvmDriverInitData.deviceSelectPins[3]		= NS_FLASH_CS_4_Pin;
 	// ... NerveNet data call back handler
-//	engineParams.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
 	// Start North Side engine thread
-	res = CasualNoises::StartNorthSideEngineThread ( &engineParams );
+	res = CasualNoises::StartNorthSideEngineThread ( &engineParams );					// ToDo add NorthSide engine stuff here
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 

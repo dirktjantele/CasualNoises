@@ -30,8 +30,8 @@ void AbstractEffectEngine::applyControlVoltages (  uint32_t noOfEntries, uint16_
 
 	static sControlVoltages controlVoltages;
 
-	controlVoltages._1V_OCT_1 = normalize1V_OCT( adcDataPtr[0] );
-	controlVoltages._1V_OCT_2 = normalize1V_OCT( adcDataPtr[1] );
+	controlVoltages._1V_OCT_1 = normalize1V_OCT ( adcDataPtr[0] );
+	controlVoltages._1V_OCT_2 = normalize1V_OCT ( adcDataPtr[1] );
 
 	for (uint32_t i = 0; i < NUM_CV_INPUTS; ++i)
 	{

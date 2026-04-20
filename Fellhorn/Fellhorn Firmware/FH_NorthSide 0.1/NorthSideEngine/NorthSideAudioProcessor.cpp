@@ -46,8 +46,7 @@ bool					NorthSideAudioProcessor::mIsAllocated = false;
 //==============================================================================
 void NorthSideAudioProcessor::prepareToPlay (
 		float sampleRate,
-		uint32_t maximumExpectedSamplesPerBlock,
-		void* synthParams)
+		uint32_t maximumExpectedSamplesPerBlock )
 {
 
 	// store settings
@@ -55,7 +54,7 @@ void NorthSideAudioProcessor::prepareToPlay (
 	mMaximumExpectedSamplesPerBlock = maximumExpectedSamplesPerBlock;
 
 	mEffectEnginePtr = new Echo;			// ToDo create an effect according to ...
-	mEffectEnginePtr->prepareToPlay ( sampleRate, maximumExpectedSamplesPerBlock, synthParams );
+	mEffectEnginePtr->prepareToPlay ( sampleRate, maximumExpectedSamplesPerBlock );
 	gAbstractEffectEnginePtr = mEffectEnginePtr;
 
 }
@@ -98,6 +97,9 @@ void NorthSideAudioProcessor::processBlock (
 		AudioBuffer* buffer, 					// Audio from the codec and audio for the codec
 		AudioBuffer* inputBuffer ) noexcept		// Audio from NerveNet
 {
+
+	buffer->copyAudio( *inputBuffer );			// Bypass effects
+	return;
 
 	gProcessBlockCallCount += 1;
 	Echo* ptr = dynamic_cast< Echo* > ( mEffectEnginePtr );			// ToDo update for multiple effect classes
