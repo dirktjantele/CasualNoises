@@ -11,7 +11,13 @@
 #pragma once
 
 #include "AudioProcessors/Processors/AudioProcessor.h"
+
 #include "Threads/ADC_Thread.h"
+
+#include "Core/Maths/Average.h"
+
+#include "SynthEngineMessage.h"
+
 #include "Utilities/ReportFault.h"
 
 #include "NerveNet/NerveNetMessage.h"
@@ -27,11 +33,13 @@ typedef struct
 class AbstractSynthEngine;
 class ADSR;
 
-class SouthSideAudioProcessor : public AudioProcessor, public ADC_DataHandler
+class SouthSideAudioProcessor :
+		public AudioProcessor,
+		public ADC_DataHandler
 {
 public:
-	 SouthSideAudioProcessor() = default;
-	~SouthSideAudioProcessor() = default;
+	 SouthSideAudioProcessor () = default;
+	~SouthSideAudioProcessor () = default;
 
 	//==============================================================================
 	//          getSouthSideAudioProcessor
@@ -55,11 +63,10 @@ public:
 	}
 
 	void 	prepareToPlay (float sampleRate,
-						   uint32_t maximumExpectedSamplesPerBlock,
-						   void* inSynthParams) noexcept override;
+						   uint32_t maximumExpectedSamplesPerBlock ) noexcept override;
 	void 	releaseResources() noexcept override;
-	void 	processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) noexcept override;
-	void 	processBlock (AudioBuffer* buffer, AudioBuffer* NN_buffer) noexcept override;
+	void 	processNerveNetData( uint32_t threadNo, uint32_t size, uint8_t* ptr ) noexcept override;
+	void 	processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buffer ) noexcept override;
 
 	void 	handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr );
 
@@ -72,8 +79,15 @@ private:
 	// Pointer to synth engine
 	AbstractSynthEngine*			mAbstractSynthEnginePtr	{ nullptr };
 
+	Average<float>*					mAveragesPtrs [ TOTAL_NUM_CV_INPUTS ] { nullptr };
+
+	bool							m1V_OctCalibrationValuesLoaded	{ false };
+	float 							m1V_OctCalibrationValues 		[ cTotalNoOfNotes ] { 0.0f };
+
 	void handleRequestSetupInfo ( uint32_t threadNo ) const noexcept;
 	void handleADC_DataRequest  ( uint32_t threadNo ) const noexcept;
+
+	void initSynthEngine () noexcept;
 
 	void handleADC_CalibrationData 		( tNerveNetMessageHeader* headerPtr );
 	void handle_1V_OCT_CalibrationData 	( tNerveNetMessageHeader* headerPtr );

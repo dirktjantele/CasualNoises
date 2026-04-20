@@ -28,6 +28,12 @@ public:
 	 AbstractSynthEngine() = default;
 	~AbstractSynthEngine() = default;
 
+	virtual void 	prepareToPlay (float sampleRate,
+						   	   	   uint32_t maximumExpectedSamplesPerBlock ) noexcept = 0;
+	virtual void 	releaseResources() noexcept = 0;
+	virtual void 	processNerveNetData(uint32_t threadNo, uint32_t size, uint8_t* ptr) noexcept = 0;
+	virtual void 	processBlock (AudioBuffer* buffer, AudioBuffer* NN_buffer) noexcept = 0;
+
 	virtual void applyControlVoltages ( sControlVoltages* voltages ) = 0;
 
 private:

@@ -13,12 +13,15 @@
 #include "SouthSideAudioProcessor.h"
 
 #include "SynthEngines/PulsarSynthEngine.h"
+#include "SynthEngines/SaturatedSineWaveEngine.h"
+#include "SynthEngines/DrawBarOrganEngine.h"
 
 #include "NerveNet/NerveNetSlaveThread.h"
 
 #include "AudioBasics/Buffers/AudioBuffer.h"
 
 #include "Core/Maths/Average.h"
+#include "Core/Maths/MathsFunctions.h"
 #include "maths.h"
 
 #include "SynthEngineMessage.h"
@@ -46,7 +49,7 @@ SouthSideAudioProcessor	SouthSideAudioProcessor::mSouthSideAudioProcessor;
 bool					SouthSideAudioProcessor::mIsAllocated = false;
 
 //==============================================================================
-//          prepareToPlay
+//          prepareToPlay ()
 //
 // this method is called before the first call to processBlock()
 //
@@ -54,12 +57,19 @@ bool					SouthSideAudioProcessor::mIsAllocated = false;
 //==============================================================================
 void SouthSideAudioProcessor::prepareToPlay (
 		float sampleRate,
-		uint32_t maximumExpectedSamplesPerBlock,
-		void* inSynthParams)
+		uint32_t maximumExpectedSamplesPerBlock )
 {
 
-	mAbstractSynthEnginePtr = new PulsarSynthEngine;													// ToDo create the right kind of engine here
-	mAbstractSynthEnginePtr->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock, inSynthParams);
+	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
+	{
+		mAveragesPtrs [ i ] = new Average <float> ( 10 );
+	}
+
+	mAbstractSynthEnginePtr = new PulsarSynthEngine;								// ToDo create the right kind of engine here
+//	mAbstractSynthEnginePtr = new SaturatedSineWaveEngine;							// ToDo create the right kind of engine here
+//	mAbstractSynthEnginePtr = new DrawBarOrganEngine;								// ToDo create the right kind of engine here
+
+	mAbstractSynthEnginePtr->prepareToPlay ( sampleRate, maximumExpectedSamplesPerBlock );
 
 }
 
@@ -72,7 +82,28 @@ void SouthSideAudioProcessor::prepareToPlay (
 //==============================================================================
 void SouthSideAudioProcessor::releaseResources()
 {
+
+	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
+	{
+		if ( mAveragesPtrs [ i ] != nullptr ) delete mAveragesPtrs [ i ];
+	}
+
 	mAbstractSynthEnginePtr->releaseResources();
+
+}
+
+//==============================================================================
+//          processBlock
+//
+// This method is called each time a new audio block needs to be processed
+//
+//  CasualNoises    13/07/2025  First implementation
+//==============================================================================
+void SouthSideAudioProcessor::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buffer )
+{
+
+	mAbstractSynthEnginePtr->processBlock ( buffer, NN_buffer );
+
 }
 
 //==============================================================================
@@ -98,11 +129,13 @@ void SouthSideAudioProcessor::processNerveNetData (
 
 		switch ( messageType )
 		{
-		case eSynthEngineMessageType::initSynthEngine:		// Ignore initSynthEngine messages
+		case eSynthEngineMessageType::initSynthEngine:
+			initSynthEngine ();
+			break;
+		case eSynthEngineMessageType::triggerEvent:			// Trigger events
 			break;
 		case eSynthEngineMessageType::setFrequency:			// Set oscillator frequency
 		case eSynthEngineMessageType::potentiometerValue:	// Update potentiometer values
-		case eSynthEngineMessageType::triggerEvent:			// Trigger events
 			mAbstractSynthEnginePtr->processNerveNetData ( threadNo, messageLength, ptr );
 			break;
 		case eSynthEngineMessageType::requestSetupInfo:		// Set-up info request
@@ -129,56 +162,47 @@ void SouthSideAudioProcessor::processNerveNetData (
 }
 
 //==============================================================================
-//          processBlock
+//          initSynthEngine ()
 //
-// This method is called each time a new audio block needs to be processed
-//
-//  CasualNoises    13/07/2025  First implementation
+//	CasualNoises    18/04/2026  First implementation
 //==============================================================================
-void SouthSideAudioProcessor::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buffer )
+void SouthSideAudioProcessor::initSynthEngine () noexcept
 {
 
-	mAbstractSynthEnginePtr->processBlock ( buffer, NN_buffer );
+	// Load calibration values
+	if ( ! m1V_OctCalibrationValuesLoaded )
+	{
+		uint32_t length = readTLV_TagBytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
+											 (uint32_t)eTLV_Tag::_1V_OCT_CalibrationValues,
+											 sizeof ( t1V_OctCalibrationValues ),
+											 ( uint32_t* ) &m1V_OctCalibrationValues );
+		if ( length == 0 )
+		{
+			for ( uint32_t i = 0; i <  cTotalNoOfNotes; ++ i )
+			{
+				m1V_OctCalibrationValues [ i ] = jmap ( ( float ) i, 0.0f, (float) ( cTotalNoOfNotes - 1 ), 0.0f, 65535.0f );
+			}
+		}
+		m1V_OctCalibrationValuesLoaded = true;
+	}
 
 }
-/*
-//==============================================================================
-//          normalize1V_OCT
-//
-// Convert 1V/OCT ADC values into a voltage											ToDo: use calibration settings
-//
-//	CasualNoises    11/03/2026  First implementation
-//==============================================================================
-inline float normalize1V_OCT ( uint16_t value )
-{
-	float volts = ( (float)value * 10) / 65535.0f;
-	return volts;
-}
-
-//==============================================================================
-//          normalizeCV_Input
-//
-// Convert a CV ADC values into a range from -1.0 to 1.0							ToDo: use calibration settings
-//
-//	CasualNoises    11/03/2026  First implementation
-//==============================================================================
-inline float normalizeCV_Input ( uint16_t value )
-{
-	float volts = ( (float)value * 2) / 65535.0f;
-	return 1.0f - volts;
-}
-*/
 
 //==============================================================================
 //          handle_ADC_Data ()
-//
-// Handle new ADC data
 //
 //	CasualNoises    02/02/2026  First implementation
 //	CasualNoises    03/04/2026  Save unnormalized data
 //==============================================================================
 void SouthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr )
 {
+	assert ( noOfEntries == TOTAL_NUM_CV_INPUTS );
+
+	// Get average values
+	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
+	{
+		adcDataPtr [ i ] = mAveragesPtrs [ i ]->nextAverage( adcDataPtr [ i ] );
+	}
 
 	// Save unnormalized values
 	gControlVoltages._1V_OCT_1	= adcDataPtr[0];
@@ -191,8 +215,8 @@ void SouthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* 
 
 	// Normalize voltages against the calibration results
 	sControlVoltages controlVoltages;
-	controlVoltages._1V_OCT_1 = normalize1V_OCT( adcDataPtr[0] );
-	controlVoltages._1V_OCT_2 = normalize1V_OCT( adcDataPtr[1] );
+	controlVoltages._1V_OCT_1 = normalize1V_OCT ( adcDataPtr [ 0 ], m1V_OctCalibrationValuesLoaded, m1V_OctCalibrationValues );
+	controlVoltages._1V_OCT_2 = normalize1V_OCT ( adcDataPtr [ 1 ], m1V_OctCalibrationValuesLoaded, m1V_OctCalibrationValues );
 	for (uint32_t i = 0; i < NUM_CV_INPUTS; ++i)
 	{
 		controlVoltages.CV_Inputs [ i ] = normalizeCV_Input ( adcDataPtr[i + 2] );
@@ -282,6 +306,9 @@ void SouthSideAudioProcessor::handle_1V_OCT_CalibrationData ( tNerveNetMessageHe
 	// Save calibration values to the flash memory
 	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
 			(uint32_t)eTLV_Tag::_1V_OCT_CalibrationValues, sizeof ( t1V_OctCalibrationValues ), (uint32_t*) valuesPtr );
+
+	// Save calibration values local
+	memcpy ( &m1V_OctCalibrationValues, valuesPtr, sizeof ( t1V_OctCalibrationValues ) );
 
 }
 

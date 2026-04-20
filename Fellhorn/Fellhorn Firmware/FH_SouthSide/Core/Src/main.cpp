@@ -211,7 +211,7 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
-  MPU_Config();
+   MPU_Config();
 
   /* Enable the CPU Cache */
 
@@ -1209,16 +1209,11 @@ void StartDefaultTask(void *argument)
 	if ( res != pdPASS )
 		CN_ReportFault ( eErrorCodes::UI_ThreadError );
 
-
 	osDelay ( pdMS_TO_TICKS ( 100 ) );
 
-	// Synthesizer parameters
-    static CasualNoises::sSynthesiserParams synthParams;
-	synthParams.frequency = 220.0f;
-
 	// Create an audio thread and run it
-	static CasualNoises::SouthSideAudioProcessor* audioProcessorPtr = CasualNoises::SouthSideAudioProcessor::getSouthSideAudioProcessor ();
-	audioProcessorPtr->prepareToPlay(SAMPLE_FREQUENCY, NUM_SAMPLES, &synthParams);
+	CasualNoises::SouthSideAudioProcessor* audioProcessorPtr = CasualNoises::SouthSideAudioProcessor::getSouthSideAudioProcessor ();
+	audioProcessorPtr->prepareToPlay ( SAMPLE_FREQUENCY, NUM_SAMPLES );
 
 	// Start NerveNet slave thread connection to the North Side
 	uint32_t performanceResult = 0;
