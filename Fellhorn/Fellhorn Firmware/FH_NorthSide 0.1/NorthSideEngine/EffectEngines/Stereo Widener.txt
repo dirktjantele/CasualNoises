@@ -1,0 +1,95 @@
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
+class StereoWidener
+{
+public:
+    StereoWidener(float sampleRate,
+                  float delayMs = 15.0f,  // 5–30 ms is typical
+                  float mix = 0.5f)       // 0 = mono, 1 = fully wide
+        : mSampleRate(sampleRate)
+        , mDelayMs(delayMs)
+        , mMix(mix)
+    {
+        setDelayTime(delayMs);
+    }
+
+    void setDelayTime(float delayMs)
+    {
+        mDelayMs = delayMs;
+        const int maxDelaySamples = static_cast<int>(mSampleRate * 0.05f); // 50 ms safety
+        mDelaySamples = std::min(
+            static_cast<int>(mSampleRate * (mDelayMs / 1000.0f)),
+            maxDelaySamples
+        );
+
+        mDelayBuffer.assign(maxDelaySamples + 1, 0.0f);
+        mWriteIndex = 0;
+    }
+
+    void setMix(float mix)
+    {
+        mMix = std::clamp(mix, 0.0f, 1.0f);
+    }
+
+    // in:  mono input buffer of n samples
+    // outL, outR: stereo output buffers of n samples each
+    void process(const float* in, float* outL, float* outR, int n)
+    {
+        if (!in || !outL || !outR || n <= 0)
+            return;
+
+        const float dryGain = 1.0f - mMix;
+        const float wetGain = mMix;
+
+        const int bufferSize = static_cast<int>(mDelayBuffer.size());
+
+        for (int i = 0; i < n; ++i)
+        {
+            const float inputSample = in[i];
+
+            // Write current sample into delay buffer
+            mDelayBuffer[mWriteIndex] = inputSample;
+
+            // Compute read index for delayed sample
+            int readIndex = mWriteIndex - mDelaySamples;
+            if (readIndex < 0)
+                readIndex += bufferSize;
+
+            const float delayedSample = mDelayBuffer[readIndex];
+
+            // Left: mostly dry
+            outL[i] = dryGain * inputSample + wetGain * inputSample;
+
+            // Right: dry + delayed
+            outR[i] = dryGain * inputSample + wetGain * delayedSample;
+
+            // Advance write index
+            mWriteIndex++;
+            if (mWriteIndex >= bufferSize)
+                mWriteIndex = 0;
+        }
+    }
+
+private:
+    float mSampleRate = 44100.0f;
+    float mDelayMs    = 15.0f;
+    float mMix        = 0.5f;
+
+    int   mDelaySamples = 0;
+    int   mWriteIndex   = 0;
+    std::vector<float> mDelayBuffer;
+};
+
+use
+___
+
+// Example usage in your audio processing code:
+StereoWidener widener(48000.0f, 15.0f, 0.6f);
+
+// inside your audio callback / process block:
+void processBlock(const float* monoIn, float* leftOut, float* rightOut, int numSamples)
+{
+    widener.process(monoIn, leftOut, rightOut, numSamples);
+}
