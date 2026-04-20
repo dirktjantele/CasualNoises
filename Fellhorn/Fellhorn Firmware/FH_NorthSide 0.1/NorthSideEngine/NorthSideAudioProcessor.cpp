@@ -16,6 +16,15 @@
 
 #include "SynthEngineMessage.h"
 
+#include "TLV_Definitions.h"
+#include "Threads/TLV_DriverThread.h"
+
+#include "Core/Maths/MathsFunctions.h"
+
+#include "CommonUtilities.h"
+
+#include "YellowPages.h"
+
 #include "Utilities/ReportFault.h"
 
 namespace CasualNoises
@@ -35,25 +44,36 @@ sControlVoltages gControlVoltages;
 NorthSideAudioProcessor	NorthSideAudioProcessor::mNorthSideAudioProcessor;
 bool					NorthSideAudioProcessor::mIsAllocated = false;
 
+
 //==============================================================================
-//          prepareToPlay
+//          prepareToPlay ()
 //
-// this method is called before the first call to processBlock()
+// This method is called before the first call to processBlock() only once
 //
 //  CasualNoises    04/12/2024  First implementation
-//  CasualNoises    14/12/2024  Passing synthesiser params structure
+//  CasualNoises    14/12/2024  Passing synthesizer params structure
 //	CasualNoises    10/03/2025  Adapted for Fellhorn
+//  CasualNoises    20/04/2026  mAveragesPtrs added
 //==============================================================================
 void NorthSideAudioProcessor::prepareToPlay (
 		float sampleRate,
 		uint32_t maximumExpectedSamplesPerBlock )
 {
 
+	// Used to calculate average ADC data
+	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
+	{
+		mAveragesPtrs [ i ] = new Average <float> ( 10 );
+	}
+
 	// store settings
 	mSampleRate 					= sampleRate;
 	mMaximumExpectedSamplesPerBlock = maximumExpectedSamplesPerBlock;
 
-	mEffectEnginePtr = new Echo;			// ToDo create an effect according to ...
+	// Load initial calibration values
+	loadCalibrationValues ();
+
+	mEffectEnginePtr = new Echo;															// ToDo create an effect according to ...
 	mEffectEnginePtr->prepareToPlay ( sampleRate, maximumExpectedSamplesPerBlock );
 	gAbstractEffectEnginePtr = mEffectEnginePtr;
 
@@ -66,9 +86,16 @@ void NorthSideAudioProcessor::prepareToPlay (
 //
 //  CasualNoises    04/12/2024  First implementation
 //	CasualNoises    13/03/2026  Adapted for Fellhorn
+//  CasualNoises    20/04/2026  mAveragesPtrs added
 //==============================================================================
 void NorthSideAudioProcessor::releaseResources()
 {
+	// Delete average calculators
+	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
+	{
+		if ( mAveragesPtrs [ i ] != nullptr ) delete mAveragesPtrs [ i ];
+	}
+
 	mEffectEnginePtr->releaseResources ();
 }
 
@@ -81,7 +108,7 @@ void NorthSideAudioProcessor::releaseResources()
 //==============================================================================
 void NorthSideAudioProcessor::processNerveNetData ( uint32_t threadNo, uint32_t size, uint8_t* ptr )
 {
-	// Not used on the north side firmware
+	// This is handled by the DeviceBoardConnection
 }
 
 //==============================================================================
@@ -111,16 +138,24 @@ void NorthSideAudioProcessor::processBlock (
 }
 
 //==============================================================================
-//          handle_ADC_Data
+//          handle_ADC_Data ()
 //
 // Handle new adc data:
-//	1 V/OCT
-//	CV1 - CV3
+//	1 V/OCT on CV1 & CV2
+//	CV1 - CV7
 //
 //	CasualNoises    27/07/2025  NerveNet support added
+//	CasualNoises    20/04/2026  mAveragesPtrs added
 //==============================================================================
-void NorthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr )
+void NorthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr ) noexcept
 {
+	setTimeMarker_1 ();
+
+	// Get average values
+	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
+	{
+		adcDataPtr [ i ] = mAveragesPtrs [ i ]->nextAverage( adcDataPtr [ i ] );
+	}
 
 	// Save unnormalized values
 	gControlVoltages._1V_OCT_1	= static_cast<float>( ( int16_t ) adcDataPtr[0] );
@@ -131,8 +166,63 @@ void NorthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* 
 		gControlVoltages.CV_Inputs [ i ] = f;
 	}
 
+	// Normalize voltages against the calibration results
+	sControlVoltages controlVoltages;
+	controlVoltages._1V_OCT_1 = normalize1V_OCT ( adcDataPtr [ 0 ], m1V_OctCalibrationValuesLoaded, m1V_OctCalibrationValues );
+	controlVoltages._1V_OCT_2 = normalize1V_OCT ( adcDataPtr [ 1 ], m1V_OctCalibrationValuesLoaded, m1V_OctCalibrationValues );
+	for (uint32_t i = 0; i < NUM_CV_INPUTS; ++i)
+	{
+		controlVoltages.CV_Inputs [ i ] = normalizeCV_Input ( adcDataPtr[i + 2], i, mCV_CalibrationValuesLoaded, mCV_CalibrationValues );
+	}
+
 	// Apply voltages
-	mEffectEnginePtr->applyControlVoltages ( noOfEntries, adcDataPtr );
+	if ( mEffectEnginePtr != nullptr )
+		mEffectEnginePtr->applyControlVoltages ( &controlVoltages );
+
+	resetTimeMarker_1 ();
+}
+
+//==============================================================================
+//          loadCalibrationValues ()
+//
+//	CasualNoises    20/04/2026  NerveNet support added
+//==============================================================================
+void NorthSideAudioProcessor::loadCalibrationValues ( bool reload ) noexcept
+{
+
+	if ( ( ! m1V_OctCalibrationValuesLoaded ) || reload )
+	{
+		uint32_t length = readTLV_TagBytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
+											 (uint32_t)eTLV_Tag::_1V_OCT_CalibrationValues,
+											 sizeof ( t1V_OctCalibrationValues ),
+											 ( uint32_t* ) &m1V_OctCalibrationValues );
+		if ( length == 0 )
+		{
+			for ( uint32_t i = 0; i <  cTotalNoOfNotes; ++ i )
+			{
+				m1V_OctCalibrationValues [ i ] = jmap ( ( float ) i, 0.0f, (float) ( cTotalNoOfNotes - 1 ), 0.0f, 65535.0f );
+			}
+		}
+		m1V_OctCalibrationValuesLoaded = true;
+	}
+
+	if ( ( ! mCV_CalibrationValuesLoaded ) || reload )
+	{
+		uint32_t length = readTLV_TagBytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
+											 (uint32_t)eTLV_Tag::CV_CalibrationValues,
+											 sizeof ( tCV_CalibrationValues ),
+											 ( uint32_t* ) &mCV_CalibrationValues );
+		if ( length == 0 )
+		{
+			for ( uint32_t i = 0; i <  TOTAL_NUM_CV_INPUTS; ++ i )
+			{
+				mCV_CalibrationValues.openInputValues 	 [ i ] =  0.0f;
+				mCV_CalibrationValues.min5V_InputValues  [ i ] = -1.0f;
+				mCV_CalibrationValues.plus5V_InputValues [ i ] =  1.0f;
+			}
+		}
+		mCV_CalibrationValuesLoaded = true;
+	}
 
 }
 

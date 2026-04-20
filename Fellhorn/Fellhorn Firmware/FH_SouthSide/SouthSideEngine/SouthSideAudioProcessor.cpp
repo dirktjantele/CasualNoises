@@ -54,12 +54,14 @@ bool					SouthSideAudioProcessor::mIsAllocated = false;
 // this method is called before the first call to processBlock()
 //
 //  CasualNoises    13/07/2025  First implementation
+//  CasualNoises    20/04/2026  mAveragesPtrs added
 //==============================================================================
 void SouthSideAudioProcessor::prepareToPlay (
 		float sampleRate,
 		uint32_t maximumExpectedSamplesPerBlock )
 {
 
+	// Used to calculate average ADC data
 	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
 	{
 		mAveragesPtrs [ i ] = new Average <float> ( 10 );
@@ -79,10 +81,12 @@ void SouthSideAudioProcessor::prepareToPlay (
 // This method is called after the last call to processBlock()
 //
 //  CasualNoises    13/07/2025  First implementation
+//  CasualNoises    20/04/2026  mAveragesPtrs added
 //==============================================================================
 void SouthSideAudioProcessor::releaseResources()
 {
 
+	// Delete average calculators
 	for ( uint32_t i = 0; i < TOTAL_NUM_CV_INPUTS; ++i )
 	{
 		if ( mAveragesPtrs [ i ] != nullptr ) delete mAveragesPtrs [ i ];
@@ -162,15 +166,14 @@ void SouthSideAudioProcessor::processNerveNetData (
 }
 
 //==============================================================================
-//          initSynthEngine ()
+//          loadCalibrationValues ()
 //
-//	CasualNoises    18/04/2026  First implementation
+//	CasualNoises    20/04/2026  NerveNet support added
 //==============================================================================
-void SouthSideAudioProcessor::initSynthEngine () noexcept
+void SouthSideAudioProcessor::loadCalibrationValues ( bool reload ) noexcept
 {
 
-	// Load calibration values
-	if ( ! m1V_OctCalibrationValuesLoaded )
+	if ( ( ! m1V_OctCalibrationValuesLoaded ) || reload )
 	{
 		uint32_t length = readTLV_TagBytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
 											 (uint32_t)eTLV_Tag::_1V_OCT_CalibrationValues,
@@ -186,13 +189,45 @@ void SouthSideAudioProcessor::initSynthEngine () noexcept
 		m1V_OctCalibrationValuesLoaded = true;
 	}
 
+	if ( ( ! mCV_CalibrationValuesLoaded ) || reload )
+	{
+		uint32_t length = readTLV_TagBytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
+											 (uint32_t)eTLV_Tag::CV_CalibrationValues,
+											 sizeof ( tCV_CalibrationValues ),
+											 ( uint32_t* ) &mCV_CalibrationValues );
+		if ( length == 0 )
+		{
+			for ( uint32_t i = 0; i <  TOTAL_NUM_CV_INPUTS; ++ i )
+			{
+				mCV_CalibrationValues.openInputValues 	 [ i ] =  0.0f;
+				mCV_CalibrationValues.min5V_InputValues  [ i ] = -1.0f;
+				mCV_CalibrationValues.plus5V_InputValues [ i ] =  1.0f;
+			}
+		}
+		mCV_CalibrationValuesLoaded = true;
+	}
+
+}
+//==============================================================================
+//          initSynthEngine ()
+//
+//	CasualNoises    18/04/2026  First implementation
+//==============================================================================
+void SouthSideAudioProcessor::initSynthEngine () noexcept
+{
+	loadCalibrationValues ();
 }
 
 //==============================================================================
 //          handle_ADC_Data ()
 //
+// Handle new adc data:
+//	1 V/OCT on CV1 & CV2
+//	CV1 - CV7
+//
 //	CasualNoises    02/02/2026  First implementation
 //	CasualNoises    03/04/2026  Save unnormalized data
+//	CasualNoises    20/04/2026  mAveragesPtrs added
 //==============================================================================
 void SouthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr )
 {
@@ -219,7 +254,7 @@ void SouthSideAudioProcessor::handle_ADC_Data ( uint32_t noOfEntries, uint16_t* 
 	controlVoltages._1V_OCT_2 = normalize1V_OCT ( adcDataPtr [ 1 ], m1V_OctCalibrationValuesLoaded, m1V_OctCalibrationValues );
 	for (uint32_t i = 0; i < NUM_CV_INPUTS; ++i)
 	{
-		controlVoltages.CV_Inputs [ i ] = normalizeCV_Input ( adcDataPtr[i + 2] );
+		controlVoltages.CV_Inputs [ i ] = normalizeCV_Input ( adcDataPtr[i + 2], i, mCV_CalibrationValuesLoaded, mCV_CalibrationValues );
 	}
 
 	// Apply the normalized values on the current engine
