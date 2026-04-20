@@ -48,12 +48,8 @@ typedef struct
 	bool			gEventHandlerThreadRunning = false;
 
 	// Info about the TLV driver thread
-//	TaskHandle_t 	gTLV_DriverThreadTaskHandle;
 	QueueHandle_t	gTLV_DriverThreadQueueHandle;
 	bool			gTLV_DriverThreadThreadRunning = false;
-
-	// Pointer to the TLV driver
-//	TLV_Driver*		gTLV_DriverPtr = nullptr;						// ToDo remove this line
 
 } tYellowPages;
 
