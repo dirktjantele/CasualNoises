@@ -60,9 +60,9 @@ _1V_OctCalibrationPage::_1V_OctCalibrationPage (
 	mNoteSelectionPtr->onChange = [this] { onNoteSelectionChange(); };
 
 	// Continuation instructions
-	mContLabelPtr = new Label ( "'>' to proceed" );
+	mContLabelPtr = new Label ( "Press 'Save'" );
 	mContLabelPtr->setJustification ( eJustificationFlags::centred );
-	addChildComponent ( mContLabelPtr );
+	addAndMakeVisible ( mContLabelPtr );
 
 	// Display CV levels
 	mLevelBarPtr = new LevelBar ( "LevelBar" );
@@ -70,7 +70,7 @@ _1V_OctCalibrationPage::_1V_OctCalibrationPage (
 	addAndMakeVisible ( mLevelBarPtr );
 
 	// Start timer
-	startTimer();
+	startTimer ();
 
 }
 
@@ -84,18 +84,18 @@ _1V_OctCalibrationPage::~_1V_OctCalibrationPage()
 }
 
 //==============================================================================
-//          onNoteSelectionChange()
+//          onNoteSelectionChange ()
 //
 //  CasualNoises    14/04/2026  First implementation
 //==============================================================================
-void _1V_OctCalibrationPage::onNoteSelectionChange() noexcept
+void _1V_OctCalibrationPage::onNoteSelectionChange () noexcept
 {
 	int32_t selection = mNoteSelectionPtr->getCurrentSelection();
 	float target = jmap ( (float) selection,
 						  (float) mNoteSelectionPtr->getMinSelection (),
 						  (float) mNoteSelectionPtr->getMaxSelection (),
 						  -1.0f, 1.0f );
-	mLevelBarPtr->setTargetLevel( target );
+	mLevelBarPtr->setTargetLevel ( target );
 }
 
 //==============================================================================
@@ -220,6 +220,14 @@ bool _1V_OctCalibrationPage::handleLocalUI_event (
 		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::SAVE_SWITCH ) &&
 		 canProceseed )
 	{
+
+		// Update range
+		float average = (mCurrentNorthSideLevel + mCurrentSouthSideLevel) / 2.0f;
+		if ( average > mMaxCalibrationValue )
+			mMaxCalibrationValue = average;
+		if ( average < mMinCalibrationValue )
+			mMinCalibrationValue = average;
+
 		uint32_t selection = mNoteSelectionPtr->getCurrentSelection ();
 		mNorthSideCalbrationLevels [ selection ] = mCurrentNorthSideLevel;
 		mSouthSideCalbrationLevels [ selection ] = mCurrentSouthSideLevel;
@@ -228,16 +236,16 @@ bool _1V_OctCalibrationPage::handleLocalUI_event (
 		if ( ( mMaxCalibrationValue - mMinCalibrationValue ) > ( 65535.0f / 5.2f ) )
 		{
 			setSwitchLed ( eLED_BitNums::SWITCH_3 );
-			mContLabelPtr->setVisible( true );
+			mContLabelPtr->setText( "Press '>'" );
 			readyToExit = true;
 		}
 	}
 
 	// Proceed to next step
-//	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
-//		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::RIGTH_ARROW_SWITCH ) &&
-//		 readyToExit )
-//	{
+	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
+		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::RIGTH_ARROW_SWITCH ) &&
+		 readyToExit )
+	{
 
 		// Compose calibration table
 		composeCalibrationTable ();
@@ -258,7 +266,10 @@ bool _1V_OctCalibrationPage::handleLocalUI_event (
 		if ( ! success )
 			CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 
-//	}
+		mContLabelPtr->setText( "Press 'Exit'" );
+		readyToExit = false;
+
+	}
 
 	return false;
 
@@ -284,11 +295,12 @@ void _1V_OctCalibrationPage::processData (
 		mCurrentSouthSideLevel = average;
 
 	// Update range
+/*
 	if ( average > mMaxCalibrationValue )
 		mMaxCalibrationValue = average;
 	if ( average < mMinCalibrationValue )
 		mMinCalibrationValue = average;
-
+*/
 	// Update level bar
 	float level = jmap ( average, 0.0f, 65535.0f, -1.0f, 1.0f );
 	mLevelBarPtr->setLevels ( level );

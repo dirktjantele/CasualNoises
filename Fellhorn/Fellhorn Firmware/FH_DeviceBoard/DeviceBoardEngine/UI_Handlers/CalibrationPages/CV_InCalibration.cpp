@@ -217,8 +217,6 @@ bool CV_CalibrationPage::handleLocalUI_event (
 				break;
 			case eCV_CalibrationPhase::confirm:
 				{
-					setTimeMarker_4 ();
-
 					mNorthSideSettings.header.sourceID		= eNerveNetSourceId::FellhornDeviceBoard;
 					mNorthSideSettings.header.destinationID	= eNerveNetSourceId::FellhornNorthSide;
 					mNorthSideSettings.header.messageTag	= (uint32_t)eSynthEngineMessageType::ADC_CalibrationData;
@@ -234,8 +232,6 @@ bool CV_CalibrationPage::handleLocalUI_event (
 					if ( ! success )
 						CN_ReportFault(eErrorCodes::NerveNetThread_Error);
 					mCurrentPhase = eCV_CalibrationPhase::exit;
-
-					resetTimeMarker_4 ();
 				}
 				break;
 			case eCV_CalibrationPhase::exit:
