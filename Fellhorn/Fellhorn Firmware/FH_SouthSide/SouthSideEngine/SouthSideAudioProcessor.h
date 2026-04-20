@@ -18,6 +18,8 @@
 
 #include "SynthEngineMessage.h"
 
+#include "TLV_Definitions.h"
+
 #include "Utilities/ReportFault.h"
 
 #include "NerveNet/NerveNetMessage.h"
@@ -70,6 +72,8 @@ public:
 
 	void 	handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr );
 
+	void	loadCalibrationValues ( bool reload = false ) noexcept;
+
 private:
 
 	// Access locker
@@ -83,6 +87,9 @@ private:
 
 	bool							m1V_OctCalibrationValuesLoaded	{ false };
 	float 							m1V_OctCalibrationValues 		[ cTotalNoOfNotes ] { 0.0f };
+
+	bool							mCV_CalibrationValuesLoaded		{ false };
+	tCV_CalibrationValues			mCV_CalibrationValues;
 
 	void handleRequestSetupInfo ( uint32_t threadNo ) const noexcept;
 	void handleADC_DataRequest  ( uint32_t threadNo ) const noexcept;

@@ -14,13 +14,15 @@
 
 #include "SynthEngineMessage.h"
 
+#include "TLV_Definitions.h"
+
 namespace CasualNoises
 {
 
 //==============================================================================
 //          normalize1V_OCT
 //
-// Convert 1V/OCT ADC values into a voltage											ToDo: use calibration settings
+// Convert 1V/OCT ADC values into a voltage
 // In: 	0 <= value <= 65535.0f
 // Out: 0 <= out   <= 10.0f
 //
@@ -52,14 +54,30 @@ inline float normalize1V_OCT (
 //==============================================================================
 //          normalizeCV_Input
 //
-// Convert a CV ADC values into a range from -1.0 to 1.0							ToDo: use calibration settings
+// Convert a CV ADC values into a range from -1.0 to 1.0
 //
 //	CasualNoises    11/03/2026  First implementation
 //==============================================================================
-inline float normalizeCV_Input ( uint16_t value )
+inline float normalizeCV_Input (
+		uint16_t value,
+		uint32_t index,
+		bool calibrationLoaded,
+		tCV_CalibrationValues& calibration )
 {
-	float volts = ( (float) value * 2 ) / 65535.0f;
-	return 1.0f - volts;
+
+	float volts = 1.0f - ( ( (float) value * 2 ) / 65535.0f );
+	if ( calibrationLoaded )
+	{
+		if ( volts <= calibration.openInputValues [ index ] )
+		{
+			volts /= calibration.min5V_InputValues [ index ] * -1.0f;
+		} else
+		{
+			volts /= calibration.plus5V_InputValues [ index ];
+		}
+	}
+
+	return volts;
 }
 
 

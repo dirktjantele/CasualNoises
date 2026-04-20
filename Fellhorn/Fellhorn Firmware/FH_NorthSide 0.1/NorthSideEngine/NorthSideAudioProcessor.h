@@ -17,6 +17,12 @@
 #include "AudioProcessors/Processors/AudioProcessor.h"
 #include "Threads/ADC_Thread.h"
 
+#include "Core/Maths/Average.h"
+
+#include "SynthEngineMessage.h"
+
+#include "TLV_Definitions.h"
+
 #include "Utilities/ReportFault.h"
 
 namespace CasualNoises
@@ -24,7 +30,9 @@ namespace CasualNoises
 
 //class NorthSideAudioProcessor
 class AbstractEffectEngine;
-class NorthSideAudioProcessor : public AudioProcessor, public ADC_DataHandler
+class NorthSideAudioProcessor :
+		public AudioProcessor,
+		public ADC_DataHandler
 {
 public:
 	 NorthSideAudioProcessor() = default;
@@ -58,7 +66,9 @@ public:
 		void 	processNerveNetData ( uint32_t threadNo, uint32_t size, uint8_t* ptr ) 		noexcept override;
 		void 	processBlock ( AudioBuffer* buffer, AudioBuffer* inputBuffer ) 				noexcept override;
 
-		void 	handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr );
+		void 	handle_ADC_Data ( uint32_t noOfEntries, uint16_t* adcDataPtr ) noexcept;
+
+		void	loadCalibrationValues ( bool reload = false ) noexcept;
 
 private:
 
@@ -70,6 +80,14 @@ private:
 		uint32_t						mMaximumExpectedSamplesPerBlock { 0 };
 
 		AbstractEffectEngine*			mEffectEnginePtr				{ nullptr };
+
+		Average<float>*					mAveragesPtrs [ TOTAL_NUM_CV_INPUTS ] { nullptr };
+
+		bool							m1V_OctCalibrationValuesLoaded	{ false };
+		float 							m1V_OctCalibrationValues 		[ cTotalNoOfNotes ] { 0.0f };
+
+		bool							mCV_CalibrationValuesLoaded		{ false };
+		tCV_CalibrationValues			mCV_CalibrationValues;
 
 };
 

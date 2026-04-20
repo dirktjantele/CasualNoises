@@ -25,12 +25,15 @@ namespace CasualNoises
 {
 
 class NerveNetSlaveThread;
+class NorthSideAudioProcessor;
 
-class DeviceBoardConnection final : public NerveNetSlaveProcessor
+class DeviceBoardConnection final :
+	public NerveNetSlaveProcessor
 {
 public:
-	 DeviceBoardConnection() = default;
-	~DeviceBoardConnection() = default;
+	 DeviceBoardConnection () = delete;
+	 DeviceBoardConnection ( NorthSideAudioProcessor* audioProcessorPtr );
+	~DeviceBoardConnection () = default;
 
 	void processNerveNetData ( uint32_t threadNo, uint32_t size, uint8_t* ptr ) override;
 
@@ -40,6 +43,8 @@ private:
 	void handleADC_DataRequest 			( NerveNetSlaveThread* nerveNetThreadPtr ) const noexcept;
 	void handleADC_CalibrationData 		( tInitMessage* messagePtr ) 			   const noexcept;
 	void handle_1V_OCT_CalibrationData	( tInitMessage* messagePtr ) 			   const noexcept;
+
+	NorthSideAudioProcessor* mAudioProcessorPtr		{ nullptr };
 
 };
 

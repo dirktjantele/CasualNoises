@@ -17,6 +17,8 @@
 
 #include "DeviceBoardConnection.h"
 
+#include "NorthSideAudioProcessor.h"
+
 #include "EffectEngines/AbstractEffectEngine.h"
 
 #include "NerveNet/NerveNetSlaveThread.h"
@@ -32,6 +34,16 @@
 
 namespace CasualNoises
 {
+
+//==============================================================================
+//          DeviceBoardConnection()
+//
+//  CasualNoises    20/04/2026  First implementation
+//==============================================================================
+DeviceBoardConnection::DeviceBoardConnection ( NorthSideAudioProcessor* audioProcessorPtr ) :
+		mAudioProcessorPtr ( audioProcessorPtr )
+{
+}
 
 //==============================================================================
 //          processNerveNetData()
@@ -164,6 +176,9 @@ void DeviceBoardConnection::handleADC_CalibrationData ( tInitMessage* messagePtr
 	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
 			(uint32_t)eTLV_Tag::CV_CalibrationValues, sizeof ( tCV_CalibrationValues ), (uint32_t*) &values );
 
+	// Update calibration values
+	mAudioProcessorPtr->loadCalibrationValues( true );
+
 }
 
 //==============================================================================
@@ -181,6 +196,9 @@ void DeviceBoardConnection::handle_1V_OCT_CalibrationData ( tInitMessage* messag
 	// Save calibration values to the flash memory
 	updateTLV_Bytes ( gYellowPages.gTLV_DriverThreadQueueHandle,
 			(uint32_t)eTLV_Tag::_1V_OCT_CalibrationValues, sizeof ( t1V_OctCalibrationValues ), (uint32_t*) valuesPtr );
+
+	// Update calibration values
+	mAudioProcessorPtr->loadCalibrationValues( true );
 
 }
 

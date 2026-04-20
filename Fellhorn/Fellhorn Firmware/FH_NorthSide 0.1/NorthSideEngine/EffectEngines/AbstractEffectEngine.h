@@ -31,7 +31,6 @@ public:
 	~AbstractEffectEngine() = default;
 
 	virtual void applyControlVoltages ( sControlVoltages* voltages ) = 0;
-	virtual void applyControlVoltages (  uint32_t noOfEntries, uint16_t* adcDataPtr  ) final;
 
 	virtual void processNerveNetMessage ( tInitMessage* messagePtr ) final;
 	virtual void applyPotentiometerValue ( ePotentioMeterId potId, float value ) = 0;
