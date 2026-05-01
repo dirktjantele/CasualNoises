@@ -66,10 +66,12 @@ public:
 	//
 	//  CasualNoises    06/12/2024  First implementation
 	//==============================================================================
-	virtual void setFrequency(float frequency) noexcept
+	virtual void setFrequency( float frequency ) noexcept
 	{
+		if ( frequency >= mSampleRate / 2.0f )
+			frequency = mSampleRate / 2.0f;
 		mFrequency	= frequency;
-		mStep 		= (mFrequency / mSampleRate) * mWaveLength;
+		mStep 		= ( mFrequency / mSampleRate ) * mWaveLength;
 	}
 
 	//==============================================================================
