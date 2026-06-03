@@ -52,7 +52,7 @@ ProgressBar::~ProgressBar()
 //
 //  CasualNoises    29/12/2025  First implementation
 //==============================================================================
-void ProgressBar::paint(Graphics& g)
+void ProgressBar::paint(Graphics& g) noexcept
 {
 
 	// Outer bounds

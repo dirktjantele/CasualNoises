@@ -13,6 +13,7 @@
 #include "AudioBuffer.h"
 
 #include "Utilities/ReportFault.h"
+
 #include "maths.h"
 
 namespace CasualNoises

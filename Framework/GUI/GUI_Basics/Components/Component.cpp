@@ -34,12 +34,12 @@ Component::Component ( String name ) :
 //
 //  CasualNoises    24/12/2025  First implementation
 //==============================================================================
-void Component::setBounds ( int32_t x, int32_t y, int32_t w, int32_t h )
+void Component::setBounds ( int32_t x, int32_t y, int32_t w, int32_t h ) noexcept
 {
 	mLocalBounds.setBounds ( x, y, w, h );
 }
 
-void Component::setBounds ( Rectangle<int32_t> bounds )
+void Component::setBounds ( Rectangle<int32_t> bounds ) noexcept
 {
 	mLocalBounds.setBounds ( bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight() );
 }

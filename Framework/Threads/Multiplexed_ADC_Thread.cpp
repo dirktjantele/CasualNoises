@@ -157,6 +157,7 @@ void multiplexed_ADC_Thread ( void* pvParameters )
 	gNoOfMultiplexers			= arguments->noOfMultiplexers;
 	gSignatures					= arguments->multiplexerSignatureArray;
 	QueueHandle_t clientQueue 	= arguments->clientQueue;
+	sLogicalPotChannelNums* logicalPotChannelNums = arguments->logicalPotChannelNumsArray;
 
 	// Register a callback for the multiplexed adc
 	add_ADC_ConvCpltCallback(multiplexed_ADC_ConvCpltCallback);
@@ -230,6 +231,8 @@ void multiplexed_ADC_Thread ( void* pvParameters )
 						event.multiplexerChannelNo	= j;
 						event.value					= gAverageAdcData[i][j];
 						event.deviation				= dev;
+						eLogicalPotId potId			= logicalPotChannelNums [ event.multiplexerNo ].logicalPotIds [ event.multiplexerChannelNo ];
+						event.logicalPotId			= potId;
 						UBaseType_t count = uxQueueSpacesAvailable ( clientQueue );
 						while ( count == 0 )
 						{

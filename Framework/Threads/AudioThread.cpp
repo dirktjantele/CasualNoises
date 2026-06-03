@@ -38,7 +38,7 @@ void AudioThread ( void* pvParameters )
 	AudioProcessorPlayer* player = AudioProcessorPlayer::getAudioProcessorPlayer ( params->audioProcessorPtr );
 	I2S_HandleTypeDef* ptr = static_cast<I2S_HandleTypeDef*> ( params->hi2sHandlePtr );
 	player->sethi2sHandlePtr ( ptr );
-	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = params->nerveNetCallBackPtr;
+//	void (**nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = params->nerveNetCallBackPtr;
 	player->runAudioProcessor( audioBufferPtr );
 
 	// We should never come here

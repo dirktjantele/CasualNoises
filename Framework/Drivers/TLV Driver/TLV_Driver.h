@@ -18,7 +18,7 @@
 
 namespace CasualNoises {
 
-const uint32_t			cMagicCode 		= 0x20260417;		// Current date
+const uint32_t			cMagicCode 		= 0x20260601;		// Current date
 const uint32_t			cFreeTLV_Tag 	= 0x65657246;		// "Free"
 
 /*
@@ -30,7 +30,7 @@ public:
 	TLV_Driver() = delete;
 	TLV_Driver(NVM_Driver* inNVM_DriverPtr);
 
-	bool isDriverReady() { return mNVM_DriverPtr->isDriverReady(); }
+	bool 		isDriverReady() 	{ return mNVM_DriverPtr->isDriverReady(); }
 
 	void		flushCache ()		{ mNVM_DriverPtr->flushSectorCache (); };
 

@@ -32,12 +32,12 @@ public:
 	 LabelGroup ( String name );
 	~LabelGroup ();
 
-	void addLabel ( Label* label );
-	void addLabel ( std::string text, eJustificationFlags flags = eJustificationFlags::left );
+	void addLabel ( Label* label ) noexcept;
+	void addLabel ( std::string text, eJustificationFlags flags = eJustificationFlags::left ) noexcept;
 
-	void takeOwnership ( bool flag )	{ mDeleteElements = flag; }
+	void takeOwnership ( bool flag ) noexcept	{ mDeleteElements = flag; }
 
-	uint32_t getHeight ();
+	uint32_t getHeight () noexcept;
 
 	virtual void setBounds ( int32_t x, int32_t y, int32_t w, int32_t h ) noexcept override;
 	virtual void setBounds ( Rectangle<int32_t> bounds ) noexcept override

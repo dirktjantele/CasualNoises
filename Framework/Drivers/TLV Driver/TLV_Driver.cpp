@@ -33,7 +33,7 @@ TLV_Driver::TLV_Driver(NVM_Driver* inNVM_DriverPtr) :
 	{
 
 		// Erase all devices if magic was not found
-//		mNVM_DriverPtr->eraseAllDevices();
+		mNVM_DriverPtr->eraseAllDevices();
 
 		// Initialize NVM / create first free TLV
 		(*mNVM_DriverPtr)[0] = cMagicCode;

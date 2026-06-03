@@ -37,7 +37,7 @@ Box::Box ( String name ) :
 //
 //  CasualNoises    29/12/2025  First implementation
 //==============================================================================
-void Box::paint ( Graphics& g )
+void Box::paint ( Graphics& g ) noexcept
 {
 	SSD1309_Driver* screen = g.getScreen ();
 	Rectangle<int32_t> bounds = getLocalBounds ();
@@ -68,7 +68,7 @@ IndexBox::IndexBox ( String name, uint8_t noOfTabs, uint8_t currentTab ) :
 //
 //  CasualNoises    09/01/2026  First implementation
 //==============================================================================
-void IndexBox::paint ( Graphics& g )
+void IndexBox::paint ( Graphics& g ) noexcept
 {
 	Box::paint ( g );
 	SSD1309_Driver* screen = g.getScreen ();

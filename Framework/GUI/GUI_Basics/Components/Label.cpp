@@ -99,7 +99,7 @@ bool isJustificationSet ( eJustificationFlags flags, eJustificationFlags flag)
 //
 //  CasualNoises    04/01/2026  First implementation
 //==============================================================================
-void Label::paint ( Graphics& g )
+void Label::paint ( Graphics& g ) noexcept
 {
 
 	// Is component resized?
@@ -152,17 +152,17 @@ void Label::paint ( Graphics& g )
 
 	// Paint all text lines
 	uint32_t y = bounds.getY();
-	char* charPtr = mLabelText.getStringPtr ();
+	const char* charPtr = mLabelText.getStringPtr ();
 	SSD1309_Driver* screen = g.getScreen ();
 	for ( uint32_t i = 0; i < lines; ++i )
 	{
 		uint32_t x = bounds.getX ();
 		screen->drawText ( x, y, charPtr, mFontPtr );
 		y += mFontPtr->height + 1;
-		char* ptr = charPtr;
+//		const char* ptr = charPtr;
 		charPtr += strlen ( charPtr ) + 1;
 		if (i < ( lines - 1 ) )
-			ptr[strlen(ptr)] = 0x0a;		// Rejoin strings again
+			mLabelText [ strlen( mLabelText.getStringPtr() ) ] = 0x0a;
 	}
 
 }

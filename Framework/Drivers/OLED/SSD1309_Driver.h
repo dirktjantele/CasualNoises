@@ -2,7 +2,8 @@
   ==============================================================================
 
     SSD1309_Driver.h
-    Created: 25 Dec 2024
+    Created: 25/12/2024
+
     Author:  Dirk Tjantele
 
   ==============================================================================
@@ -12,23 +13,18 @@
 
 #pragma once
 
-#include <math.h>
+#include "Core/Text/String.h"
+#include "Graphics/Fonts/Font.h"
+#include "Graphics/Geometry/Rectangle.h"
 
-//#include "CasualNoises.h"
-#include <Core/Text/String.h>
-#include <Graphics/Fonts/Font.h>
-//#include <Graphics/Geometry/Rectangle.h>
-#include "../../Graphics/Geometry/Rectangle.h"
-#include "maths.h"
+#include "Graphics/Utilities/ScreenSaver.h"
 
-//#include "CasualNoises.h"
+#include "Utilities/TimerBase.h"
 
-#include "main.h"
+#include "SystemConfig.h"
 
 namespace CasualNoises
 {
-
-//class Rectangle<int32_t>;
 
 //==============================================================================
 //          SSD1309_ConfigData
@@ -64,7 +60,7 @@ enum class eBitOperations
 //  CasualNoises    25/12/2024  First implementation
 //  CasualNoises    13/12/2025  Made it more generic for Fellhorn rev 2
 //==============================================================================
-class SSD1309_Driver final
+class SSD1309_Driver final : private TimerBase
 {
 public:
 
@@ -74,9 +70,11 @@ public:
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
 	SSD1309_Driver() = delete;
-	SSD1309_Driver(sSSD1309_ConfigData *configDataPtr)
-	: mConfigDataPtr (configDataPtr)
+	SSD1309_Driver(sSSD1309_ConfigData *configDataPtr) :
+		TimerBase ( "ScreenSaver", 1000 ),
+		mConfigDataPtr (configDataPtr)
 	{
+		startTimer ();
 		resetDisplay();
 		displayOn();
 		clearDisplay();
@@ -154,8 +152,19 @@ public:
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
-	HAL_StatusTypeDef refreshDisplay ()
+	HAL_StatusTypeDef refreshDisplay ( bool keepScreenSaver = false )
 	{
+
+		// Reset screen saver timer
+		if ( ! keepScreenSaver )
+		{
+			mScreenSaverTimer = 0;
+			if (  mScreenSaverTaskHandle != nullptr )
+			{
+				vTaskDelete( mScreenSaverTaskHandle );
+				mScreenSaverTaskHandle = nullptr;
+			}
+		}
 
 		// Fill bitmap buffer with pixel data from the source bitmap
 		uint32_t x = 0;
@@ -183,8 +192,6 @@ public:
 		HAL_GPIO_WritePin ( mConfigDataPtr->DC_PORT, mConfigDataPtr->DC_PIN, GPIO_PIN_SET );
 		HAL_StatusTypeDef res;
 		res = HAL_SPI_Transmit ( mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize, HAL_MAX_DELAY );
-// ToDo: use dma for the transfert
-//		res = HAL_SPI_Transmit_DMA ( mConfigDataPtr->SPI, mBitMapBuffer, cBitMapBufferSize );
 		HAL_GPIO_WritePin ( mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_SET );
 		return res;
 
@@ -438,26 +445,6 @@ public:
 	}
 
 	//==============================================================================
-	//          drawString()
-	//
-	//  CasualNoises    29/12/2025  First implementation
-	//==============================================================================
-/*	void drawString(int32_t x, int32_t y, const String& string, const sFont* fontPtr,
-							eBitOperations op = eBitOperations::SetBitOp)
-	{
-
-		uint16_t len = string.length();
-		uint32_t w = fontPtr->width;
-
-		for (uint32_t i = 0; i < len; ++i)
-		{
-//			drawCharacter(x, y, string[i], fontPtr, op);
-			x += w;
-		}
-
-	}
-*/
-	//==============================================================================
 	//          drawProgressBar()
 	//
 	//  CasualNoises    27/12/2024  First implementation
@@ -569,17 +556,66 @@ public:
 		return cDisplayHeight;
 	}
 
+	//==============================================================================
+	//          countPixels()
+	//
+	//  CasualNoises    22/04/2026  First implementation
+	//==============================================================================
+	uint32_t countPixels()
+	{
+		uint32_t count = 0;
+		for ( uint32_t x = 0; x < cDisplayWidth; ++x )
+			for ( uint32_t y = 0; y < cDisplayHeight; ++y )
+				if ( mBitMap [ x ][ y ] != 0 )
+					++count;
+		return count;
+	}
+
+protected:
+
+	static void runScreenSaver ( void* pvParameters )
+	{
+		SSD1309_Driver* driverPtr = static_cast< SSD1309_Driver* >( pvParameters );
+		ScreenSaver* screenSaverPtr = driverPtr->getScreenSaverPtr ();
+		for (;;)
+		{
+			screenSaverPtr->refresh ();
+			osDelay( pdMS_TO_TICKS ( 20 ) );
+		}
+	}
+
+    virtual void onTimer() override
+    {
+    	if ( mScreenSaverPtr == nullptr )
+    		mScreenSaverPtr = new ScreenSaver ( this );
+    	mScreenSaverTimer += 1;
+    	if ( mScreenSaverTimer > cScreenSaverTimeOut )
+    	{
+    		if (  mScreenSaverTaskHandle == nullptr )
+    			xTaskCreate ( runScreenSaver, "ScreenSaverTask", 1024, this, UI_THREAD_PRIORITY - 1, &mScreenSaverTaskHandle );
+    		mScreenSaverTimer -= 1;
+    	}
+    }
+
+    static constexpr uint32_t	cScreenSaverTimeOut		= 60;
+    uint32_t					mScreenSaverTimer		{ 0 };
+
+    TaskHandle_t 				mScreenSaverTaskHandle 	{ nullptr };
+	ScreenSaver*				mScreenSaverPtr			{ nullptr };
+
+    ScreenSaver*				getScreenSaverPtr()		{ return mScreenSaverPtr; };
+
 private:
 	static constexpr int32_t	cDisplayWidth 		= 128;
 	static constexpr int32_t	cDisplayHeight		= 64;
 	static constexpr int32_t	cBitMapSize			= cDisplayWidth * cDisplayHeight;
 	static constexpr int32_t	cBitMapBufferSize	= cBitMapSize / 8;
 
-	sSSD1309_ConfigData*	mConfigDataPtr	{ nullptr };
-	uint8_t					mBitMap[cDisplayWidth][cDisplayHeight];
-	uint8_t					mBitMapBuffer[cBitMapBufferSize];
+	sSSD1309_ConfigData*		mConfigDataPtr	{ nullptr };
+	uint8_t						mBitMap [ cDisplayWidth ][ cDisplayHeight ];
+	uint8_t						mBitMapBuffer [ cBitMapBufferSize ];
 
-	Rectangle<int32_t>		mClipRect { 0, 0, cDisplayWidth, cDisplayHeight };
+	Rectangle<int32_t>			mClipRect { 0, 0, cDisplayWidth, cDisplayHeight };
 
 	//==============================================================================
 	//          clipRect()
@@ -597,23 +633,19 @@ private:
 		int clipY1 = clipY0 + mClipRect.getHeight ();
 
 		//  1. rect origin beyond screen dimensions, nothing to draw
-//		if ((*x >= cDisplayWidth) || (*y >= cDisplayHeight))
 		if ( ( *x >= clipX1 ) || ( *y >= clipY1 ) )
 			return false;
 
 		//  2. rect width or height is 0, nothing to draw
-//		if ( ( *w == 0 ) || ( *h == 0 ) )
 		if ( ( *w == clipX0 ) || ( *h == clipY0 ) )
 			return false;
 
 		// 3. rect origin has negative component, adjust origin and dimensions
-//		if (*x < 0)
 		if ( *x < clipX0)
 		{
 			*w += *x;
 			*x = 0;
 		}
-//		if (*y < 0)
 		if ( *y < clipY0 )
 		{
 			*h += *y;
@@ -621,15 +653,12 @@ private:
 		}
 
 	    //  4. rect width beyond screen width, reduce rect width
-//	    if ( (*x + *w - 1 ) >= cDisplayWidth)
 		if ( ( *x + *w - 1 ) >= mClipRect.getWidth () )
 	    {
-//	    	*w = cDisplayWidth - *x;
 	    	*w = mClipRect.getWidth () - *x;
 	    }
 
 	    //  5. rect height beyond screen height, reduce rect height
-//	    if ((*y + *h - 1) >= cDisplayHeight)
 		if ( ( *y + *h - 1 ) >= mClipRect.getHeight() )
 	    {
 	    	*h = cDisplayHeight - *y;
@@ -640,7 +669,7 @@ private:
 	}
 
 	//==============================================================================
-	//          swap()
+	//          swap ()
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
@@ -652,7 +681,7 @@ private:
 	}
 
 	//==============================================================================
-	//          abs()
+	//          abs ()
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
@@ -665,11 +694,11 @@ private:
 	}
 
 	//==============================================================================
-	//          sendCommand() 1 byte command
+	//          sendCommand () 1 byte command
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
-	HAL_StatusTypeDef sendCommand(uint8_t cmd)
+	HAL_StatusTypeDef sendCommand( uint8_t cmd )
 	{
 		  HAL_GPIO_WritePin(mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_RESET);
 		  HAL_GPIO_WritePin(mConfigDataPtr->DC_PORT, mConfigDataPtr->DC_PIN, GPIO_PIN_RESET);
@@ -685,7 +714,7 @@ private:
 	//
 	//  CasualNoises    25/12/2024  First implementation
 	//==============================================================================
-	HAL_StatusTypeDef sendCommand(uint8_t cmd1, uint8_t cmd2)
+	HAL_StatusTypeDef sendCommand ( uint8_t cmd1, uint8_t cmd2 )
 	{
 		  HAL_GPIO_WritePin(mConfigDataPtr->CS_PORT, mConfigDataPtr->CS_PIN, GPIO_PIN_RESET);
 		  HAL_GPIO_WritePin(mConfigDataPtr->DC_PORT, mConfigDataPtr->DC_PIN, GPIO_PIN_RESET);

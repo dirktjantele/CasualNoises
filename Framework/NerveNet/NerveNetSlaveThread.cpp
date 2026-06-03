@@ -47,7 +47,7 @@ struct sRunNerveNetSlaveThreadParams
 //  CasualNoises    18/07/2025  First implementation
 //  CasualNoises	25/07/2025	Made function thread save
 //==============================================================================
-bool NerveNetSlaveThread::sendMessage ( tNerveNetMessageHeader* messagePtr, uint32_t size)
+bool NerveNetSlaveThread::sendMessage ( tNerveNetMessageHeader* messagePtr, uint32_t size) noexcept
 {
 
 	// Number messages
@@ -399,7 +399,7 @@ void runNerveNetSlaveThread ( void* pvParameters )
 BaseType_t startNerveNetSlaveThread (
 		CasualNoises::NerveNetSlaveThread* threadPtr,
 		void *argument,
-		TaskHandle_t* xHandlePtr)
+		TaskHandle_t* xHandlePtr) noexcept
 {
 
 	static sRunNerveNetSlaveThreadParams params;

@@ -54,7 +54,7 @@ void ViewPort::applyVerticalScrolling ( int32_t amount )
 //
 //  CasualNoises    17/03/2026  First implementation
 //==============================================================================
-void ViewPort::paint ( Graphics& g )
+void ViewPort::paint ( Graphics& g ) noexcept
 {
 
 	// Is there any content?

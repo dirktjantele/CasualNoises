@@ -48,7 +48,7 @@ ComboBox::~ComboBox()
 //
 //  CasualNoises    29/12/2025  First implementation
 //==============================================================================
-void ComboBox::paint ( Graphics& g )
+void ComboBox::paint ( Graphics& g ) noexcept
 {
 
 	// Set to default font when no font is specified

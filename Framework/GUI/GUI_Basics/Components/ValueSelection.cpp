@@ -39,7 +39,7 @@ ValueSelection::ValueSelection ( String name ) :
 //
 //  CasualNoises    13/04/2026  First implementation
 //==============================================================================
-void ValueSelection::paint ( Graphics& g )
+void ValueSelection::paint ( Graphics& g ) noexcept
 {
 
 	// Set to default font when no font is specified

@@ -350,7 +350,7 @@ void TLV_DriverThread ( void* pvParameters )
 	NVM_Driver* NVM_DriverPtr = paramsPtr->NVM_DriverPtr;
 
 	// Create a queue for incoming messages
-	QueueHandle_t xUI_ThreadQueue = xQueueCreate ( cQueueLength, sizeof(sTLV_Event) );
+	QueueHandle_t xUI_ThreadQueue = xQueueCreate ( cQueueLength, sizeof ( sTLV_Event ) );
 	if ( xUI_ThreadQueue == nullptr )
 		CN_ReportFault ( eErrorCodes::FreeRTOS_ErrorRes );
 	*( paramsPtr->queueHandlePtr ) = xUI_ThreadQueue;

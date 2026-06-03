@@ -177,13 +177,7 @@ void AudioProcessorPlayer::runAudioProcessor (
 
 	// Prepare the audio processor
 	mAudioProcessorPtr->prepareToPlay ( SAMPLE_FREQUENCY, numSamples );
-/*
-	while ( ( gNerveNetMasterThreadPtr [AUDIO_NERVENET_THREAD_NO] == nullptr ) ||
-			( ! gNerveNetMasterThreadPtr [AUDIO_NERVENET_THREAD_NO]->isThreadRunning() ) )
-	{
-		vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
-	}
-*/
+
 	// Process incoming audio data block when a DMA interrupt is received
 	float scale = static_cast<float>(0x7fffff00);
 	for (;;)
@@ -207,15 +201,7 @@ void AudioProcessorPlayer::runAudioProcessor (
 		// Handle NerveNet message
 		if ( ( nerveNetMessagePtr != nullptr ) && ( nerveNetMessagePtr->header.messageLength != 0 ) )
 		{
-
 			handleNerveNetCallBacks ( ( void* ) &nerveNetMessagePtr->data  );
-
-			// Do we have a call back pointer to handle the incoming NerveNet data?
-//			if ( nerveNetCallBackPtr != nullptr )
-//			{
-//				( **nerveNetCallBackPtr )( &nerveNetMessagePtr->data );
-//			}
-
 		}
 #endif
 

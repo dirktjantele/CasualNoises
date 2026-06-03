@@ -29,9 +29,9 @@ namespace CasualNoises
 typedef struct
 {
 	sADC_MultiplexerSignature*	multiplexerSignatureArray;		// Contains noOfMultiplexers entries
+	sLogicalPotChannelNums*		logicalPotChannelNumsArray;
 	uint16_t					noOfMultiplexers;				// No of multiplexers
 	ADC_HandleTypeDef* 			hadc;							// Handle to the ADC to be used
-//	TIM_HandleTypeDef*			htim;							// Timer used to trigger ADC conversions
 	QueueHandle_t				clientQueue;					// Queue to send ADC events to
 } sADC_MultiplexerThreadData;
 

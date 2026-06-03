@@ -34,7 +34,7 @@ LevelBar::LevelBar(String name) :
 //
 //  CasualNoises    09/04/2026  First implementation
 //==============================================================================
-void LevelBar::paint ( Graphics& g )
+void LevelBar::paint ( Graphics& g ) noexcept
 {
 
 	// Draw center line

@@ -14,8 +14,6 @@
 #include <string.h>
 #include <Utilities/ReportFault.h>
 
-#include "CharPointerType.h"
-
 namespace CasualNoises
 {
 
@@ -33,11 +31,11 @@ public:
 	 String ( const String& other )
 	{
 		mStringLength = other.mStringLength;
-		if ( mStringPtr != nullptr )
-			vPortFree ( mStringPtr );
-		mStringPtr = (char*)pvPortMalloc ( mStringLength + 1 );
-		if ( mStringPtr == nullptr )
-			CN_ReportFault ( eErrorCodes::unknowError );
+		if (mStringPtr != nullptr)
+			vPortFree(mStringPtr);
+		mStringPtr = (char*)pvPortMalloc(mStringLength + 1);
+		if (mStringPtr == nullptr)
+			CN_ReportFault(eErrorCodes::unknowError);
 		for (uint16_t i = 0; i < mStringLength; ++i)
 			mStringPtr[i] = other.mStringPtr[i];
 		mStringPtr[mStringLength] = 0;
@@ -47,19 +45,18 @@ public:
 	//          String ( String&& )
 	//
 	//  CasualNoises    14/12/2024  First implementation
-	//  CasualNoises    07/04/2026  Bug fix, this was moved into other...
 	//==============================================================================
 	/** Move constructor */
-	String ( String&& other ) :
-		mStringLength ( other.mStringLength ),
-		mStringPtr ( other.mStringPtr )
+	String ( String&& other)
 	{
-		other.mStringLength = 0;
-		other.mStringPtr = nullptr;
+		other.mStringLength = mStringLength;
+		mStringLength = 0;
+		other.mStringPtr = mStringPtr;
+		mStringPtr = nullptr;
 	}
 
 	//==============================================================================
-	//          String ( char* string )
+	//          String(char* string)
 	//
 	//  CasualNoises    02/08/2023  First implementation
 	//==============================================================================
@@ -218,17 +215,6 @@ public:
     }
 
 	//==============================================================================
-	//          operator<
-	//
-	//  CasualNoises    27/04/2026  First implementation
-	//==============================================================================
-    bool operator< (const String other) const noexcept
-    {
-    	int result = strcmp ( mStringPtr, other.getStringPtr () );
-    	return result < 0;
-    }
-
-	//==============================================================================
 	//          operator=
 	//
 	//  CasualNoises    14/12/2024  First implementation
@@ -267,42 +253,29 @@ public:
     }
 
  	//==============================================================================
-	//          isEmpty ()
+	//          isEmpty
 	//
 	//  CasualNoises    02/08/2023  First implementation
 	//==============================================================================
     /** Test for empty string */
-	bool isEmpty () noexcept
+	bool isEmpty() noexcept
 	{
 		return mStringLength == 0;
 	};
 
  	//==============================================================================
-	//          getStringPtr ()
+	//          getStringPtr
 	//
 	//  CasualNoises    30/12/2025  First implementation
 	//==============================================================================
-	const char* getStringPtr () const
+	char* getStringPtr()
 	{
 		return mStringPtr;
 	}
 
- 	//==============================================================================
-	//          clear ()
-	//
-	//  CasualNoises    26/04/2026  First implementation
-	//==============================================================================
-	void clear ()
-	{
-		if (mStringPtr != nullptr)
-			vPortFree(mStringPtr);
-		mStringPtr = nullptr;
-		mStringLength = 0;
-	}
-
 private:
-	char*				mStringPtr 		{ nullptr };
-	uint16_t			mStringLength	{ 0 };
+	char*		mStringPtr 		{ nullptr };
+	uint16_t	mStringLength	{ 0 };
 };
 
 } // namespace CasualNoises

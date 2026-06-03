@@ -51,7 +51,7 @@ LabelGroup::~LabelGroup()
 //
 //  CasualNoises    19/03/2026  First implementation
 //==============================================================================
-uint32_t LabelGroup::getHeight ()
+uint32_t LabelGroup::getHeight () noexcept
 {
 
 	// An empty group has 0 height
@@ -77,7 +77,7 @@ uint32_t LabelGroup::getHeight ()
 //
 //  CasualNoises    19/03/2026  First implementation
 //==============================================================================
-void LabelGroup::addLabel ( Label* label )
+void LabelGroup::addLabel ( Label* label ) noexcept
 {
 	mLabelGroup.push_back ( label );
 }
@@ -89,7 +89,7 @@ void LabelGroup::addLabel ( Label* label )
 //
 //  CasualNoises    23/03/2026  First implementation
 //==============================================================================
-void LabelGroup::addLabel ( std::string text, eJustificationFlags flags )
+void LabelGroup::addLabel ( std::string text, eJustificationFlags flags ) noexcept
 {
 	Label* ptr = new Label ( text.c_str() );
 	ptr->setJustification( flags );
@@ -121,7 +121,7 @@ void LabelGroup::setBounds ( int32_t x, int32_t y, int32_t w, int32_t h ) noexce
 //
 //  CasualNoises    21/03/2026  First implementation
 //==============================================================================
-void LabelGroup::paint ( Graphics& g )
+void LabelGroup::paint ( Graphics& g ) noexcept
 {
 	if (! mElementBoundsSet )
 		return;
