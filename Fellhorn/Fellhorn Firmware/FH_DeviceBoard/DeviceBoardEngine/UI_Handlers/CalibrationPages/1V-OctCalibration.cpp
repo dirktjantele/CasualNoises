@@ -39,9 +39,9 @@ _1V_OctCalibrationPage::_1V_OctCalibrationPage (
 	TimerBase ( "Timer", 100 )
 {
 
-	// Turn on Save switch led
+	// Turn on Save switch led					ToDo find alternative solution
 	dimSwitchLeds ();
-	setSwitchLed ( eLED_BitNums::SWITCH_6 );
+//	setSwitchLed ( eLED_BitNums::SWITCH_6 );
 
 	// Create a border component
 	mOuterBoxPtr = new Box( String( (char*) "Border" ) );
@@ -213,9 +213,9 @@ bool _1V_OctCalibrationPage::handleLocalUI_event (
 		}
 
 	}
-
 	// Handle Save button events
 	static bool readyToExit = false;
+/*																			ToDo alternative to save button
 	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
 		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::SAVE_SWITCH ) &&
 		 canProceseed )
@@ -240,7 +240,7 @@ bool _1V_OctCalibrationPage::handleLocalUI_event (
 			readyToExit = true;
 		}
 	}
-
+*/
 	// Proceed to next step
 	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
 		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::RIGTH_ARROW_SWITCH ) &&
@@ -312,7 +312,7 @@ void _1V_OctCalibrationPage::processData (
 //
 //  CasualNoises    14/04/2026  First implementation
 //==============================================================================
-void _1V_OctCalibrationPage::composeCalibrationTable ()
+void _1V_OctCalibrationPage::composeCalibrationTable () noexcept
 {
 
 	// Get pointers

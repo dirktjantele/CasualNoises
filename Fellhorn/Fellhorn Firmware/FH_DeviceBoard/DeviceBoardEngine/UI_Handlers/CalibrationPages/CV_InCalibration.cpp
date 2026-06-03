@@ -206,12 +206,12 @@ bool CV_CalibrationPage::handleLocalUI_event (
 				if ( processData ( mCurrentPhase, headerPtr->sourceID, dataPtr ) )
 				{
 					mContLabelPtr->setVisible( true );
-					setSwitchLed ( eLED_BitNums::SWITCH_3 );
+					setSwitchLed ( eLED_BitNums::RIGTH_ARROW_SWITCH );
 					canProceseed = northSideReplied & southSideReplied;
 				} else
 				{
 					mContLabelPtr->setVisible( false );
-					dimSwitchLed ( eLED_BitNums::SWITCH_3 );
+					dimSwitchLed ( eLED_BitNums::RIGTH_ARROW_SWITCH );
 					canProceseed = false;
 				}
 				break;

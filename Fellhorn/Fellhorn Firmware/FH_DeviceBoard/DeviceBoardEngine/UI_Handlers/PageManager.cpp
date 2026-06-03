@@ -16,8 +16,6 @@
 #include "PageManager.h"
 
 #include "MainPage.h"
-#include "SetupPage.h"
-#include "LoadPage.h"
 #include "../UI_Definitions.h"
 
 #include "SystemInfoPage.h"
@@ -139,12 +137,6 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 	case ePageId::mainPage:
 		pagePtr = new MainPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
 		break;
-	case ePageId::setupPage:
-		pagePtr = new SetupPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
-		break;
-	case ePageId::loadPage:
-		pagePtr = new LoadPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
-		break;
 	case ePageId::calibrationPage:
 		pagePtr = new CalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
 		break;
@@ -241,7 +233,7 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 {
 
 	// Handle encoder and switch events
-	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID) &&
+	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
 		 ( (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderSwitch ) ||
 		   (uiEvent->encoderEvent.eventType == eEncoderEventType::encoderCount) ) )
 	{
@@ -252,26 +244,10 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 			handleExitSwitch ( altSwitchState );
 		}
 
-		// Handle setup switch																		ToDo assign another function to the setup switch
-		else if ( ( uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::SETUP_SWITCH ) &&
-				  ( mPageIdStack[mPageIdStackPtr - 1] == ePageId::mainPage ) )
-		{
-			handleExitSwitch ( true, false );				// pretend that this is equal to a ALT-EXIT switch press
-			createPage ( ePageId::setupPage, true, mPageIdStackPtr );
-		}
-
-		// Handle LOAD switch
-		else if ( ( uiEvent->encoderEvent.encoderNo == (uint16_t)eSwitchNums::LOAD_SWITCH ) &&
-				  ( mPageIdStack[mPageIdStackPtr - 1] == ePageId::mainPage ) )
-		{
-			handleExitSwitch ( true, false );				// pretend that this is equal to a ALT-EXIT switch press
-			createPage ( ePageId::loadPage, true, mPageIdStackPtr );
-		}
-
 		// Skip 'ALT' switch events, but use the state
 		else if ( uiEvent->encoderEvent.encoderNo != (uint16_t)eSwitchNums::ALT_SWITCH )
 		{
-			mPageObjectStack[mPageIdStackPtr - 1]->handleUI_event ( uiEvent, altSwitchState, *mGraphics, settingsPtr, altSwitchState );
+			mPageObjectStack[ mPageIdStackPtr - 1 ]->handleUI_event ( uiEvent, altSwitchState, *mGraphics, settingsPtr, altSwitchState );
 		}
 
 		// Adjust exit switch led intensity & paint screen
@@ -363,7 +339,7 @@ void PageManager::setExitSwitchLedIntensity ()
 
 	// Dim all switch LED's except for exit & ALT switch
 	eLED_BitNums leds[] = {
-		eLED_BitNums::EXIT_SWITCH, eLED_BitNums::SWITCH_1
+		eLED_BitNums::EXIT_SWITCH, eLED_BitNums::ALT_SWITCH
 	};
 	sLED_Event event;
 	event.ledIntensity = 100;

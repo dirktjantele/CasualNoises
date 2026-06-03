@@ -26,7 +26,7 @@ enum class eEventSourceID
 	nerveNetSourceID,
 };
 
-// Multiplexer signature
+// Multiplexer signature, one structure used for each multiplexer
 // The ADC multiplexer is controlled by 3 GPIO output pins
 typedef struct
 {
@@ -39,12 +39,38 @@ typedef struct
 	uint8_t					mask;
 } sADC_MultiplexerSignature;
 
+// Logical potentiometer id's
+enum class eLogicalPotId
+{
+	pot_1	= 0,
+	pot_2,
+	pot_3,
+	pot_4,
+	slider_1,
+	slider_2,
+	slider_3,
+	slider_4,
+	slider_5,
+	slider_6,
+	slider_7,
+	slider_8,
+	unconnected,			// Should be last
+};
+
+// Multiplexer signature, one structure used for each multiplexer
+// This struct is used by the Multiplexed ADC thread to do the mapping from mult coordinates to eLogicalPotId's
+typedef struct
+{
+	eLogicalPotId logicalPotIds [ NO_OF_ADC_MULTI_CHANNELS ];
+} sLogicalPotChannelNums;
+
 // Structure of a multiplexed ADC event
 typedef struct
 {
 	eEventSourceID				eventSourceID;
 	uint16_t	 				multiplexerNo;
 	uint16_t					multiplexerChannelNo;
+	eLogicalPotId				logicalPotId;
 	uint32_t					value;
 	int32_t						deviation;
 } sMultiplexed_ADC_Event;
@@ -76,6 +102,7 @@ typedef struct
 	eEventSourceID				eventSourceID;
 	eEncoderEventType 			eventType;
 	uint16_t					encoderNo;
+	eSwitchNums					encoderSwitchNum;
 	int16_t						encoderCount;
 	bool						newState;
 } sEncoderEvent;

@@ -16,7 +16,6 @@
 #include "YellowPages.h"
 
 #include <GUI/GUI_Basics/Components/ComboBox.h>
-#include <xml/XmlElement.h>
 
 namespace CasualNoises
 {
@@ -132,8 +131,8 @@ bool RootPage::handleUI_event ( sIncommingUI_Event* uiEvent,
 void RootPage::dimSwitchLeds ()
 {
 	eLED_BitNums dimmed[] = {
-		eLED_BitNums::SWITCH_2, eLED_BitNums::SWITCH_3, eLED_BitNums::SWITCH_4,
-		eLED_BitNums::SWITCH_5, eLED_BitNums::SWITCH_6
+		eLED_BitNums::PAGE_A_SWITCH, eLED_BitNums::PAGE_B_SWITCH, eLED_BitNums::LEFT_ARROW_SWITCH,
+		eLED_BitNums::RIGTH_ARROW_SWITCH, eLED_BitNums::EDIT_SWITCH
 	};
 	sLED_Event event;
 	event.ledIntensity = 5;

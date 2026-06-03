@@ -1258,6 +1258,7 @@ void StartDefaultTask(void *argument)
 		osDelay( pdMS_TO_TICKS ( 100 ) );
 		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
 		osDelay ( pdMS_TO_TICKS ( 700 ) );
+		xFreeHeapSize = xPortGetFreeHeapSize();
 	}
   /* USER CODE END 5 */
 }

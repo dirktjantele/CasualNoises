@@ -54,6 +54,7 @@ MainPage::MainPage (
 	// Build a ComboBox
 	static String names[]
 	{
+	    String ( "Load Performance" ),
 	    String ( "New Performance" ),
 		String ( "Calibration" ),
 		String ( "System Info" ),
@@ -87,12 +88,14 @@ void MainPage::onComboBoxChange () noexcept
 	uint32_t id = mComboBoxPtr->getSelectedId ();
 	switch (id)
 	{
-	case 1:								// New performance
+	case 1:								// Load performance
 		break;
-	case 2:								// Calibration
+	case 2:								// New performance
+		break;
+	case 3:								// Calibration
 		mPageManagerPtr->createNewPage ( ePageId::calibrationPage );
 		break;
-	case 3:								// Sytem Info
+	case 4:								// Sytem Info
 		mPageManagerPtr->createNewPage ( ePageId::systemInfoPage );
 		break;
 	default:
@@ -486,7 +489,7 @@ void PotentiometerCalibrationPage::updateLEDs ()
 //==============================================================================
 //          processADC_Event()
 //
-// 	Process any incomming ADC events by updating the progress bar
+// 	Process any incoming ADC events by updating the progress bar
 //
 //  CasualNoises    08/01/2026  First implementation
 //==============================================================================
@@ -496,64 +499,56 @@ void PotentiometerCalibrationPage::processADC_Event ( sIncommingUI_Event* uiEven
 	uint32_t value = uiEvent->multiplexed_ADC_Event.value;
 	if ( uiEvent->multiplexed_ADC_Event.eventSourceID == eEventSourceID::multiplexerADC_ThreadSourceID )
 	{
+
+		// Get device name
 		String text;
-		if ( uiEvent->multiplexed_ADC_Event.multiplexerNo == 0 )
+		eLogicalPotId logicalPotId = uiEvent->multiplexed_ADC_Event.logicalPotId;
+		switch ( logicalPotId )
 		{
-			switch ( uiEvent->multiplexed_ADC_Event.multiplexerChannelNo )
-			{
-			case (uint32_t)eMultiplexerChannel_0::P_1:
-				text = String( "P #1" );
-				break;
-			case (uint32_t)eMultiplexerChannel_0::P_2:
-				text = String( "P #2" );
-				break;
-			case (uint32_t)eMultiplexerChannel_0::P_3:
-				text = String( "P #3" );
-				break;
-			case (uint32_t)eMultiplexerChannel_0::P_4:
-				text = String( "P #4" );
-				break;
-			default:
-				text = String( "<< unknown >>" );
-				break;
-			}
-		} else if ( uiEvent->multiplexed_ADC_Event.multiplexerNo == 1 )
-		{
-			switch ( uiEvent->multiplexed_ADC_Event.multiplexerChannelNo )
-			{
-			case (uint32_t)eMultiplexerChannel_1::F_1:
-				text = String( "F #1" );
-				break;
-			case (uint32_t)eMultiplexerChannel_1::F_2:
-				text = String( "F #2" );
-				break;
-			case (uint32_t)eMultiplexerChannel_1::F_3:
-				text = String( "F #3" );
-				break;
-			case (uint32_t)eMultiplexerChannel_1::F_4:
-				text = String( "F #4" );
-				break;
-			case (uint32_t)eMultiplexerChannel_1::F_5:
-				text = String( "F #5" );
-				break;
-			case (uint32_t)eMultiplexerChannel_1::F_6:
-				text = String( "F #6" );
-				break;
-			case (uint32_t)eMultiplexerChannel_1::F_7:
-				text = String( "F #7" );
-				break;
-			case (uint32_t)eMultiplexerChannel_1::F_8:
-				text = String( "F #8" );
-				break;
-			default:
-				text = String( "<< unknown >>" );
-				break;
-			}
-			value = 65535 - value;
-		} else
-		{
-			CN_ReportFault ( eErrorCodes::runtimeError );
+		case eLogicalPotId::pot_1:
+			text = String( "P #1" );
+			break;
+		case eLogicalPotId::pot_2:
+			text = String( "P #2" );
+			break;
+		case eLogicalPotId::pot_3:
+			text = String( "P #3" );
+			break;
+		case eLogicalPotId::pot_4:
+			text = String( "P #4" );
+			break;
+		case eLogicalPotId::slider_1:
+			text = String( "F #1" );
+			break;
+		case eLogicalPotId::slider_2:
+			text = String( "F #2" );
+			break;
+		case eLogicalPotId::slider_3:
+			text = String( "F #3" );
+			break;
+		case eLogicalPotId::slider_4:
+			text = String( "F #4" );
+			break;
+		case eLogicalPotId::slider_5:
+			text = String( "F #5" );
+			break;
+		case eLogicalPotId::slider_6:
+			text = String( "F #6" );
+			break;
+		case eLogicalPotId::slider_7:
+			text = String( "F #7" );
+			break;
+		case eLogicalPotId::slider_8:
+			text = String( "F #8" );
+			break;
+		default:
+			text = String( "<< unknown >>" );
+			break;
 		}
+
+		// Sliders are mounted upside down!!! Compensate for this...					ToDo find a better solution
+		if ( uiEvent->multiplexed_ADC_Event.multiplexerNo == 1 )
+			value = 65535 - value;
 
 		// Update potentiometer values
 		float fvalue = ( (float)(  value  * 100 )  / 65535 );
@@ -612,7 +607,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 			if ( allPotsAtmin () )
 			{
 				mContLabelPtr->setVisible ( true );
-				setSwitchLed ( eLED_BitNums::SWITCH_3 );
+				setSwitchLed ( eLED_BitNums::RIGTH_ARROW_SWITCH );
 				mState = ePotentiometerCalibrationPageState::AwaitingMaxs;
 			}
 		}
@@ -646,7 +641,7 @@ bool PotentiometerCalibrationPage::handleLocalUI_event (
 										 [uiEvent->multiplexed_ADC_Event.multiplexerChannelNo] = uiEvent->multiplexed_ADC_Event.value;
 			if ( allPotsAtmax () )
 			{
-				setSwitchLed ( eLED_BitNums::SWITCH_3 );
+				setSwitchLed ( eLED_BitNums::RIGTH_ARROW_SWITCH );
 				mContLabelPtr->setVisible ( true );
 				mState = ePotentiometerCalibrationPageState::Completion;
 				saveCalibrationValues ();

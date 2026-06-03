@@ -175,6 +175,7 @@ void handleLocalEvent ( sIncommingUI_Event* uiEvent )
 //  CasualNoises    15/02/2025  First implementation
 //  CasualNoises    08/01/2026  Adapted for Fellhorn
 //  CasualNoises    08/04/2026  altSwitchState added
+//  CasualNoises    01/05/2026  reworking ui, adding presets and rearranging buttons
 //==============================================================================
 void UI_Thread(void* pvParameters)
 {
@@ -291,7 +292,7 @@ void UI_Thread(void* pvParameters)
 
 	// Set all led's to there initial state
 	constexpr eLED_BitNums initial_leds[] = {
-			eLED_BitNums::SWITCH_1
+			eLED_BitNums::ALT_SWITCH
 	};
 	for (auto led : initial_leds)
 	{
@@ -316,8 +317,8 @@ void UI_Thread(void* pvParameters)
 			CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 	}
 	constexpr eLED_BitNums intensity_leds2[] = {
-			eLED_BitNums::SWITCH_2, eLED_BitNums::SWITCH_3, eLED_BitNums::SWITCH_4,
-			eLED_BitNums::SWITCH_5, eLED_BitNums::SWITCH_6,
+			eLED_BitNums::PAGE_A_SWITCH, eLED_BitNums::PAGE_B_SWITCH, eLED_BitNums::LEFT_ARROW_SWITCH,
+			eLED_BitNums::RIGTH_ARROW_SWITCH, eLED_BitNums::EDIT_SWITCH,
 			eLED_BitNums::EXIT_SWITCH
 	};
 	for (auto led : intensity_leds2)
@@ -436,9 +437,13 @@ void UI_Thread(void* pvParameters)
 		if ( res == pdPASS )
 		{
 
+			// Translate encoder number into an enum entity
+			if ( event.encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID )
+				event.encoderEvent.encoderSwitchNum = ( eSwitchNums ) event.encoderEvent.encoderNo;
+
 			// Get state of ALT switch
 			if ( ( event.encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
-				 ( ( eSwitchNums ) event.encoderEvent.encoderNo == eSwitchNums::ALT_SWITCH ) )
+				 ( event.encoderEvent.encoderSwitchNum == eSwitchNums::ALT_SWITCH ) )
 			{
 				altSwitchState = event.encoderEvent.newState;
 			} else

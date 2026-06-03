@@ -30,7 +30,6 @@
 
 #include "UI_Thread.h"
 
-//#include "NerveNet/NerveNetMessageHeader.h"
 #include "NerveNet/NerveNetMasterThread.h"
 #include "NerveNet/NerveNetSlaveThread.h"
 #include "NerveNet/NerveNetConfig.h"
@@ -204,10 +203,51 @@ void resetTimeMarker_4()
   * @brief  The application entry point.
   * @retval int
   */
+
+//#include "juce_core/text/juce_String.h"
+//#include "juce_core/xml/juce_XmlDocument.h"
+//#include "juce_core/xml/juce_XmlElement.h"
+
 int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+/*
+	const juce::String xmlText =
+		"<?xml dummy document header ?>"
+		"<!-- This is a comment -->"
+		"<PERFORMANCE>"
+			"<INFO>"
+				"<VALUE>"
+					"<name>PulsarHeaven</name>"
+					"<type>5</type>"
+				"</VALUE>"
+			"</INFO>"
+			"<INFO>"
+				"<VALUE>"
+					"<name>FM Delight</name>"
+					"<type>6</type>"
+				"</VALUE>"
+			"</INFO>"
+		"</PERFORMANCE>";
+
+	std::unique_ptr<juce::XmlElement> root = juce::XmlDocument::parse ( xmlText );
+
+    for (auto* info = root->getFirstChildElement(); info != nullptr; info = info->getNextElement())
+    {
+        if (info->hasTagName("INFO"))
+        {
+            auto* value = info->getChildByName("VALUE");
+            if (value != nullptr)
+            {
+                juce::String name = value->getChildByName("name")->getAllSubText().trim();
+                juce::String type = value->getChildByName("type")->getAllSubText().trim();
+
+                DBG("Name: " << name << ", Type: " << type);
+            }
+        }
+    }
+*/
 
   /* USER CODE END 1 */
 
@@ -941,7 +981,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
 	encoderSignatures[num].allChanges	= true;
-	++num;													// Switch #2 (<)
+	++num;													// Switch #2 (Page 'A')
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 0;
 	encoderSignatures[num].switchPinNo	= 7;
@@ -950,7 +990,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
 	encoderSignatures[num].allChanges	= false;
-	++num;													// Switch #3 (>)
+	++num;													// Switch #3 (Page 'B')
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
 	encoderSignatures[num].switchPinNo	= 0;
@@ -959,7 +999,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
 	encoderSignatures[num].allChanges	= false;
-	++num;													// Switch #4 (Setup)
+	++num;													// Switch #4 (<)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
 	encoderSignatures[num].switchPinNo	= 1;
@@ -968,7 +1008,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
 	encoderSignatures[num].allChanges	= false;
-	++num;													// Switch #5 (Load)
+	++num;													// Switch #5 (>)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
 	encoderSignatures[num].switchPinNo	= 2;
@@ -977,7 +1017,7 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_B_DevNo	= 0xff;
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
 	encoderSignatures[num].allChanges	= false;
-	++num;													// Switch #6 (Save)
+	++num;													// Switch #6 (Edit)
 	encoderSignatures[num].encoderNo	= num;
 	encoderSignatures[num].switchDevNo	= 1;
 	encoderSignatures[num].switchPinNo	= 3;
@@ -996,9 +1036,9 @@ void StartDefaultTask(void *argument)
 	encoderSignatures[num].enc_B_PinNo	= 0xff;
 	encoderSignatures[num].allChanges	= false;
 
-	// Create a signature map for all encoders/switches
-	constexpr uint32_t noADC_Multiplexers 	= 2;			// 2 multiplexers: 1 pots & 1 sliders
-	static CasualNoises::sADC_MultiplexerSignature sADC_MultiplexerSignatures[noADC_Multiplexers];
+	// Create a signature map for all ADC multiplexers
+	constexpr uint32_t noADC_Multiplexers 	= NO_OF_ADC_MULTIPLEXERS;			// 2 multiplexers: 1 pots & 1 sliders
+	static CasualNoises::sADC_MultiplexerSignature sADC_MultiplexerSignatures [ noADC_Multiplexers ];
 	num = 0;												// Potentiometer multiplexer
 	sADC_MultiplexerSignatures[num].SO_Pin	= POTS_S0_Pin;
 	sADC_MultiplexerSignatures[num].SO_Port	= GPIOD;
@@ -1015,6 +1055,23 @@ void StartDefaultTask(void *argument)
 	sADC_MultiplexerSignatures[num].S2_Pin	= SLIDERS_S2_Pin;
 	sADC_MultiplexerSignatures[num].S2_Port	= SLIDERS_S2_GPIO_Port;
 	sADC_MultiplexerSignatures[num].mask	= 0xff;
+
+	// Create mapping tables for converting ADC Multiplexer no / ADC Multiplexer channel to logical channel id
+	static CasualNoises::sLogicalPotChannelNums sLogicalPotChannelNums  [ noADC_Multiplexers ];
+	num = 0;												// Potentiometer multiplexer
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_1 ] = CasualNoises::eLogicalPotId::pot_1;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_2 ] = CasualNoises::eLogicalPotId::pot_2;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_3 ] = CasualNoises::eLogicalPotId::pot_3;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_4 ] = CasualNoises::eLogicalPotId::pot_4;
+	++num;													// Slider multiplexer
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_1 ] = CasualNoises::eLogicalPotId::slider_1;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_2 ] = CasualNoises::eLogicalPotId::slider_2;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_3 ] = CasualNoises::eLogicalPotId::slider_3;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_4 ] = CasualNoises::eLogicalPotId::slider_4;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_5 ] = CasualNoises::eLogicalPotId::slider_5;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_6 ] = CasualNoises::eLogicalPotId::slider_6;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_7 ] = CasualNoises::eLogicalPotId::slider_7;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_8 ] = CasualNoises::eLogicalPotId::slider_8;
 
 	// Encoder #1 (Value)
 	// Create a UI thread and run it
@@ -1052,7 +1109,8 @@ void StartDefaultTask(void *argument)
 	// ...
 	uiData.ADC_MultiplexerThreadData.hadc				= &hadc2;
 	uiData.ADC_MultiplexerThreadData.noOfMultiplexers	= 2;
-	uiData.ADC_MultiplexerThreadData.multiplexerSignatureArray = sADC_MultiplexerSignatures;
+	uiData.ADC_MultiplexerThreadData.multiplexerSignatureArray 	= sADC_MultiplexerSignatures;
+	uiData.ADC_MultiplexerThreadData.logicalPotChannelNumsArray = sLogicalPotChannelNums;
 
 	// Start UI thread
 	uiData.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
@@ -1102,6 +1160,7 @@ void StartDefaultTask(void *argument)
 		osDelay ( pdMS_TO_TICKS (100) );
 		HAL_GPIO_WritePin ( EX_HEART_BEAT_GPIO_Port, EX_HEART_BEAT_Pin, GPIO_PIN_SET );
 		osDelay( pdMS_TO_TICKS ( 700) );
+		xFreeHeapSize = xPortGetFreeHeapSize();
 //		nerveNetMasterThread.checkCycleCount ();								// ToDo put this code back in after debug
 	}
 

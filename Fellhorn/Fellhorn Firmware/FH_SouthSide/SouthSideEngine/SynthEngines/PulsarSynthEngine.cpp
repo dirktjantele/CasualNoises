@@ -225,8 +225,8 @@ void PulsarSynthEngine::processBlock ( AudioBuffer* buffer, AudioBuffer* NN_buff
 //			mPulsarSynthPtr->setFrequency ( frequency );
 //		}
 
-		float gain = mGain;															// ToDo restore this line
-//		float gain = 1.0f;
+//		float gain = mGain;															// ToDo restore this line
+		float gain = 1.0f;
 		float sample_1 = mPulsarSynthPtr->nextSample () * gain;
 		*lwptr++ = sample_1;
 		*rwptr++ = sample_1;

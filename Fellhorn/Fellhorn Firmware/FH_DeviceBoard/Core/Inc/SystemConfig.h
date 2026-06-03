@@ -32,16 +32,6 @@ constexpr uint32_t	MAX_NO_OF_NERVENET_SLAVE_THREADS  	= 0;
 constexpr uint32_t	AUDIO_NERVENET_THREAD_NO		  	= 0;
 constexpr uint32_t	NERVENET_DATA_SIZE				  	= 1024;
 
-/*
-// Thread source identification, part of any event send from any thread to the UI thread
-enum class eEventSourceID
-{
-	encoderThreadSourceID,
-	potentiometerThreadSourceID,
-	multiplexerADC_ThreadSourceID,
-};
-*/
-
 // Bit pattern for led's (see schematic for shift register connections)
 // Note, all bit numbers are shifted 8 bit to the right to avoid compilation errors!
 enum class eLED_BitNums
@@ -54,12 +44,12 @@ enum class eLED_BitNums
 	FADER_6				= 22,
 	FADER_7				= 23,
 	FADER_8				= 24,
-	SWITCH_2			= 25,
-	SWITCH_6			= 26,	// 'Save'
-	SWITCH_5			= 27,
-	SWITCH_4			= 28,
-	SWITCH_3			= 29,	// '>'
-	SWITCH_1			= 30,
+	PAGE_A_SWITCH		= 25,	// 'A'
+	EDIT_SWITCH			= 26,	// 'Edit'
+	RIGTH_ARROW_SWITCH	= 27,	// '>'
+	LEFT_ARROW_SWITCH	= 28,	// '<'
+	PAGE_B_SWITCH		= 29,	// 'B'
+	ALT_SWITCH			= 30,	// 'Alt'
 	EXIT_SWITCH			= 31,
 };
 
@@ -75,11 +65,11 @@ enum class eSwitchNums
 	ENCODER_SWITCH		= 0,
 	EXIT_SWITCH			= 7,
 	ALT_SWITCH			= 1,
-	LEFT_ARROW_SWITCH	= 2,
-	RIGTH_ARROW_SWITCH	= 3,
-	SETUP_SWITCH		= 4,
-	LOAD_SWITCH			= 5,
-	SAVE_SWITCH			= 6,
+	PAGE_A_SWITCH		= 2,
+	PAGE_B_SWITCH		= 3,
+	LEFT_ARROW_SWITCH	= 4,
+	RIGTH_ARROW_SWITCH	= 5,
+	EDIT_SWITCH			= 6,
 };
 
 // Encoder switch bitmap positions

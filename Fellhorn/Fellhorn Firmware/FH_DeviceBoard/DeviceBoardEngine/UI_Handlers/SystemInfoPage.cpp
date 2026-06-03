@@ -95,7 +95,7 @@ bool SystemInfoPage::handleLocalUI_event ( sIncommingUI_Event* uiEvent,
 {
 	if ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
 	{
-		sNerveNetEvent* messagePtr = &uiEvent->nerveNetEvent;
+//		sNerveNetEvent* messagePtr = &uiEvent->nerveNetEvent;
 
 		return false;
 	} else if  ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID )
