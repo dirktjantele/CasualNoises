@@ -1,0 +1,173 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "9a80d9f5-6c8e-478e-b06d-a26746796acd")
+	(paper "A4")
+	(lib_symbols)
+	(text "SPI\n- SPI1: I2S to/from codec\n- SPI2: Flash memory\n- SPI3: NC\n- SPI4: NerveNet to Device Board\n- SPI5: NerveNet to South Side\n- SPI6: NC\nI2C\n- I2C4: Codec"
+		(exclude_from_sim no)
+		(at 168.402 80.264 0)
+		(effects
+			(font
+				(size 4 4)
+				(thickness 0.8)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "7d0a57ae-dc16-46e1-bd22-b688bf2fda2f")
+	)
+	(text "North Side:\n- STM32H743 mcu\n- 64 MByte flash\n- codec with audio output"
+		(exclude_from_sim no)
+		(at 169.672 117.856 0)
+		(effects
+			(font
+				(size 4 4)
+				(thickness 0.8)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "e774dcc9-2f75-49bf-b62e-9aa1742e907d")
+	)
+	(sheet
+		(at 76.708 115.824)
+		(size 76.2 20.066)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "4e4e9421-473f-4522-87c5-1967cba410c5")
+		(property "Sheetname" "Codec & OpAmps"
+			(at 96.266 126.492 0)
+			(effects
+				(font
+					(size 3 3)
+					(thickness 0.6)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "cs4270.kicad_sch"
+			(at 76.708 134.1886 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/eb258cc0-1195-4ed1-95ab-e53e6d821927"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 76.2 83.82)
+		(size 76.962 20.066)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "5f306997-82a3-475c-bfc2-648a88bb9ab4")
+		(property "Sheetname" "Flash Memory"
+			(at 99.06 95.25 0)
+			(effects
+				(font
+					(size 3 3)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "flashmemory1.kicad_sch"
+			(at 76.2 104.0896 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/eb258cc0-1195-4ed1-95ab-e53e6d821927"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 76.2 50.8)
+		(size 76.835 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "e817d8ae-1c08-4a6e-8eb2-fb513c4076d6")
+		(property "Sheetname" "STM32H743"
+			(at 104.775 62.23 0)
+			(effects
+				(font
+					(size 3 3)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32h743.kicad_sch"
+			(at 76.2 70.4346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Field2" ""
+			(at 76.2 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/eb258cc0-1195-4ed1-95ab-e53e6d821927"
+					(page "3")
+				)
+			)
+		)
+	)
+)

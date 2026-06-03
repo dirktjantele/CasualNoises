@@ -1,0 +1,237 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "bc7f0cf2-663b-4460-b1a8-d9570524fa95")
+	(paper "A4")
+	(lib_symbols)
+	(text "SPI\n- SPI1: Flash memory - psram\n- SPI2: NerveNet to North Side\n- SPI3: NerveNet to West Side\n- SPI4: NC\n- SPI5: NerveNet East-West\n- SPI6: NerveNet East Side"
+		(exclude_from_sim no)
+		(at 145.796 152.146 0)
+		(effects
+			(font
+				(size 4 4)
+				(thickness 0.8)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "ef867652-e6b1-46ca-9fc5-a10ebea79894")
+	)
+	(sheet
+		(at 57.15 107.95)
+		(size 76.2 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "51523333-a176-4383-be05-89c6d4645648")
+		(property "Sheetname" "STM32H723 C2"
+			(at 80.01 120.015 0)
+			(effects
+				(font
+					(size 3 3)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32h723c2.kicad_sch"
+			(at 57.15 127.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/9920c00d-aede-4dd0-b937-df56fea618fd"
+					(page "10")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 57.15 44.45)
+		(size 76.2 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "7054590f-d73f-4c1e-88a5-0be030aa15bb")
+		(property "Sheetname" "STM32H723 A2"
+			(at 78.74 56.515 0)
+			(effects
+				(font
+					(size 3 3)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32h723a2.kicad_sch"
+			(at 57.15 64.0846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/9920c00d-aede-4dd0-b937-df56fea618fd"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 157.988 44.958)
+		(size 76.2 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9bb8fda3-319b-4ec4-9ddf-be4af95adb19")
+		(property "Sheetname" "Flash Memory"
+			(at 182.753 56.388 0)
+			(effects
+				(font
+					(size 3 3)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "flashmemory2.kicad_sch"
+			(at 157.988 64.5926 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/9920c00d-aede-4dd0-b937-df56fea618fd"
+					(page "11")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 57.15 76.2)
+		(size 76.2 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "c2dde853-49d7-4bec-8ea4-4552b871edee")
+		(property "Sheetname" "STM32H723 B2"
+			(at 79.375 88.265 0)
+			(effects
+				(font
+					(size 3 3)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32h723b2_sch.kicad_sch"
+			(at 57.15 95.8346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/9920c00d-aede-4dd0-b937-df56fea618fd"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 157.988 76.2)
+		(size 76.2 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "da02f740-f65b-4487-ad70-4a84dcfa9597")
+		(property "Sheetname" "PSRAM"
+			(at 191.262 87.63 0)
+			(effects
+				(font
+					(size 3 3)
+					(thickness 0.6)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "untitled.kicad_sch"
+			(at 157.988 95.8346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "MCU Board"
+				(path "/5d20b1cb-a992-4ecd-a21e-0da718158bf8/9920c00d-aede-4dd0-b937-df56fea618fd"
+					(page "14")
+				)
+			)
+		)
+	)
+)

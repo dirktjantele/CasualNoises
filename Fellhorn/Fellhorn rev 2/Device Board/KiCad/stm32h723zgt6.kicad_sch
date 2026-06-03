@@ -1,0 +1,159 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "ace8f884-de83-4f3a-80ba-164014e90ed4")
+	(paper "A4")
+	(title_block
+		(title "Fellhorn rev 2 STM32H723 overview")
+		(date "2025-07-22")
+		(rev "1")
+		(company "CasualNoises")
+	)
+	(lib_symbols)
+	(text "SPI1: Serial input shift register for buttons and encoder\nSPI2: Serial output shift register for led's\nSPI3: Display driver\nSPI4: NerveNet interface driver\nSPI5: Flash memory driver\n\nI2C4: Capacitive touch sensor"
+		(exclude_from_sim no)
+		(at 141.478 53.34 0)
+		(effects
+			(font
+				(size 3 3)
+				(thickness 0.6)
+				(bold yes)
+			)
+			(justify left)
+		)
+		(uuid "5f12d4bd-89e0-4f72-952d-7b0517ab6324")
+	)
+	(sheet
+		(at 50.8 101.092)
+		(size 76.454 26.924)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "004d7fd1-03af-45c0-9b14-e0c9c076be84")
+		(property "Sheetname" "STM32H723 B"
+			(at 73.914 117.602 0)
+			(effects
+				(font
+					(size 3 3)
+					(thickness 0.6)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32h723b.kicad_sch"
+			(at 50.8 128.6006 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "KiCad"
+				(path "/83cf7789-f0fe-4144-bcb0-140151057475/6126f1b7-8f7f-4cc5-8ea2-3f8c2f19d41a"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 50.8 50.292)
+		(size 76.454 26.416)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "65783996-38e7-46a1-b485-afe98355e8fb")
+		(property "Sheetname" "STM32H723 A"
+			(at 73.406 65.532 0)
+			(effects
+				(font
+					(size 3 3)
+					(thickness 0.6)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32h723a.kicad_sch"
+			(at 50.8 77.2926 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "KiCad"
+				(path "/83cf7789-f0fe-4144-bcb0-140151057475/6126f1b7-8f7f-4cc5-8ea2-3f8c2f19d41a"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 49.784 151.384)
+		(size 77.47 27.432)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "cabb4f3b-5539-4615-85d3-44e6e8905684")
+		(property "Sheetname" "STM32H723 C"
+			(at 74.93 168.402 0)
+			(effects
+				(font
+					(size 3 3)
+					(thickness 0.6)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32h723c.kicad_sch"
+			(at 49.784 179.4006 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "KiCad"
+				(path "/83cf7789-f0fe-4144-bcb0-140151057475/6126f1b7-8f7f-4cc5-8ea2-3f8c2f19d41a"
+					(page "5")
+				)
+			)
+		)
+	)
+)
