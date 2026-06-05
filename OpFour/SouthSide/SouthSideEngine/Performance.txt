@@ -1,3 +1,0 @@
-SouthSideAudioProcessor::processBlock()
-	empty 					: 81us
-	LFO::nextSample() x 1 	: 356us
