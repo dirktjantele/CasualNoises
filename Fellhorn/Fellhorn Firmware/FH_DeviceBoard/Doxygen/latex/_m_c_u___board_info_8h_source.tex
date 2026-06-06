@@ -1,0 +1,47 @@
+\doxysection{MCU\+\_\+\+Board\+Info.\+h}
+\hypertarget{_m_c_u___board_info_8h_source}{}\label{_m_c_u___board_info_8h_source}\index{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/MCU\_BoardInfo.h@{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/MCU\_BoardInfo.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ \ \ MCU\_BoardInfo.h}}
+\DoxyCodeLine{00005\ \textcolor{comment}{}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ \ \ \ Usefull\ for\ communication\ between\ threads}}
+\DoxyCodeLine{00007\ \textcolor{comment}{}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ \ \ \ Created:\ 19/04/2025}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ \ \ \ Author:\ \ Dirk\ Tjantele}}
+\DoxyCodeLine{00010\ \textcolor{comment}{}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00012\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{namespace\ }DeviceBoard}
+\DoxyCodeLine{00019\ \{}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ version;}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \}\ \mbox{\hyperlink{struct_device_board_1_1t_north_side_info}{tNorthSideInfo}};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ version;}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \}\ \mbox{\hyperlink{struct_device_board_1_1t_south_side_info}{tSouthSideInfo}};}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1t_north_side_info}{tNorthSideInfo}}\ \ \ \ NorthSide;}
+\DoxyCodeLine{00036\ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1t_south_side_info}{tSouthSideInfo}}\ \ \ \ SouthSide;}
+\DoxyCodeLine{00037\ \}\ \mbox{\hyperlink{struct_device_board_1_1t_m_c_u___board_info}{tMCU\_BoardInfo}};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{extern}\ \mbox{\hyperlink{struct_device_board_1_1t_m_c_u___board_info}{tMCU\_BoardInfo}}\ gMCU\_BoardInfo;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \}\ \textcolor{comment}{//\ namespace\ DeviceBoard}}
+
+\end{DoxyCode}

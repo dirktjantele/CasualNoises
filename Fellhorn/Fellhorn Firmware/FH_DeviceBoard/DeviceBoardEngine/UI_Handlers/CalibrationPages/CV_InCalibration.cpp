@@ -22,8 +22,10 @@
 
 #include "Utilities/enumClassUtilities.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 //==============================================================================
 //          CV_CalibrationPage() & ~CV_CalibrationPage()
@@ -361,4 +363,4 @@ bool CV_CalibrationPage::processData (
 	return false;
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

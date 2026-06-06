@@ -18,8 +18,10 @@
 #include <NerveNet/NerveNetMessage.h>
 #include "Threads/Multiplexed_ADC_Thread.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 // Arguments expected when starting the thread
 typedef struct
@@ -43,4 +45,4 @@ BaseType_t Start_UI_Thread ( UI_ThreadData *argument );
 
 void handleNerveNetCallBacks ( tNerveNetMessageHeader* messagePtr );
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

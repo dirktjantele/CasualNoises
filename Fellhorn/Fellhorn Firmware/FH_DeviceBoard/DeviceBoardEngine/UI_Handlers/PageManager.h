@@ -24,8 +24,10 @@
 
 #include "queue.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 enum class ePageId
 {
@@ -74,4 +76,4 @@ private:
 
 };
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

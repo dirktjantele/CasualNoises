@@ -19,7 +19,7 @@
 #include "task.h"
 #include "queue.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
 
 typedef struct
@@ -45,7 +45,6 @@ typedef struct
 	bool			gEventHandlerThreadRunning = false;
 
 	// Info about the TLV driver thread
-//	TaskHandle_t 	gTLV_DriverThreadTaskHandle;
 	QueueHandle_t	gTLV_DriverThreadQueueHandle;
 	bool			gTLV_DriverThreadThreadRunning = false;
 
@@ -53,4 +52,4 @@ typedef struct
 
 extern tYellowPages	gYellowPages;
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

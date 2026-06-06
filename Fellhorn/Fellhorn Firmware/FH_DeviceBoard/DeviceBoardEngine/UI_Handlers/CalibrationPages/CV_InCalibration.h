@@ -21,10 +21,15 @@
 
 namespace CasualNoises
 {
-
 class Box;
 class Label;
 class LevelBar;
+}
+
+namespace DeviceBoard
+{
+
+using namespace CasualNoises;
 
 //==============================================================================
 //          CV_CalibrationPage
@@ -97,4 +102,4 @@ private:
 
 };
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

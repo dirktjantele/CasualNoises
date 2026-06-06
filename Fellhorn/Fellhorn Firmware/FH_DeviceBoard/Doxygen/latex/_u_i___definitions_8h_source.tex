@@ -1,0 +1,165 @@
+\doxysection{UI\+\_\+\+Definitions.\+h}
+\hypertarget{_u_i___definitions_8h_source}{}\label{_u_i___definitions_8h_source}\index{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Definitions.h@{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Definitions.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ \ \ UI\_Definitions.h}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ \ \ \ Created:\ 02/01/2026}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ \ \ \ Author:\ \ Dirk\ Tjantele}}
+\DoxyCodeLine{00007\ \textcolor{comment}{}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00009\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}main.h"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}SystemConfig.h"{}}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{comment}{//\#include\ "{}NerveNet/NerveNetMessageHeader.h"{}}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{namespace\ }DeviceBoard}
+\DoxyCodeLine{00019\ \{}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{comment}{//\ Thread\ source\ identification,\ part\ of\ any\ event\ send\ from\ any\ thread\ to\ the\ UI\ thread}}
+\DoxyCodeLine{00022\ \textcolor{keyword}{enum\ class}\ eEventSourceID}
+\DoxyCodeLine{00023\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ encoderThreadSourceID,}
+\DoxyCodeLine{00025\ \ \ \ \ multiplexerADC\_ThreadSourceID,}
+\DoxyCodeLine{00026\ \ \ \ \ nerveNetSourceID,}
+\DoxyCodeLine{00027\ \};}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{//\ Multiplexer\ signature,\ one\ structure\ used\ for\ each\ multiplexer}}
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ The\ ADC\ multiplexer\ is\ controlled\ by\ 3\ GPIO\ output\ pins}}
+\DoxyCodeLine{00031\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ GPIO\_TypeDef*\ \ \ \ \ \ \ \ \ \ \ SO\_Port;}
+\DoxyCodeLine{00034\ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SO\_Pin;}
+\DoxyCodeLine{00035\ \ \ \ \ GPIO\_TypeDef*\ \ \ \ \ \ \ \ \ \ \ S1\_Port;}
+\DoxyCodeLine{00036\ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ S1\_Pin;}
+\DoxyCodeLine{00037\ \ \ \ \ GPIO\_TypeDef*\ \ \ \ \ \ \ \ \ \ \ S2\_Port;}
+\DoxyCodeLine{00038\ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ S2\_Pin;}
+\DoxyCodeLine{00039\ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask;}
+\DoxyCodeLine{00040\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_a_d_c___multiplexer_signature}{sADC\_MultiplexerSignature}};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{comment}{//\ Logical\ potentiometer\ id's}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{enum\ class}\ eLogicalPotId}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ pot\_1\ \ \ =\ 0,}
+\DoxyCodeLine{00046\ \ \ \ \ pot\_2,}
+\DoxyCodeLine{00047\ \ \ \ \ pot\_3,}
+\DoxyCodeLine{00048\ \ \ \ \ pot\_4,}
+\DoxyCodeLine{00049\ \ \ \ \ slider\_1,}
+\DoxyCodeLine{00050\ \ \ \ \ slider\_2,}
+\DoxyCodeLine{00051\ \ \ \ \ slider\_3,}
+\DoxyCodeLine{00052\ \ \ \ \ slider\_4,}
+\DoxyCodeLine{00053\ \ \ \ \ slider\_5,}
+\DoxyCodeLine{00054\ \ \ \ \ slider\_6,}
+\DoxyCodeLine{00055\ \ \ \ \ slider\_7,}
+\DoxyCodeLine{00056\ \ \ \ \ slider\_8,}
+\DoxyCodeLine{00057\ \ \ \ \ unconnected,\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Should\ be\ last}}
+\DoxyCodeLine{00058\ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{comment}{//\ Multiplexer\ signature,\ one\ structure\ used\ for\ each\ multiplexer}}
+\DoxyCodeLine{00061\ \textcolor{comment}{//\ This\ struct\ is\ used\ by\ the\ Multiplexed\ ADC\ thread\ to\ do\ the\ mapping\ from\ mult\ coordinates\ to\ eLogicalPotId's}}
+\DoxyCodeLine{00062\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00063\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ eLogicalPotId\ logicalPotIds\ [\ NO\_OF\_ADC\_MULTI\_CHANNELS\ ];}
+\DoxyCodeLine{00065\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_logical_pot_channel_nums}{sLogicalPotChannelNums}};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{comment}{//\ Structure\ of\ a\ multiplexed\ ADC\ event}}
+\DoxyCodeLine{00068\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00069\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ eEventSourceID\ \ \ \ \ \ \ \ \ \ \ \ \ \ eventSourceID;}
+\DoxyCodeLine{00071\ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ multiplexerNo;}
+\DoxyCodeLine{00072\ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ multiplexerChannelNo;}
+\DoxyCodeLine{00073\ \ \ \ \ eLogicalPotId\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logicalPotId;}
+\DoxyCodeLine{00074\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value;}
+\DoxyCodeLine{00075\ \ \ \ \ int32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ deviation;}
+\DoxyCodeLine{00076\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_multiplexed___a_d_c___event}{sMultiplexed\_ADC\_Event}};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{comment}{//\ Encoder\ signature}}
+\DoxyCodeLine{00079\ \textcolor{comment}{//\ A\ switch\ is\ a\ simplified\ encoder,\ device\ no's/pin\ no's\ for\ encoder\ switches\ set\ to\ 0xff}}
+\DoxyCodeLine{00080\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00081\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ uint8\_t\ \ \ \ \ encoderNo;}
+\DoxyCodeLine{00083\ \ \ \ \ uint8\_t\ \ \ \ \ switchDevNo;}
+\DoxyCodeLine{00084\ \ \ \ \ uint8\_t\ \ \ \ \ switchPinNo;}
+\DoxyCodeLine{00085\ \ \ \ \ uint8\_t\ \ \ \ \ enc\_A\_DevNo;}
+\DoxyCodeLine{00086\ \ \ \ \ uint8\_t\ \ \ \ \ enc\_A\_PinNo;}
+\DoxyCodeLine{00087\ \ \ \ \ uint8\_t\ \ \ \ \ enc\_B\_DevNo;}
+\DoxyCodeLine{00088\ \ \ \ \ uint8\_t\ \ \ \ \ enc\_B\_PinNo;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ allChanges;}
+\DoxyCodeLine{00090\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_encoder_signature}{sEncoderSignature}};}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \textcolor{comment}{//\ Encoder\ event\ types}}
+\DoxyCodeLine{00093\ \textcolor{keyword}{enum\ class}\ eEncoderEventType}
+\DoxyCodeLine{00094\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ encoderSwitch,}
+\DoxyCodeLine{00096\ \ \ \ \ encoderCount}
+\DoxyCodeLine{00097\ \};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \textcolor{comment}{//\ Structure\ of\ an\ encoder\ event}}
+\DoxyCodeLine{00100\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00101\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ eEventSourceID\ \ \ \ \ \ \ \ \ \ \ \ \ \ eventSourceID;}
+\DoxyCodeLine{00103\ \ \ \ \ eEncoderEventType\ \ \ \ \ \ \ \ \ \ \ eventType;}
+\DoxyCodeLine{00104\ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ encoderNo;}
+\DoxyCodeLine{00105\ \ \ \ \ eSwitchNums\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ encoderSwitchNum;}
+\DoxyCodeLine{00106\ \ \ \ \ int16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ encoderCount;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newState;}
+\DoxyCodeLine{00108\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_encoder_event}{sEncoderEvent}};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{comment}{//\ Structure\ of\ a\ NerveNet\ event}}
+\DoxyCodeLine{00111\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00112\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ eEventSourceID\ \ \ \ \ \ \ \ \ \ \ \ \ \ eventSourceID;}
+\DoxyCodeLine{00114\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ eventLength;}
+\DoxyCodeLine{00115\ \ \ \ \ uint8\_t*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ eventdataPtr;}
+\DoxyCodeLine{00116\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_nerve_net_event}{sNerveNetEvent}};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \textcolor{comment}{//\ Structure\ of\ incoming\ UI\ messages}}
+\DoxyCodeLine{00119\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{union}}
+\DoxyCodeLine{00120\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1s_encoder_event}{sEncoderEvent}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ encoderEvent;}
+\DoxyCodeLine{00122\ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1s_multiplexed___a_d_c___event}{sMultiplexed\_ADC\_Event}}\ \ \ \ \ \ \ \ multiplexed\_ADC\_Event;}
+\DoxyCodeLine{00123\ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1s_nerve_net_event}{sNerveNetEvent}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nerveNetEvent;}
+\DoxyCodeLine{00124\ \}\ \mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{sIncommingUI\_Event}};}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \textcolor{comment}{//\ Potentiometer/slider\ calibration\ values}}
+\DoxyCodeLine{00127\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00128\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ uint8\_t\ \ \ \ \ reveserved\_1;}
+\DoxyCodeLine{00130\ \ \ \ \ uint8\_t\ \ \ \ \ isCalibrated;}
+\DoxyCodeLine{00131\ \ \ \ \ uint16\_t\ \ \ \ reveserved\_2;}
+\DoxyCodeLine{00132\ \ \ \ \ uint32\_t\ \ \ \ minValues\ [NO\_OF\_ADC\_MULTIPLEXERS]\ [NO\_OF\_ADC\_MULTI\_CHANNELS];}
+\DoxyCodeLine{00133\ \ \ \ \ uint32\_t\ \ \ \ maxValues\ [NO\_OF\_ADC\_MULTIPLEXERS]\ [NO\_OF\_ADC\_MULTI\_CHANNELS];}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ maskFlags\ [NO\_OF\_ADC\_MULTIPLEXERS]\ [NO\_OF\_ADC\_MULTI\_CHANNELS];}
+\DoxyCodeLine{00135\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_calibration_data}{sCalibrationData}};}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \textcolor{comment}{//\ System\ settings}}
+\DoxyCodeLine{00138\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00139\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1s_calibration_data}{sCalibrationData}}\ \ \ \ \ \ \ \ calibrationData;}
+\DoxyCodeLine{00141\ \}\ \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{sSystemSettings}};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \}\ \textcolor{comment}{//\ namespace\ DeviceBoard}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \textcolor{keyword}{namespace\ }CasualNoises}
+\DoxyCodeLine{00146\ \{}
+\DoxyCodeLine{00147\ \textcolor{keyword}{using\ }DeviceBoard::eEventSourceID;}
+\DoxyCodeLine{00148\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_a_d_c___multiplexer_signature}{DeviceBoard::sADC\_MultiplexerSignature}};}
+\DoxyCodeLine{00149\ \textcolor{keyword}{using\ }DeviceBoard::eLogicalPotId;}
+\DoxyCodeLine{00150\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_logical_pot_channel_nums}{DeviceBoard::sLogicalPotChannelNums}};}
+\DoxyCodeLine{00151\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_multiplexed___a_d_c___event}{DeviceBoard::sMultiplexed\_ADC\_Event}};}
+\DoxyCodeLine{00152\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_encoder_signature}{DeviceBoard::sEncoderSignature}};}
+\DoxyCodeLine{00153\ \textcolor{keyword}{using\ }DeviceBoard::eEncoderEventType;}
+\DoxyCodeLine{00154\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_encoder_event}{DeviceBoard::sEncoderEvent}};}
+\DoxyCodeLine{00155\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_nerve_net_event}{DeviceBoard::sNerveNetEvent}};}
+\DoxyCodeLine{00156\ \textcolor{keyword}{using\ }\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{DeviceBoard::sIncommingUI\_Event}};}
+\DoxyCodeLine{00157\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_calibration_data}{DeviceBoard::sCalibrationData}};}
+\DoxyCodeLine{00158\ \textcolor{keyword}{using\ }\mbox{\hyperlink{struct_device_board_1_1s_system_settings}{DeviceBoard::sSystemSettings}};}
+\DoxyCodeLine{00159\ \}}
+
+\end{DoxyCode}

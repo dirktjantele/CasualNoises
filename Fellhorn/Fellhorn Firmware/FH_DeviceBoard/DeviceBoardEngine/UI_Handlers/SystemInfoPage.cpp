@@ -27,8 +27,10 @@
 #include "GUI/GUI_Basics/Components/ProgressBar.h"
 #include "Graphics/Geometry/Rectangle.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 /*---------------------------- SystemInfoPage ----------------------------*/
 
@@ -111,11 +113,11 @@ bool SystemInfoPage::handleLocalUI_event ( sIncommingUI_Event* uiEvent,
 //==============================================================================
 //          SystemInfoPage()
 //
-// Show main page
+// Show system info page
 //
 //  CasualNoises    17/03/2026  First implementation
 //==============================================================================
-#include <task.h>
+//#include <task.h>
 void SystemInfoPage::startDataCollection ( )
 {
 
@@ -165,7 +167,7 @@ void SystemInfoPage::startDataCollection ( )
 }
 
 //==============================================================================
-//          SystemInfoPage()
+//          paint ()
 //
 // Show main page
 //
@@ -180,7 +182,7 @@ void SystemInfoPage::paint ( Graphics& g )
 }
 
 //==============================================================================
-//          resized()
+//          resized ()
 //
 // 	Set size and location of all components in the page
 //
@@ -210,5 +212,5 @@ void SystemInfoPage::updateLEDs ()
 	dimSwitchLeds ();
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard
 

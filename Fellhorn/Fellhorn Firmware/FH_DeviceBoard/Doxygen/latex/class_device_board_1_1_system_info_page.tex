@@ -1,0 +1,135 @@
+\doxysection{Device\+Board\+::System\+Info\+Page Class Reference}
+\hypertarget{class_device_board_1_1_system_info_page}{}\label{class_device_board_1_1_system_info_page}\index{DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}}
+Inheritance diagram for Device\+Board\+::System\+Info\+Page\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_device_board_1_1_system_info_page}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_device_board_1_1_system_info_page_a28c8f3d1c798f703896b87b934bd61e1}\label{class_device_board_1_1_system_info_page_a28c8f3d1c798f703896b87b934bd61e1} 
+{\bfseries System\+Info\+Page} (SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*}m\+\_\+oled\+Driver\+Ptr, Queue\+Handle\+\_\+t driver\+Queue\+Handle, \mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*}page\+Manager\+Ptr)
+\item 
+virtual bool \mbox{\hyperlink{class_device_board_1_1_system_info_page_af6f77a0df072e68b858b40f7a472a635}{handle\+Local\+UI\+\_\+event}} (\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}ui\+Event, bool alt\+State, Graphics \&g, \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}settings\+Ptr, bool alt\+Switch\+State) override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_system_info_page_ad4fce940e2f2529cc28a0ee130e4ea45}{paint}} (Graphics \&g) override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_system_info_page_aaafb0bfbadf70ba0b1adbf1e041da820}{resized}} () override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_system_info_page_aba856bcf24f1bbb45b14a3ef04ab3549}{update\+LEDs}} () override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_system_info_page_ae23ba48aa3932643394bbba6048f38e8}{load\+Context}} () override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_system_info_page_afef4fac9743fa1fdac64bc01f27563fd}{save\+Context}} () override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{Root\+Page}} ()=delete
+\begin{DoxyCompactList}\small\item\em do\+Something \end{DoxyCompactList}\item 
+{\bfseries Root\+Page} (SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*}m\+\_\+oled\+Driver\+Ptr, Queue\+Handle\+\_\+t driver\+Queue\+Handle, \mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*}page\+Manager\+Ptr)
+\item 
+void {\bfseries paint\+All} (Graphics \&g)
+\item 
+bool {\bfseries handle\+UI\+\_\+event} (\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}ui\+Event, bool alt\+State, Graphics \&g, \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}settings\+Ptr, bool alt\+Switch\+State)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries add\+Child\+Component} (Component \texorpdfstring{$\ast$}{*}child)
+\item 
+void {\bfseries add\+And\+Make\+Visible} (Component \texorpdfstring{$\ast$}{*}child)
+\item 
+Rectangle$<$ int32\+\_\+t $>$ {\bfseries get\+Global\+Bounds} () const
+\item 
+void {\bfseries dim\+Switch\+Leds} ()
+\item 
+void {\bfseries set\+Switch\+Led} (e\+LED\+\_\+\+Bit\+Nums led)
+\item 
+void {\bfseries dim\+Switch\+Led} (e\+LED\+\_\+\+Bit\+Nums led)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}}
+\begin{DoxyCompactItemize}
+\item 
+SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*} {\bfseries m\+\_\+oled\+Driver\+Ptr} \{ nullptr \}
+\item 
+Queue\+Handle\+\_\+t {\bfseries m\+TLV\+\_\+\+Driver\+Queue\+Handle} \{ nullptr \}
+\item 
+\mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*} {\bfseries m\+Page\+Manager\+Ptr} \{ nullptr \}
+\item 
+Rectangle$<$ int32\+\_\+t $>$ {\bfseries m\+Local\+Bounds}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_device_board_1_1_system_info_page_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_device_board_1_1_system_info_page_af6f77a0df072e68b858b40f7a472a635}\index{DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}!handleLocalUI\_event@{handleLocalUI\_event}}
+\index{handleLocalUI\_event@{handleLocalUI\_event}!DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}}
+\doxysubsubsection{\texorpdfstring{handleLocalUI\_event()}{handleLocalUI\_event()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_system_info_page_af6f77a0df072e68b858b40f7a472a635} 
+bool Device\+Board\+::\+System\+Info\+Page\+::handle\+Local\+UI\+\_\+event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}}]{ui\+Event}{, }\item[{bool}]{alt\+State}{, }\item[{Graphics \&}]{g}{, }\item[{\mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}}]{settings\+Ptr}{, }\item[{bool}]{alt\+Switch\+State}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_system_info_page_ae23ba48aa3932643394bbba6048f38e8}\index{DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}!loadContext@{loadContext}}
+\index{loadContext@{loadContext}!DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}}
+\doxysubsubsection{\texorpdfstring{loadContext()}{loadContext()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_system_info_page_ae23ba48aa3932643394bbba6048f38e8} 
+void Device\+Board\+::\+System\+Info\+Page\+::load\+Context (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_system_info_page_ad4fce940e2f2529cc28a0ee130e4ea45}\index{DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}!paint@{paint}}
+\index{paint@{paint}!DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}}
+\doxysubsubsection{\texorpdfstring{paint()}{paint()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_system_info_page_ad4fce940e2f2529cc28a0ee130e4ea45} 
+void Device\+Board\+::\+System\+Info\+Page\+::paint (\begin{DoxyParamCaption}\item[{Graphics \&}]{g}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_system_info_page_aaafb0bfbadf70ba0b1adbf1e041da820}\index{DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}!resized@{resized}}
+\index{resized@{resized}!DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}}
+\doxysubsubsection{\texorpdfstring{resized()}{resized()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_system_info_page_aaafb0bfbadf70ba0b1adbf1e041da820} 
+void Device\+Board\+::\+System\+Info\+Page\+::resized (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_system_info_page_afef4fac9743fa1fdac64bc01f27563fd}\index{DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}!saveContext@{saveContext}}
+\index{saveContext@{saveContext}!DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}}
+\doxysubsubsection{\texorpdfstring{saveContext()}{saveContext()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_system_info_page_afef4fac9743fa1fdac64bc01f27563fd} 
+void Device\+Board\+::\+System\+Info\+Page\+::save\+Context (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_system_info_page_aba856bcf24f1bbb45b14a3ef04ab3549}\index{DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}!updateLEDs@{updateLEDs}}
+\index{updateLEDs@{updateLEDs}!DeviceBoard::SystemInfoPage@{DeviceBoard::SystemInfoPage}}
+\doxysubsubsection{\texorpdfstring{updateLEDs()}{updateLEDs()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_system_info_page_aba856bcf24f1bbb45b14a3ef04ab3549} 
+void Device\+Board\+::\+System\+Info\+Page\+::update\+LEDs (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/dirktjantele/\+Desktop/\+Hardware Projects/\+Hardware Synth/\+\_\+\+Current Projects/\+Fellhorn rev 2/\+Fellhorn Firmware/\+FH\+\_\+\+Device\+Board/\+Device\+Board\+Engine/\+UI\+\_\+\+Handlers/System\+Info\+Page.\+h\item 
+/\+Users/dirktjantele/\+Desktop/\+Hardware Projects/\+Hardware Synth/\+\_\+\+Current Projects/\+Fellhorn rev 2/\+Fellhorn Firmware/\+FH\+\_\+\+Device\+Board/\+Device\+Board\+Engine/\+UI\+\_\+\+Handlers/System\+Info\+Page.\+cpp\end{DoxyCompactItemize}

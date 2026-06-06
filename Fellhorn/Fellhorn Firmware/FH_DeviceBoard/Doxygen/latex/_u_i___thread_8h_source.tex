@@ -1,0 +1,54 @@
+\doxysection{UI\+\_\+\+Thread.\+h}
+\hypertarget{_u_i___thread_8h_source}{}\label{_u_i___thread_8h_source}\index{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Thread.h@{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Thread.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ \ \ UI\_Thread.h}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ \ \ \ Created:\ 15/02/2025}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ \ \ \ Author:\ \ Dirk\ Tjantele}}
+\DoxyCodeLine{00007\ \textcolor{comment}{}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00009\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{comment}{//\#include\ "{}NorthSideAudioProcessor.h"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <Drivers/NVM\ Drivers/NVM\ Driver/NVM\_Driver.h>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <Threads/SPI\_EncoderThread.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <Threads/SPI\_LED\_Thread.h>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <Drivers/OLED/SSD1309\_Driver.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <NerveNet/NerveNetMessage.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ "{}Threads/Multiplexed\_ADC\_Thread.h"{}}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{namespace\ }DeviceBoard}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{using\ namespace\ }CasualNoises;}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{comment}{//\ Arguments\ expected\ when\ starting\ the\ thread}}
+\DoxyCodeLine{00027\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \ \ \ \ sNVM\_DriverInitData\ \ \ \ \ \ \ \ \ nvmDriverInitData;}
+\DoxyCodeLine{00030\ \ \ \ \ sSPI\_EncoderThreadData\ \ \ \ \ \ spiEncoderThreadData;}
+\DoxyCodeLine{00031\ \ \ \ \ sSPI\_LED\_ThreadData\ \ \ \ \ \ \ \ \ spi\_LED\_ThreadData;}
+\DoxyCodeLine{00032\ \ \ \ \ sSSD1309\_ConfigData\ \ \ \ \ \ \ \ \ oledConfigData;}
+\DoxyCodeLine{00033\ \ \ \ \ sADC\_MultiplexerThreadData\ \ ADC\_MultiplexerThreadData;}
+\DoxyCodeLine{00034\ \ \ \ \ void\ (\ **nerveNetCallBackPtr\ )\ (\ tNerveNetMessageHeader*\ messagePtr\ );}
+\DoxyCodeLine{00035\ \}\ \mbox{\hyperlink{struct_device_board_1_1_u_i___thread_data}{UI\_ThreadData}};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ version;}
+\DoxyCodeLine{00040\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count;}
+\DoxyCodeLine{00041\ \}\ \mbox{\hyperlink{struct_device_board_1_1_u_i___state_data}{UI\_StateData}};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{//\ Start\ thread\ function}}
+\DoxyCodeLine{00044\ BaseType\_t\ Start\_UI\_Thread\ (\ \mbox{\hyperlink{struct_device_board_1_1_u_i___thread_data}{UI\_ThreadData}}\ *argument\ );}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keywordtype}{void}\ handleNerveNetCallBacks\ (\ tNerveNetMessageHeader*\ messagePtr\ );}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \}\ \textcolor{comment}{//\ namespace\ DeviceBoard}}
+
+\end{DoxyCode}

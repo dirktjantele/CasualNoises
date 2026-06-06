@@ -15,7 +15,7 @@
 
 //#include "NerveNet/NerveNetMessageHeader.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
 
 // Thread source identification, part of any event send from any thread to the UI thread
@@ -140,4 +140,20 @@ typedef struct
 	sCalibrationData 		calibrationData;
 } sSystemSettings;
 
-} // namespace CasualNoises
+} // namespace DeviceBoard
+
+namespace CasualNoises
+{
+using DeviceBoard::eEventSourceID;
+using DeviceBoard::sADC_MultiplexerSignature;
+using DeviceBoard::eLogicalPotId;
+using DeviceBoard::sLogicalPotChannelNums;
+using DeviceBoard::sMultiplexed_ADC_Event;
+using DeviceBoard::sEncoderSignature;
+using DeviceBoard::eEncoderEventType;
+using DeviceBoard::sEncoderEvent;
+using DeviceBoard::sNerveNetEvent;
+using DeviceBoard::sIncommingUI_Event;
+using DeviceBoard::sCalibrationData;
+using DeviceBoard::sSystemSettings;
+}

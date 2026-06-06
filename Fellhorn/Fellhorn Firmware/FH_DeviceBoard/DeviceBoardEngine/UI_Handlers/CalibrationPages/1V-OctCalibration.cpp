@@ -23,8 +23,10 @@
 
 #include "NerveNet/NerveNetMasterThread.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 //==============================================================================
 //          _1V_OctCalibrationPage() & ~_1V_OctCalibrationPage()
@@ -41,7 +43,7 @@ _1V_OctCalibrationPage::_1V_OctCalibrationPage (
 
 	// Turn on Save switch led					ToDo find alternative solution
 	dimSwitchLeds ();
-//	setSwitchLed ( eLED_BitNums::SWITCH_6 );
+	setSwitchLed ( eLED_BitNums::RIGTH_ARROW_SWITCH );
 
 	// Create a border component
 	mOuterBoxPtr = new Box( String( (char*) "Border" ) );
@@ -60,7 +62,7 @@ _1V_OctCalibrationPage::_1V_OctCalibrationPage (
 	mNoteSelectionPtr->onChange = [this] { onNoteSelectionChange(); };
 
 	// Continuation instructions
-	mContLabelPtr = new Label ( "Press 'Save'" );
+	mContLabelPtr = new Label ( "Press '>'" );
 	mContLabelPtr->setJustification ( eJustificationFlags::centred );
 	addAndMakeVisible ( mContLabelPtr );
 
@@ -207,17 +209,17 @@ bool _1V_OctCalibrationPage::handleLocalUI_event (
 			if ( headerPtr->sourceID == eNerveNetSourceId::FellhornSouthSide )
 				southSideReplied = true;
 			canProceseed = northSideReplied & southSideReplied;
-			processData( headerPtr->sourceID, dataPtr );
+			processData ( headerPtr->sourceID, dataPtr );
 			return true;
 
 		}
 
 	}
-	// Handle Save button events
+
+	// Handle '>' button events
 	static bool readyToExit = false;
-/*																			ToDo alternative to save button
 	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
-		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::SAVE_SWITCH ) &&
+		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::RIGTH_ARROW_SWITCH ) &&
 		 canProceseed )
 	{
 
@@ -235,15 +237,16 @@ bool _1V_OctCalibrationPage::handleLocalUI_event (
 		southSideReplied = false;
 		if ( ( mMaxCalibrationValue - mMinCalibrationValue ) > ( 65535.0f / 5.2f ) )
 		{
-			setSwitchLed ( eLED_BitNums::SWITCH_3 );
-			mContLabelPtr->setText( "Press '>'" );
+			dimSwitchLed ( eLED_BitNums::RIGTH_ARROW_SWITCH );
+			setSwitchLed ( eLED_BitNums::EDIT_SWITCH );
+			mContLabelPtr->setText( "Press 'Save'" );
 			readyToExit = true;
 		}
 	}
-*/
+
 	// Proceed to next step
 	if ( ( uiEvent->encoderEvent.eventSourceID == eEventSourceID::encoderThreadSourceID ) &&
-		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::RIGTH_ARROW_SWITCH ) &&
+		 ( (eSwitchNums) uiEvent->encoderEvent.encoderNo == eSwitchNums::EDIT_SWITCH ) &&
 		 readyToExit )
 	{
 
@@ -367,4 +370,4 @@ void _1V_OctCalibrationPage::composeCalibrationTable () noexcept
 
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

@@ -13,9 +13,9 @@
 
 #include "MCU_BoardInfo.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
 
 tMCU_BoardInfo	gMCU_BoardInfo;
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

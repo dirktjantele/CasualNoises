@@ -17,12 +17,17 @@
 
 namespace CasualNoises
 {
-
 class Box;
 class IndexBox;
 class ComboBox;
 class Label;
 class ProgressBar;
+}
+
+namespace DeviceBoard
+{
+
+using namespace CasualNoises;
 
 // Struct used to save/load main page state
 typedef struct
@@ -173,4 +178,4 @@ private:
 
 };
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

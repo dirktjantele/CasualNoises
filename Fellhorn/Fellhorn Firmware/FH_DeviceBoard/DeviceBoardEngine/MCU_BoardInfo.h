@@ -15,7 +15,7 @@
 
 #include <stdint.h>
 
-namespace CasualNoises
+namespace DeviceBoard
 {
 
 typedef struct
@@ -38,4 +38,4 @@ typedef struct
 
 extern tMCU_BoardInfo	gMCU_BoardInfo;
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

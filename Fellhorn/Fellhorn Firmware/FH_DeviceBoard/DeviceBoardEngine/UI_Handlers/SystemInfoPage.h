@@ -17,14 +17,20 @@
 
 namespace CasualNoises
 {
-
-//==============================================================================
-//          SystemInfoPage
-//==============================================================================
 class Box;
 class Label;
 class LabelGroup;
 class ViewPort;
+}
+
+namespace DeviceBoard
+{
+
+using namespace CasualNoises;
+
+//==============================================================================
+//          SystemInfoPage
+//==============================================================================
 
 class SystemInfoPage : public RootPage
 {
@@ -62,4 +68,4 @@ private:
 
 };
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

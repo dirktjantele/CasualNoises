@@ -28,8 +28,10 @@
 
 #include "NerveNet/NerveNetMasterThread.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 /*---------------------------- MainPage ----------------------------*/
 
@@ -89,6 +91,7 @@ void MainPage::onComboBoxChange () noexcept
 	switch (id)
 	{
 	case 1:								// Load performance
+		mPageManagerPtr->createNewPage( ePageId::loadPage );
 		break;
 	case 2:								// New performance
 		break;
@@ -758,4 +761,4 @@ void PotentiometerCalibrationPage::saveContext()
 	// Nothing to save here
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

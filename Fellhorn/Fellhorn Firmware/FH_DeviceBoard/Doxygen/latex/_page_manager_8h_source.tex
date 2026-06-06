@@ -1,0 +1,85 @@
+\doxysection{Page\+Manager.\+h}
+\hypertarget{_page_manager_8h_source}{}\label{_page_manager_8h_source}\index{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Handlers/PageManager.h@{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Handlers/PageManager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ \ \ PageManager.h}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ \ \ \ Created:\ 22/12/2025}}
+\DoxyCodeLine{00006\ \textcolor{comment}{}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ \ \ \ Handles\ opening\ pages\ and\ moving\ around\ pages}}
+\DoxyCodeLine{00008\ \textcolor{comment}{}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ \ \ \ Author:\ \ Dirk\ Tjantele}}
+\DoxyCodeLine{00010\ \textcolor{comment}{}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00012\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ "{}RootPage.h"{}}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{comment}{//\#include\ "{}NerveNet/NerveNetMessageHeader.h"{}}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}../UI\_Thread.h"{}}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ "{}Graphics/Contexts/Graphics.h"{}}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ "{}main.h"{}}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}queue.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace\ }DeviceBoard}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{using\ namespace\ }CasualNoises;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{enum\ class}\ ePageId}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ empty\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0x00000000,}
+\DoxyCodeLine{00035\ \ \ \ \ mainPage\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0x6e69616d,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'main'\ main\ page}}
+\DoxyCodeLine{00036\ \ \ \ \ setupPage\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0x75707473,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'stpu'\ setup\ pag}}
+\DoxyCodeLine{00037\ \ \ \ \ loadPage\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0x64616f6c,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'load'\ load\ page}}
+\DoxyCodeLine{00038\ \ \ \ \ calibrationPage\ \ \ \ \ \ \ \ \ =\ 0x62696c63,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'clib'\ calibration\ page}}
+\DoxyCodeLine{00039\ \ \ \ \ potCalibrationPage\ \ \ \ \ \ =\ 0x626c6370,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'pclb'\ calibration\ page}}
+\DoxyCodeLine{00040\ \ \ \ \ \mbox{\hyperlink{class_device_board_1_1_c_v___calibration_page}{CV\_CalibrationPage}}\ \ \ \ \ \ \ \ =\ 0x62637663,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'cvcb'\ calibration\ page}}
+\DoxyCodeLine{00041\ \ \ \ \ \mbox{\hyperlink{class_device_board_1_1__1_v___oct_calibration_page}{\_1V\_OctCalibrationPage}}\ \ \ \ =\ 0x434f5631,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ '1VOC'\ calibration\ page}}
+\DoxyCodeLine{00042\ \ \ \ \ systemInfoPage\ \ \ \ \ \ \ \ \ \ =\ 0x69737973,\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'sysi'\ system\ information\ page}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{class\ }PageManager\ final}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \ PageManager\ ()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00051\ \ \ \ \ \ PageManager\ (\ SSD1309\_Driver*\ oledDriverPt,\ QueueHandle\_t\ driverQueueHandle\ );}
+\DoxyCodeLine{00052\ \ \ \ \ \string~PageManager\ ();}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{void}\ handleUI\_event\ (\ \mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{sIncommingUI\_Event}}*\ uiEvent,\ \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{sSystemSettings}}*\ settingsPtr,\ \textcolor{keywordtype}{bool}\ altSwitchState\ );}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{void}\ saveContext\ ();}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{void}\ createNewPage\ (ePageId\ pageId);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00060\ \ \ \ \ SSD1309\_Driver*\ m\_oledDriverPtr\ \ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00061\ \ \ \ \ QueueHandle\_t\ \ \ mTLV\_DriverQueueHandle\ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \textcolor{keyword}{static}\ cPageIdStackSize\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 24;}
+\DoxyCodeLine{00065\ \ \ \ \ ePageId\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mPageIdStack[cPageIdStackSize];\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Contains\ the\ current\ page\ id\ stack\ (saved\ in\ flash)}}
+\DoxyCodeLine{00066\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mPageIdStackPtr\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ 0\ \};\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Points\ to\ next\ unused\ entry\ in\ the\ page\ stack\ (saved\ in\ flash)}}
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{class_device_board_1_1_root_page}{RootPage}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mPageObjectStack[cPageIdStackSize];\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Stack\ holding\ pointers\ to\ page\ object\ instances}}
+\DoxyCodeLine{00068\ \ \ \ \ Graphics*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mGraphics\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};\ \ \textcolor{comment}{//\ Graphics\ object\ used\ during\ painting\ of\ components}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{void}\ createPage\ (\ ePageId\ pageId,\ \textcolor{keywordtype}{bool}\ updateIdStack,\ uint32\_t\ stackPtr\ );}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ setExitSwitchLedIntensity\ ();}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{void}\ handleExitSwitch\ (\ \textcolor{keywordtype}{bool}\ altState,\ \textcolor{keywordtype}{bool}\ doPaint\ =\ \textcolor{keyword}{true}\ );}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{void}\ forwardADC\_Event\ (\ \mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{sIncommingUI\_Event}}*\ uiEvent,\ \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{sSystemSettings}}*\ settingsPtr,\ \textcolor{keywordtype}{bool}\ altSwitchState\ );}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{void}\ handleNerveNetEvent\ (\ tNerveNetMessageHeader*\ eventPtr\ );}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \}\ \textcolor{comment}{//\ namespace\ DeviceBoard}}
+
+\end{DoxyCode}

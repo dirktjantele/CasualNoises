@@ -21,11 +21,16 @@
 
 namespace CasualNoises
 {
-
 class Box;
 class Label;
 class NoteSelection;
 class LevelBar;
+}
+
+namespace DeviceBoard
+{
+
+using namespace CasualNoises;
 
 class _1V_OctCalibrationPage : public RootPage, private TimerBase
 {
@@ -90,4 +95,4 @@ private:
 
 };
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

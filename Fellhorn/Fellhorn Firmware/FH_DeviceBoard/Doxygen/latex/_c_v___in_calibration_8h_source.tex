@@ -1,0 +1,111 @@
+\doxysection{CV\+\_\+\+In\+Calibration.\+h}
+\hypertarget{_c_v___in_calibration_8h_source}{}\label{_c_v___in_calibration_8h_source}\index{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Handlers/CalibrationPages/CV\_InCalibration.h@{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Handlers/CalibrationPages/CV\_InCalibration.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ \ \ CV\_InCalibration.h}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ \ \ \ Created:\ 03/04/2026}}
+\DoxyCodeLine{00006\ \textcolor{comment}{}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ \ \ \ Handle\ CV\ calibration}}
+\DoxyCodeLine{00008\ \textcolor{comment}{}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ \ \ \ Author:\ \ Dirk\ Tjantele}}
+\DoxyCodeLine{00010\ \textcolor{comment}{}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00012\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ "{}../RootPage.h"{}}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}SynthEngineMessage.h"{}}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ "{}Utilities/TimerBase.h"{}}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{namespace\ }CasualNoises}
+\DoxyCodeLine{00023\ \{}
+\DoxyCodeLine{00024\ \textcolor{keyword}{class\ }Box;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{class\ }Label;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{class\ }LevelBar;}
+\DoxyCodeLine{00027\ \}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }DeviceBoard}
+\DoxyCodeLine{00030\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{using\ namespace\ }CasualNoises;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{//==============================================================================}}
+\DoxyCodeLine{00035\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ CV\_CalibrationPage}}
+\DoxyCodeLine{00036\ \textcolor{comment}{//==============================================================================}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{enum\ class}\ eCV\_CalibrationPhase}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ openCV\_Inputs,}
+\DoxyCodeLine{00041\ \ \ \ \ cv1\_min5,}
+\DoxyCodeLine{00042\ \ \ \ \ cv2\_min5,}
+\DoxyCodeLine{00043\ \ \ \ \ cv3\_min5,}
+\DoxyCodeLine{00044\ \ \ \ \ cv4\_min5,}
+\DoxyCodeLine{00045\ \ \ \ \ cv5\_min5,}
+\DoxyCodeLine{00046\ \ \ \ \ cv6\_min5,}
+\DoxyCodeLine{00047\ \ \ \ \ cv7\_min5,}
+\DoxyCodeLine{00048\ \ \ \ \ cv1\_plus5,}
+\DoxyCodeLine{00049\ \ \ \ \ cv2\_plus5,}
+\DoxyCodeLine{00050\ \ \ \ \ cv3\_plus5,}
+\DoxyCodeLine{00051\ \ \ \ \ cv4\_plus5,}
+\DoxyCodeLine{00052\ \ \ \ \ cv5\_plus5,}
+\DoxyCodeLine{00053\ \ \ \ \ cv6\_plus5,}
+\DoxyCodeLine{00054\ \ \ \ \ cv7\_plus5,}
+\DoxyCodeLine{00055\ \ \ \ \ confirm,}
+\DoxyCodeLine{00056\ \ \ \ \ exit,}
+\DoxyCodeLine{00057\ \ \ \ \ Count,\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Required\ to\ be\ able\ to\ step\ through\ the\ enum\ using\ next\ ()}}
+\DoxyCodeLine{00058\ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{class\ }CV\_CalibrationPage\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{RootPage}},\ \textcolor{keyword}{private}\ TimerBase}
+\DoxyCodeLine{00061\ \{}
+\DoxyCodeLine{00062\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \ CV\_CalibrationPage()\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00065\ \ \ \ \ \ CV\_CalibrationPage(\ SSD1309\_Driver*\ m\_oledDriverPtr,}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ QueueHandle\_t\ driverQueueHandle,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_device_board_1_1_page_manager}{PageManager}}*\ pageManagerPtr\ );}
+\DoxyCodeLine{00068\ \ \ \ \ \string~CV\_CalibrationPage\ ()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{void}\ paint(Graphics\&\ g)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ resized()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{void}\ updateLEDs\ ()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{void}\ loadContext()\textcolor{keyword}{\ override\ }\{\ \};}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{void}\ saveContext()\textcolor{keyword}{\ override\ }\{\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{bool}\ handleLocalUI\_event(\ \mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{sIncommingUI\_Event}}*\ uiEvent,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ altState,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Graphics\&\ g,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{sSystemSettings}}*\ settingsPtr,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ altSwitchState\ )\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{void}\ onTimer()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ Box*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mOuterBoxPtr\ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ Label*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mContLabelPtr\ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00092\ \ \ \ \ Label*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mMessageLabelPtr\ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00093\ \ \ \ \ LevelBar*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mLevelBarPtr\ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ eCV\_CalibrationPhase\ \ \ \ mCurrentPhase\ \ \ \ \ \ \ \ \ \ \ \{\ eCV\_CalibrationPhase::openCV\_Inputs\ \};}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ tCV\_InputCalibrationSettings\ \ \ \ mNorthSideSettings;}
+\DoxyCodeLine{00098\ \ \ \ \ tCV\_InputCalibrationSettings\ \ \ \ mSouthSideSettings;}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ requestADC\_Data\ (\ eNerveNetSourceId\ target\ =\ eNerveNetSourceId::FellhornBothSides\ );}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ processData\ (\ eCV\_CalibrationPhase\ phase,\ eNerveNetSourceId\ sourceId,\ \textcolor{keywordtype}{float}*\ sourceDataPtr\ );}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \}\ \textcolor{comment}{//\ namespace\ DeviceBoard}}
+
+\end{DoxyCode}

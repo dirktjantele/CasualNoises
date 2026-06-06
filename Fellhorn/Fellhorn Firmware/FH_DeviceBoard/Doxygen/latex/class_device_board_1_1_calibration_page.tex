@@ -1,0 +1,141 @@
+\doxysection{Device\+Board\+::Calibration\+Page Class Reference}
+\hypertarget{class_device_board_1_1_calibration_page}{}\label{class_device_board_1_1_calibration_page}\index{DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}}
+Inheritance diagram for Device\+Board\+::Calibration\+Page\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_device_board_1_1_calibration_page}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_device_board_1_1_calibration_page_a89e93be4e7e1e9900d7a48a81b26c395}\label{class_device_board_1_1_calibration_page_a89e93be4e7e1e9900d7a48a81b26c395} 
+{\bfseries Calibration\+Page} (SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*}m\+\_\+oled\+Driver\+Ptr, Queue\+Handle\+\_\+t driver\+Queue\+Handle, \mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*}page\+Manager\+Ptr)
+\item 
+\Hypertarget{class_device_board_1_1_calibration_page_a4b0cd838645f85cd327881d7375fb123}\label{class_device_board_1_1_calibration_page_a4b0cd838645f85cd327881d7375fb123} 
+void {\bfseries on\+Combo\+Box\+Change} ()
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_calibration_page_a8f3af0db555991d7540821352edcd5fe}{paint}} (Graphics \&g) override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_calibration_page_a3f9b0bb43d3dd0aa52cbaba42f5b16b5}{resized}} () override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_calibration_page_a84cc562b0f907b849357796dfebf5c6c}{update\+LEDs}} () override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_calibration_page_adb95237f00f45129d63678c6563e6d21}{load\+Context}} () override
+\item 
+void \mbox{\hyperlink{class_device_board_1_1_calibration_page_a7b50d4a2fa25d5f87fa8c01c683a1be2}{save\+Context}} () override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{Root\+Page}} ()=delete
+\begin{DoxyCompactList}\small\item\em do\+Something \end{DoxyCompactList}\item 
+{\bfseries Root\+Page} (SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*}m\+\_\+oled\+Driver\+Ptr, Queue\+Handle\+\_\+t driver\+Queue\+Handle, \mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*}page\+Manager\+Ptr)
+\item 
+void {\bfseries paint\+All} (Graphics \&g)
+\item 
+bool {\bfseries handle\+UI\+\_\+event} (\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}ui\+Event, bool alt\+State, Graphics \&g, \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}settings\+Ptr, bool alt\+Switch\+State)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_device_board_1_1_calibration_page_a834237f272492f2e5b14d10f060b4f32}{handle\+Local\+UI\+\_\+event}} (\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}ui\+Event, bool alt\+State, Graphics \&g, \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}settings\+Ptr, bool alt\+Switch\+State) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries add\+Child\+Component} (Component \texorpdfstring{$\ast$}{*}child)
+\item 
+void {\bfseries add\+And\+Make\+Visible} (Component \texorpdfstring{$\ast$}{*}child)
+\item 
+Rectangle$<$ int32\+\_\+t $>$ {\bfseries get\+Global\+Bounds} () const
+\item 
+void {\bfseries dim\+Switch\+Leds} ()
+\item 
+void {\bfseries set\+Switch\+Led} (e\+LED\+\_\+\+Bit\+Nums led)
+\item 
+void {\bfseries dim\+Switch\+Led} (e\+LED\+\_\+\+Bit\+Nums led)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}}
+\begin{DoxyCompactItemize}
+\item 
+SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*} {\bfseries m\+\_\+oled\+Driver\+Ptr} \{ nullptr \}
+\item 
+Queue\+Handle\+\_\+t {\bfseries m\+TLV\+\_\+\+Driver\+Queue\+Handle} \{ nullptr \}
+\item 
+\mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*} {\bfseries m\+Page\+Manager\+Ptr} \{ nullptr \}
+\item 
+Rectangle$<$ int32\+\_\+t $>$ {\bfseries m\+Local\+Bounds}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_device_board_1_1_calibration_page_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_device_board_1_1_calibration_page_a834237f272492f2e5b14d10f060b4f32}\index{DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}!handleLocalUI\_event@{handleLocalUI\_event}}
+\index{handleLocalUI\_event@{handleLocalUI\_event}!DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}}
+\doxysubsubsection{\texorpdfstring{handleLocalUI\_event()}{handleLocalUI\_event()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_calibration_page_a834237f272492f2e5b14d10f060b4f32} 
+bool Device\+Board\+::\+Calibration\+Page\+::handle\+Local\+UI\+\_\+event (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}}]{ui\+Event}{, }\item[{bool}]{alt\+State}{, }\item[{Graphics \&}]{g}{, }\item[{\mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}}]{settings\+Ptr}{, }\item[{bool}]{alt\+Switch\+State}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_calibration_page_adb95237f00f45129d63678c6563e6d21}\index{DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}!loadContext@{loadContext}}
+\index{loadContext@{loadContext}!DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}}
+\doxysubsubsection{\texorpdfstring{loadContext()}{loadContext()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_calibration_page_adb95237f00f45129d63678c6563e6d21} 
+void Device\+Board\+::\+Calibration\+Page\+::load\+Context (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_calibration_page_a8f3af0db555991d7540821352edcd5fe}\index{DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}!paint@{paint}}
+\index{paint@{paint}!DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}}
+\doxysubsubsection{\texorpdfstring{paint()}{paint()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_calibration_page_a8f3af0db555991d7540821352edcd5fe} 
+void Device\+Board\+::\+Calibration\+Page\+::paint (\begin{DoxyParamCaption}\item[{Graphics \&}]{g}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_calibration_page_a3f9b0bb43d3dd0aa52cbaba42f5b16b5}\index{DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}!resized@{resized}}
+\index{resized@{resized}!DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}}
+\doxysubsubsection{\texorpdfstring{resized()}{resized()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_calibration_page_a3f9b0bb43d3dd0aa52cbaba42f5b16b5} 
+void Device\+Board\+::\+Calibration\+Page\+::resized (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_calibration_page_a7b50d4a2fa25d5f87fa8c01c683a1be2}\index{DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}!saveContext@{saveContext}}
+\index{saveContext@{saveContext}!DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}}
+\doxysubsubsection{\texorpdfstring{saveContext()}{saveContext()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_calibration_page_a7b50d4a2fa25d5f87fa8c01c683a1be2} 
+void Device\+Board\+::\+Calibration\+Page\+::save\+Context (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+\Hypertarget{class_device_board_1_1_calibration_page_a84cc562b0f907b849357796dfebf5c6c}\index{DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}!updateLEDs@{updateLEDs}}
+\index{updateLEDs@{updateLEDs}!DeviceBoard::CalibrationPage@{DeviceBoard::CalibrationPage}}
+\doxysubsubsection{\texorpdfstring{updateLEDs()}{updateLEDs()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_calibration_page_a84cc562b0f907b849357796dfebf5c6c} 
+void Device\+Board\+::\+Calibration\+Page\+::update\+LEDs (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{class_device_board_1_1_root_page}{Device\+Board\+::\+Root\+Page}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/dirktjantele/\+Desktop/\+Hardware Projects/\+Hardware Synth/\+\_\+\+Current Projects/\+Fellhorn rev 2/\+Fellhorn Firmware/\+FH\+\_\+\+Device\+Board/\+Device\+Board\+Engine/\+UI\+\_\+\+Handlers/Main\+Page.\+h\item 
+/\+Users/dirktjantele/\+Desktop/\+Hardware Projects/\+Hardware Synth/\+\_\+\+Current Projects/\+Fellhorn rev 2/\+Fellhorn Firmware/\+FH\+\_\+\+Device\+Board/\+Device\+Board\+Engine/\+UI\+\_\+\+Handlers/Main\+Page.\+cpp\end{DoxyCompactItemize}

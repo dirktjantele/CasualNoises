@@ -203,51 +203,10 @@ void resetTimeMarker_4()
   * @brief  The application entry point.
   * @retval int
   */
-
-//#include "juce_core/text/juce_String.h"
-//#include "juce_core/xml/juce_XmlDocument.h"
-//#include "juce_core/xml/juce_XmlElement.h"
-
 int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-/*
-	const juce::String xmlText =
-		"<?xml dummy document header ?>"
-		"<!-- This is a comment -->"
-		"<PERFORMANCE>"
-			"<INFO>"
-				"<VALUE>"
-					"<name>PulsarHeaven</name>"
-					"<type>5</type>"
-				"</VALUE>"
-			"</INFO>"
-			"<INFO>"
-				"<VALUE>"
-					"<name>FM Delight</name>"
-					"<type>6</type>"
-				"</VALUE>"
-			"</INFO>"
-		"</PERFORMANCE>";
-
-	std::unique_ptr<juce::XmlElement> root = juce::XmlDocument::parse ( xmlText );
-
-    for (auto* info = root->getFirstChildElement(); info != nullptr; info = info->getNextElement())
-    {
-        if (info->hasTagName("INFO"))
-        {
-            auto* value = info->getChildByName("VALUE");
-            if (value != nullptr)
-            {
-                juce::String name = value->getChildByName("name")->getAllSubText().trim();
-                juce::String type = value->getChildByName("type")->getAllSubText().trim();
-
-                DBG("Name: " << name << ", Type: " << type);
-            }
-        }
-    }
-*/
 
   /* USER CODE END 1 */
 
@@ -489,7 +448,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -681,7 +640,7 @@ static void MX_SPI5_Init(void)
   hspi5.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi5.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi5.Init.NSS = SPI_NSS_SOFT;
-  hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi5.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi5.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi5.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -1038,7 +997,7 @@ void StartDefaultTask(void *argument)
 
 	// Create a signature map for all ADC multiplexers
 	constexpr uint32_t noADC_Multiplexers 	= NO_OF_ADC_MULTIPLEXERS;			// 2 multiplexers: 1 pots & 1 sliders
-	static CasualNoises::sADC_MultiplexerSignature sADC_MultiplexerSignatures [ noADC_Multiplexers ];
+	static DeviceBoard::sADC_MultiplexerSignature sADC_MultiplexerSignatures [ noADC_Multiplexers ];
 	num = 0;												// Potentiometer multiplexer
 	sADC_MultiplexerSignatures[num].SO_Pin	= POTS_S0_Pin;
 	sADC_MultiplexerSignatures[num].SO_Port	= GPIOD;
@@ -1057,28 +1016,28 @@ void StartDefaultTask(void *argument)
 	sADC_MultiplexerSignatures[num].mask	= 0xff;
 
 	// Create mapping tables for converting ADC Multiplexer no / ADC Multiplexer channel to logical channel id
-	static CasualNoises::sLogicalPotChannelNums sLogicalPotChannelNums  [ noADC_Multiplexers ];
+	static DeviceBoard::sLogicalPotChannelNums sLogicalPotChannelNums  [ noADC_Multiplexers ];
 	num = 0;												// Potentiometer multiplexer
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_1 ] = CasualNoises::eLogicalPotId::pot_1;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_2 ] = CasualNoises::eLogicalPotId::pot_2;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_3 ] = CasualNoises::eLogicalPotId::pot_3;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_4 ] = CasualNoises::eLogicalPotId::pot_4;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_1 ] = DeviceBoard::eLogicalPotId::pot_1;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_2 ] = DeviceBoard::eLogicalPotId::pot_2;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_3 ] = DeviceBoard::eLogicalPotId::pot_3;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_0::P_4 ] = DeviceBoard::eLogicalPotId::pot_4;
 	++num;													// Slider multiplexer
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_1 ] = CasualNoises::eLogicalPotId::slider_1;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_2 ] = CasualNoises::eLogicalPotId::slider_2;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_3 ] = CasualNoises::eLogicalPotId::slider_3;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_4 ] = CasualNoises::eLogicalPotId::slider_4;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_5 ] = CasualNoises::eLogicalPotId::slider_5;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_6 ] = CasualNoises::eLogicalPotId::slider_6;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_7 ] = CasualNoises::eLogicalPotId::slider_7;
-	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_8 ] = CasualNoises::eLogicalPotId::slider_8;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_1 ] = DeviceBoard::eLogicalPotId::slider_1;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_2 ] = DeviceBoard::eLogicalPotId::slider_2;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_3 ] = DeviceBoard::eLogicalPotId::slider_3;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_4 ] = DeviceBoard::eLogicalPotId::slider_4;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_5 ] = DeviceBoard::eLogicalPotId::slider_5;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_6 ] = DeviceBoard::eLogicalPotId::slider_6;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_7 ] = DeviceBoard::eLogicalPotId::slider_7;
+	sLogicalPotChannelNums [ num ].logicalPotIds [ (uint32_t)eMultiplexerChannel_1::F_8 ] = DeviceBoard::eLogicalPotId::slider_8;
 
 	// Encoder #1 (Value)
 	// Create a UI thread and run it
 	// Note, part of the UI_ThreadData is filled in by the UI thread when starting up
 	void ( *nerveNetCallBackPtr ) ( CasualNoises::tNerveNetMessageHeader* messagePtr ) = nullptr;
 
-	static CasualNoises::UI_ThreadData uiData;
+	static DeviceBoard::UI_ThreadData uiData;
 	// ... NVM Driver settings
 	uiData.nvmDriverInitData.noOfDevices				= 2;
 	uiData.nvmDriverInitData.hspix_ptr					= &hspi5;
@@ -1114,7 +1073,7 @@ void StartDefaultTask(void *argument)
 
 	// Start UI thread
 	uiData.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
-	res = CasualNoises::Start_UI_Thread ( &uiData );
+	res = DeviceBoard::Start_UI_Thread ( &uiData );
 	if ( res != pdPASS )
 		CN_ReportFault( eErrorCodes::FreeRTOS_ErrorRes );
 
@@ -1135,15 +1094,15 @@ void StartDefaultTask(void *argument)
 	nerveNetThreadData.NerveNet_RESET_Port		= NERVE_NET_RESET_GPIO_Port;
 	nerveNetThreadData.NerveNet_RESET_Pin		= NERVE_NET_RESET_Pin;
 	nerveNetThreadData.NerveNet_SPI_Ptr			= &hspi4;
-	nerveNetThreadData.NerveNetThreadQueue		= &CasualNoises::gYellowPages.gNerveNetMasterThreadQueueHandle;
-	nerveNetThreadData.NerveNetRunningFlagPtr	= &CasualNoises::gYellowPages.gNetMasterThreadRunning;
+	nerveNetThreadData.NerveNetThreadQueue		= &DeviceBoard::gYellowPages.gNerveNetMasterThreadQueueHandle;
+	nerveNetThreadData.NerveNetRunningFlagPtr	= &DeviceBoard::gYellowPages.gNetMasterThreadRunning;
 	static TaskHandle_t xHandlePtr;
 	static CasualNoises::NerveNetMasterThread nerveNetMasterThread;
 	res = CasualNoises::startNerveNetMasterThread ( &nerveNetMasterThread, &nerveNetThreadData, &xHandlePtr );
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::NerveNetThread_Error);
-	CasualNoises::gYellowPages.gNerveNetMasterThreadTaskHandle 	= xHandlePtr;
-	CasualNoises::NorthSideConnection connection;
+	DeviceBoard::gYellowPages.gNerveNetMasterThreadTaskHandle 	= xHandlePtr;
+	DeviceBoard::NorthSideConnection connection;
 	nerveNetMasterThread.setNerveNetMasterProcessorPtr ( &connection );
 
    /* Infinite loop */

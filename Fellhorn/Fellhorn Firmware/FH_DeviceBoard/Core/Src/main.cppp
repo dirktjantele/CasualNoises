@@ -995,7 +995,7 @@ void StartDefaultTask(void *argument)
 
 	// Create a signature map for all encoders/switches
 	constexpr uint32_t noADC_Multiplexers 	= 2;			// 2 multiplexers: 1 pots & 1 sliders
-	static CasualNoises::sADC_MultiplexerSignature sADC_MultiplexerSignatures[noADC_Multiplexers];
+	static DeviceBoard::sADC_MultiplexerSignature sADC_MultiplexerSignatures[noADC_Multiplexers];
 	num = 0;												// Potentiometer multiplexer
 	sADC_MultiplexerSignatures[num].SO_Pin	= POTS_S0_Pin;
 	sADC_MultiplexerSignatures[num].SO_Port	= GPIOD;
@@ -1015,7 +1015,7 @@ void StartDefaultTask(void *argument)
 	// Create a UI thread and run it
 	// Note, part of the UI_ThreadData is filled in by the UI thread when starting up
 	void (*nerveNetCallBackPtr)(CasualNoises::sNerveNetData*) = nullptr;
-	static CasualNoises::UI_ThreadData uiData;
+	static DeviceBoard::UI_ThreadData uiData;
 	// ... NVM Driver settings
 	uiData.nvmDriverInitData.noOfDevices				= 2;
 	uiData.nvmDriverInitData.hspix_ptr					= &hspi5;
@@ -1051,7 +1051,7 @@ void StartDefaultTask(void *argument)
 
 
 //	uiData.nerveNetCallBackPtr   						= &nerveNetCallBackPtr;
-	res = CasualNoises::Start_UI_Thread(&uiData);
+	res = DeviceBoard::Start_UI_Thread(&uiData);
 	if (res != pdPASS)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 

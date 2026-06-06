@@ -19,7 +19,7 @@
 
 #include "NerveNet/NerveNetMessage.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
 
 //==============================================================================
@@ -36,6 +36,6 @@ void NorthSideConnection::processNerveNetData (
 	handleNerveNetCallBacks ( messagePtr );
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard
 
 #endif

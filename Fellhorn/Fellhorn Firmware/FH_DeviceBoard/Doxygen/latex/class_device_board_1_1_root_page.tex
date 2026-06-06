@@ -1,0 +1,126 @@
+\doxysection{Device\+Board\+::Root\+Page Class Reference}
+\hypertarget{class_device_board_1_1_root_page}{}\label{class_device_board_1_1_root_page}\index{DeviceBoard::RootPage@{DeviceBoard::RootPage}}
+Inheritance diagram for Device\+Board\+::Root\+Page\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=0.701754cm]{class_device_board_1_1_root_page}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{Root\+Page}} ()=delete
+\begin{DoxyCompactList}\small\item\em do\+Something \end{DoxyCompactList}\item 
+\Hypertarget{class_device_board_1_1_root_page_ac1cfd5775d7f804656f9ae8f2aa4cf72}\label{class_device_board_1_1_root_page_ac1cfd5775d7f804656f9ae8f2aa4cf72} 
+{\bfseries Root\+Page} (SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*}m\+\_\+oled\+Driver\+Ptr, Queue\+Handle\+\_\+t driver\+Queue\+Handle, \mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*}page\+Manager\+Ptr)
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a7590083524087ca4874202ddbedd63d1}\label{class_device_board_1_1_root_page_a7590083524087ca4874202ddbedd63d1} 
+void {\bfseries paint\+All} (Graphics \&g)
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a04c4777469a6dfdc740d21977fab99a8}\label{class_device_board_1_1_root_page_a04c4777469a6dfdc740d21977fab99a8} 
+virtual void {\bfseries paint} (Graphics \&g)=0
+\item 
+\Hypertarget{class_device_board_1_1_root_page_aa8c85e56efdf56b54aa57732d3e69d92}\label{class_device_board_1_1_root_page_aa8c85e56efdf56b54aa57732d3e69d92} 
+virtual void {\bfseries resized} ()=0
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a43698adf402365a99bb7568dc352347b}\label{class_device_board_1_1_root_page_a43698adf402365a99bb7568dc352347b} 
+virtual void {\bfseries update\+LEDs} ()=0
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a2ab2752117da39a6a22246f7a1772322}\label{class_device_board_1_1_root_page_a2ab2752117da39a6a22246f7a1772322} 
+virtual void {\bfseries load\+Context} ()=0
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a4d11bd670b91ee5d7ac0d066f2280b21}\label{class_device_board_1_1_root_page_a4d11bd670b91ee5d7ac0d066f2280b21} 
+virtual void {\bfseries save\+Context} ()=0
+\item 
+\Hypertarget{class_device_board_1_1_root_page_ae25abde2fc169ca556e6426f35fe8d65}\label{class_device_board_1_1_root_page_ae25abde2fc169ca556e6426f35fe8d65} 
+bool {\bfseries handle\+UI\+\_\+event} (\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}ui\+Event, bool alt\+State, Graphics \&g, \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}settings\+Ptr, bool alt\+Switch\+State)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_device_board_1_1_root_page_aa13ae0df67c4db9546e17cfbd6b8f7e2}\label{class_device_board_1_1_root_page_aa13ae0df67c4db9546e17cfbd6b8f7e2} 
+void {\bfseries add\+Child\+Component} (Component \texorpdfstring{$\ast$}{*}child)
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a9dd5b670e955e57019c7aaa249decaa1}\label{class_device_board_1_1_root_page_a9dd5b670e955e57019c7aaa249decaa1} 
+void {\bfseries add\+And\+Make\+Visible} (Component \texorpdfstring{$\ast$}{*}child)
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a9a66eb3342e9c70ae5c8d4e6ae19677b}\label{class_device_board_1_1_root_page_a9a66eb3342e9c70ae5c8d4e6ae19677b} 
+Rectangle$<$ int32\+\_\+t $>$ {\bfseries get\+Global\+Bounds} () const
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a8e4bd1269aaab3cb61c7a7a5b12cecb0}\label{class_device_board_1_1_root_page_a8e4bd1269aaab3cb61c7a7a5b12cecb0} 
+virtual bool {\bfseries handle\+Local\+UI\+\_\+event} (\mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{s\+Incomming\+UI\+\_\+\+Event}} \texorpdfstring{$\ast$}{*}ui\+Event, bool alt\+State, Graphics \&g, \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{s\+System\+Settings}} \texorpdfstring{$\ast$}{*}settings\+Ptr, bool alt\+Switch\+State)
+\item 
+\Hypertarget{class_device_board_1_1_root_page_abdfbfc4fa073b751d81f3fa203462128}\label{class_device_board_1_1_root_page_abdfbfc4fa073b751d81f3fa203462128} 
+void {\bfseries dim\+Switch\+Leds} ()
+\item 
+\Hypertarget{class_device_board_1_1_root_page_acab6fc9d95128ecd490909a1d4deddf2}\label{class_device_board_1_1_root_page_acab6fc9d95128ecd490909a1d4deddf2} 
+void {\bfseries set\+Switch\+Led} (e\+LED\+\_\+\+Bit\+Nums led)
+\item 
+\Hypertarget{class_device_board_1_1_root_page_ab2cd4e40f70d45597a21fc587c712094}\label{class_device_board_1_1_root_page_ab2cd4e40f70d45597a21fc587c712094} 
+void {\bfseries dim\+Switch\+Led} (e\+LED\+\_\+\+Bit\+Nums led)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_device_board_1_1_root_page_ae4a8f1004226ba153998d626de2eae79}\label{class_device_board_1_1_root_page_ae4a8f1004226ba153998d626de2eae79} 
+SSD1309\+\_\+\+Driver \texorpdfstring{$\ast$}{*} {\bfseries m\+\_\+oled\+Driver\+Ptr} \{ nullptr \}
+\item 
+\Hypertarget{class_device_board_1_1_root_page_acdad97c6974d7f375e4ce9c95a942bd0}\label{class_device_board_1_1_root_page_acdad97c6974d7f375e4ce9c95a942bd0} 
+Queue\+Handle\+\_\+t {\bfseries m\+TLV\+\_\+\+Driver\+Queue\+Handle} \{ nullptr \}
+\item 
+\Hypertarget{class_device_board_1_1_root_page_a9dff87ebef909e2eed3efce1f840c4a8}\label{class_device_board_1_1_root_page_a9dff87ebef909e2eed3efce1f840c4a8} 
+\mbox{\hyperlink{class_device_board_1_1_page_manager}{Page\+Manager}} \texorpdfstring{$\ast$}{*} {\bfseries m\+Page\+Manager\+Ptr} \{ nullptr \}
+\item 
+\Hypertarget{class_device_board_1_1_root_page_acb3a28fccfdf03eb39b2faf15e5085b0}\label{class_device_board_1_1_root_page_acb3a28fccfdf03eb39b2faf15e5085b0} 
+Rectangle$<$ int32\+\_\+t $>$ {\bfseries m\+Local\+Bounds}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_device_board_1_1_root_page_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}\index{DeviceBoard::RootPage@{DeviceBoard::RootPage}!RootPage@{RootPage}}
+\index{RootPage@{RootPage}!DeviceBoard::RootPage@{DeviceBoard::RootPage}}
+\doxysubsubsection{\texorpdfstring{RootPage()}{RootPage()}}
+{\footnotesize\ttfamily \label{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e} 
+Device\+Board\+::\+Root\+Page\+::\+Root\+Page (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+do\+Something 
+
+No behavior, constraints, algorithms, side effects, and usage notes.
+
+
+\begin{DoxyParams}{Parameters}
+{\em param1} & A random float. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Just a copy of the random float. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Nothing} & \\
+\hline
+\end{DoxyExceptions}
+
+\begin{DoxyRetVals}{Return values}
+{\em No} & meaning... \\
+\hline
+\end{DoxyRetVals}
+\begin{DoxyWarning}{Warning}
+Use at home. 
+\end{DoxyWarning}
+\begin{DoxyNote}{Note}
+Only fools do this. 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+No relations, sad class... 
+\end{DoxySeeAlso}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/dirktjantele/\+Desktop/\+Hardware Projects/\+Hardware Synth/\+\_\+\+Current Projects/\+Fellhorn rev 2/\+Fellhorn Firmware/\+FH\+\_\+\+Device\+Board/\+Device\+Board\+Engine/\+UI\+\_\+\+Handlers/Root\+Page.\+h\item 
+/\+Users/dirktjantele/\+Desktop/\+Hardware Projects/\+Hardware Synth/\+\_\+\+Current Projects/\+Fellhorn rev 2/\+Fellhorn Firmware/\+FH\+\_\+\+Device\+Board/\+Device\+Board\+Engine/\+UI\+\_\+\+Handlers/Root\+Page.\+cpp\end{DoxyCompactItemize}

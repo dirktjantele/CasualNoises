@@ -13,10 +13,10 @@
 
 #include "YellowPages.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
 
 tYellowPages	gYellowPages;
 
-} // namespace CasualNoises
+} // namespace DeviceBoard
 

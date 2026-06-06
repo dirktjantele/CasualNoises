@@ -1,0 +1,125 @@
+\doxysection{Root\+Page.\+h}
+\hypertarget{_root_page_8h_source}{}\label{_root_page_8h_source}\index{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Handlers/RootPage.h@{/Users/dirktjantele/Desktop/Hardware Projects/Hardware Synth/\_Current Projects/Fellhorn rev 2/Fellhorn Firmware/FH\_DeviceBoard/DeviceBoardEngine/UI\_Handlers/RootPage.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ \ \ RootPage.h}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ \ \ \ Created:\ 24/12/2025}}
+\DoxyCodeLine{00006\ \textcolor{comment}{}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ \ \ \ Abstract\ class\ used\ as\ root\ for\ all\ page\ objects}}
+\DoxyCodeLine{00008\ \textcolor{comment}{}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ \ \ \ Author:\ \ Dirk\ Tjantele}}
+\DoxyCodeLine{00010\ \textcolor{comment}{}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ \ ==============================================================================}}
+\DoxyCodeLine{00012\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{namespace\ }DeviceBoard}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{class\ }MyDeviceBoard}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \ \ MyDeviceBoard\ ()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00034\ \ \ \ \ \string~MyDeviceBoard\ ()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{class_device_board_1_1_my_device_board_ab168ca921494718372df2a89f5026079}{doSomething}}\ (\ \textcolor{keywordtype}{float}\ in\ );}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ doNotEnter\ (\ \textcolor{keywordtype}{bool}\ privacy\ =\ \textcolor{keyword}{false}\ );}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{preprocessor}{\#include\ "{}../UI\_Thread.h"{}}}
+\DoxyCodeLine{00077\ \textcolor{preprocessor}{\#include\ "{}../../DeviceBoardEngine/UI\_Definitions.h"{}}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{preprocessor}{\#include\ "{}Threads/TLV\_DriverThread.h"{}}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{preprocessor}{\#include\ "{}Graphics/Geometry/Rectangle.h"{}}}
+\DoxyCodeLine{00082\ \textcolor{preprocessor}{\#include\ "{}Graphics/Geometry/Point.h"{}}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{namespace\ }CasualNoises}
+\DoxyCodeLine{00085\ \{}
+\DoxyCodeLine{00086\ \textcolor{keyword}{class\ }SSD1309\_Driver;}
+\DoxyCodeLine{00087\ \textcolor{keyword}{class\ }TLV\_Driver;}
+\DoxyCodeLine{00088\ \textcolor{keyword}{class\ }Component;}
+\DoxyCodeLine{00089\ \textcolor{keyword}{class\ }Graphics;}
+\DoxyCodeLine{00090\ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \textcolor{keyword}{namespace\ }DeviceBoard}
+\DoxyCodeLine{00093\ \{}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{using\ namespace\ }CasualNoises;}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{keyword}{class\ }PageManager;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{RootPage}}}
+\DoxyCodeLine{00100\ \{}
+\DoxyCodeLine{00101\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{RootPage}}\ ()\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00118\ \ \ \ \ \ \mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{RootPage}}\ (\ SSD1309\_Driver*\ m\_oledDriverPtr,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ QueueHandle\_t\ driverQueueHandle,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_device_board_1_1_page_manager}{PageManager}}*\ pageManagerPtr\ );}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{class_device_board_1_1_root_page_a433d80817418cc37f358dbf1f179605e}{\string~RootPage}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordtype}{void}\ paintAll(Graphics\&\ g);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ paint\ (\ Graphics\&\ g\ )\ \ =\ 0;}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ resized\ ()\ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ updateLEDs\ ()\ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ loadContext()\ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ saveContext()\ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordtype}{bool}\ handleUI\_event\ (\ \mbox{\hyperlink{union_device_board_1_1s_incomming_u_i___event}{sIncommingUI\_Event}}*\ uiEvent,}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ altState,\ Graphics\&\ g,}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{struct_device_board_1_1s_system_settings}{sSystemSettings}}*\ settingsPtr,}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ altSwitchState\ );}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ SSD1309\_Driver*\ m\_oledDriverPtr\ \ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00141\ \ \ \ \ QueueHandle\_t\ \ \ mTLV\_DriverQueueHandle\ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00142\ \ \ \ \ PageManager*\ \ \ \ mPageManagerPtr\ \ \ \ \ \ \ \ \ \{\ \textcolor{keyword}{nullptr}\ \};}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ Rectangle<\ int32\_t\ >\ \ \ \ \ \ \ \ \ \ \ \ mLocalBounds;}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordtype}{void}\ addChildComponent\ (\ Component*\ child\ );}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordtype}{void}\ addAndMakeVisible\ (\ Component*\ child\ );}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \ \ Rectangle<int32\_t>\ getGlobalBounds()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00150\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mGlobalBounds;}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ handleLocalUI\_event\ (\ sIncommingUI\_Event*\ uiEvent,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ altState,\ Graphics\&\ g,}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sSystemSettings*\ settingsPtr,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ altSwitchState)}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordtype}{void}\ dimSwitchLeds\ ();}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordtype}{void}\ setSwitchLed\ \ (\ eLED\_BitNums\ led\ );}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordtype}{void}\ dimSwitchLed\ \ (\ eLED\_BitNums\ led\ );}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00165\ \ \ \ \ Rectangle<\ int32\_t\ >\ \ \ \ \ \ \ \ mGlobalBounds;}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \ \ std::vector<Component*>\ \ \ \ \ mChildren;}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \};}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \}\ \textcolor{comment}{//\ namespace\ DeviceBoard}}
+
+\end{DoxyCode}

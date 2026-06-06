@@ -117,6 +117,7 @@ enum class eTLV_Tag
 	UI_MainPageState		= 0x7473706d,			// 'mpst'
 	UI_CalibrationPageState	= 0x74737063,			// 'cpst'
 	CalibrationValues		= 0x766c6370,			// 'pclv'
+	FactoryPresets			= 0x73727066,			// 'fprs'
 };
 
 

@@ -1,0 +1,62 @@
+<PERFORMANCES>
+	<PERFORMANCE>
+		<INFO>
+			<NAME>PulsarHeaven</NAME>
+			<TYPE>PULSAR</TYPE>
+			<DESCRIPTION>
+				Based on Pulsar Synthesis
+			</DESCRIPTION>
+		</INFO>
+		<POT_CONFIGURATION>
+			<POT page="0" id="1" value="0" name="CV3 Att" />
+			<POT page="0" id="2" value="0" name="CV4 Att" />
+			<POT page="0" id="3" value="0" name="CV5 Att" />
+			<POT page="0" id="4" value="0" name="CV6 Att" />
+			<POT page="1" id="1" value="0" name="Freq Coarse" />
+			<POT page="1" id="2" value="0" name="Freq Fine" />
+		</POT_CONFIGURATION>
+		<CV_INPUTS>
+		</CV_INPUTS>
+	</PERFORMANCE>
+	
+	<PERFORMANCE>
+		<INFO>
+			<NAME>Moogish</NAME>
+			<TYPE>ANALOG MODELING</TYPE>
+			<DESCRIPTION>
+				Based on Analog Modeling
+			</DESCRIPTION>
+		</INFO>
+		<POT_CONFIGURATION>
+			<POT page="0" id="1" value="0" name="CV3 Att" />
+			<POT page="0" id="2" value="0" name="CV4 Att" />
+			<POT page="0" id="3" value="0" name="CV5 Att" />
+			<POT page="0" id="4" value="0" name="CV6 Att" />
+			<POT page="1" id="1" value="0" name="Freq Coarse" />
+			<POT page="1" id="2" value="0" name="Freq Fine" />
+		</POT_CONFIGURATION>
+		<CV_INPUTS>
+		</CV_INPUTS>
+	</PERFORMANCE>
+	
+	<PERFORMANCE>
+		<INFO>
+			<NAME>SnowFlakes</NAME>
+			<TYPE>FM</TYPE>
+			<DESCRIPTION>
+				Based on FM
+			</DESCRIPTION>
+		</INFO>
+		<POT_CONFIGURATION>
+			<POT page="0" id="1" value="0" name="CV3 Att" />
+			<POT page="0" id="2" value="0" name="CV4 Att" />
+			<POT page="0" id="3" value="0" name="CV5 Att" />
+			<POT page="0" id="4" value="0" name="CV6 Att" />
+			<POT page="1" id="1" value="0" name="Freq Coarse" />
+			<POT page="1" id="2" value="0" name="Freq Fine" />
+		</POT_CONFIGURATION>
+		<CV_INPUTS>
+		</CV_INPUTS>
+	</PERFORMANCE>
+</PERFORMANCES>
+	

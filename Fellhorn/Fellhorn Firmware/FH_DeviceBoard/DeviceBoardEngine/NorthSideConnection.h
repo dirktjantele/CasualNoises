@@ -19,8 +19,10 @@
 
 #include "main.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 class NorthSideConnection final : public NerveNetMasterProcessor
 {
@@ -32,6 +34,6 @@ public:
 
 };
 
-} // namespace CasualNoises
+} // namespace DeviceBoard
 
 #endif

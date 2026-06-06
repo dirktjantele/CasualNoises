@@ -11,6 +11,64 @@
   ==============================================================================
 */
 
+namespace DeviceBoard
+{
+
+/**
+ * @class MyDeviceBoard
+ * @brief blabla
+ *
+ * This class is the abstract parent for all page classes.
+ *
+ * Additional paragraphs can follow after blank lines.
+ *
+ * @author Dirk Tjantele
+ * @version 0.1
+ * @date 04/06/2026
+ */
+
+class MyDeviceBoard
+{
+public:
+	MyDeviceBoard () = default;
+	~MyDeviceBoard () = default;
+
+/**
+	 * @brief doSomething
+	 *
+	 * No behavior, constraints,
+	 * algorithms, side effects, and usage notes.
+	 *
+	 * @param param1 A random float.
+	 * @return Just a copy of the random float.
+	 * @throws Nothing
+	 * @retval No meaning...
+	 * @warning Use at home.
+	 * @note Only fools do this.
+	 * @see No relations, sad class...
+	 */
+	float doSomething ( float in );
+
+private:
+	void doNotEnter ( bool privacy = false );
+
+};
+
+}
+
+/**
+ * @class RootPage
+ * @brief Abstract class used as root for all page objects.
+ *
+ * This class is the abstarct parent for all page classes.
+ *
+ * Additional paragraphs can follow after blank lines.
+ *
+ * @author Dirk Tjantele
+ * @version 0.1
+ * @date 04/06/2026
+ */
+
 #pragma once
 
 #include <vector>
@@ -25,17 +83,37 @@
 
 namespace CasualNoises
 {
-
-class PageManager;
 class SSD1309_Driver;
 class TLV_Driver;
 class Component;
 class Graphics;
+}
+
+namespace DeviceBoard
+{
+
+using namespace CasualNoises;
+
+class PageManager;
 
 class RootPage
 {
 public:
 
+	/**
+		 * @brief doSomething
+		 *
+		 * No behavior, constraints,
+		 * algorithms, side effects, and usage notes.
+		 *
+		 * @param param1 A random float.
+		 * @return Just a copy of the random float.
+		 * @throws Nothing
+		 * @retval No meaning...
+		 * @warning Use at home.
+		 * @note Only fools do this.
+		 * @see No relations, sad class...
+		 */
 	 RootPage () = delete;
 	 RootPage ( SSD1309_Driver* m_oledDriverPtr,
 			  	QueueHandle_t driverQueueHandle,
@@ -90,4 +168,4 @@ private:
 
 };
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

@@ -13,6 +13,7 @@
 
 #include "UI_Handlers/CalibrationPages/CV_InCalibration.h"
 #include "UI_Handlers/CalibrationPages/1V-OctCalibration.h"
+#include "UI_Handlers/XML/LoadPerformancePage.h"
 #include "PageManager.h"
 
 #include "MainPage.h"
@@ -31,8 +32,10 @@
 
 #include "Core/Maths/MathsFunctions.h"
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 //==============================================================================
 //          PageManager() & ~PageManager
@@ -136,6 +139,9 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 	{
 	case ePageId::mainPage:
 		pagePtr = new MainPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		break;
+	case ePageId::loadPage:
+		pagePtr = new LoadPerformancePage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
 		break;
 	case ePageId::calibrationPage:
 		pagePtr = new CalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
@@ -473,4 +479,4 @@ void PageManager::handleNerveNetEvent ( tNerveNetMessageHeader* eventPtr )
 // Just ignore all calls for now					//ToDo can this function be removed?
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

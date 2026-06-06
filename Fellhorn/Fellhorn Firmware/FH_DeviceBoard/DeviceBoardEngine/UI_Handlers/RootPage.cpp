@@ -17,8 +17,27 @@
 
 #include <GUI/GUI_Basics/Components/ComboBox.h>
 
-namespace CasualNoises
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
+
+float MyDeviceBoard::doSomething ( float in )
+{
+	return in;
+}
+
+void MyDeviceBoard::doNotEnter ( bool privacy )
+{
+
+}
+
+}
+
+namespace DeviceBoard
+{
+
+using namespace CasualNoises;
 
 //==============================================================================
 //          RootPage
@@ -179,4 +198,4 @@ void RootPage::dimSwitchLed  ( eLED_BitNums led )
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard

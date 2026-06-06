@@ -29,8 +29,12 @@
 
 #include "SynthEngineMessage.h"
 
-namespace CasualNoises
+#include "UI_Handlers/XML/XML_FactoryDefaults.h"
+
+namespace DeviceBoard
 {
+
+using namespace CasualNoises;
 
 // System settings used during UI interaction
 sSystemSettings gSystemSettings;
@@ -64,6 +68,11 @@ void handleNerveNetCallBacks ( tNerveNetMessageHeader* messagePtr )
 //==============================================================================
 void createInitialTLVs ( QueueHandle_t TLV_DriverQueue )
 {
+
+	// ToDo update this temp implementation
+	bool success = inStallXML_FactoryDefaults ( TLV_DriverQueue );
+	if ( ! success )
+		CN_ReportFault( eErrorCodes::UI_ThreadError );
 
 	// Default calibration values
 	uint32_t index = findNextTLV ( TLV_DriverQueue, (uint32_t)eTLV_Tag::CalibrationValues, 0 );
@@ -100,15 +109,15 @@ void createInitialTLVs ( QueueHandle_t TLV_DriverQueue )
 		// Save TLV
 		addTLV_Bytes ( TLV_DriverQueue,
 					   (uint32_t)eTLV_Tag::CalibrationValues,
-					   sizeof ( sCalibrationData ), (uint32_t*)
-					   &gSystemSettings.calibrationData );
+					   sizeof ( sCalibrationData ),
+					   (uint32_t*) &gSystemSettings.calibrationData );
 
 	} else
 	{
 		uint32_t size = readTLV_TagBytes ( TLV_DriverQueue,
 										   (uint32_t)eTLV_Tag::CalibrationValues,
-										   sizeof ( sCalibrationData ), (uint32_t*)
-										   &gSystemSettings.calibrationData );
+										   sizeof ( sCalibrationData ),
+										   (uint32_t*) &gSystemSettings.calibrationData );
 		if ( size == 0)
 			CN_ReportFault ( eErrorCodes::UI_ThreadError );
 	}
@@ -496,4 +505,4 @@ BaseType_t Start_UI_Thread(UI_ThreadData *argument)
 
 }
 
-} // namespace CasualNoises
+} // namespace DeviceBoard
