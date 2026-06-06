@@ -136,7 +136,7 @@ void LED_Thread(void* pvParameters)
 	QueueHandle_t xUI_ThreadQueue = xQueueCreate( cQueueLength, sizeof(sLED_Event) );
 	if (xUI_ThreadQueue == nullptr)
 		CN_ReportFault(eErrorCodes::FreeRTOS_ErrorRes);
-	gYellowPages.gLED_ThreadQueueHandle = xUI_ThreadQueue;
+	DeviceBoard::gYellowPages.gLED_ThreadQueueHandle = xUI_ThreadQueue;
 
 	// Start refresh interrupt timer
 	res = HAL_TIM_Base_Start_IT (timerPtr);
@@ -144,7 +144,7 @@ void LED_Thread(void* pvParameters)
 		CN_ReportFault(eErrorCodes::UI_ThreadError);
 
 	// Report UI thread ready for duty
-	gYellowPages.gLED_ThreadRunning = true;
+	DeviceBoard::gYellowPages.gLED_ThreadRunning = true;
 
 	// Main thread loop
 	for (;;)
@@ -185,7 +185,7 @@ BaseType_t start_LED_Thread(void *argument, TaskHandle_t* xHandlePtr)
 	// Create the thread to drive the led's
 	BaseType_t res = xTaskCreate(LED_Thread, "SPI_LED", DEFAULT_STACK_SIZE / 2, argument,
 			UI_THREAD_PRIORITY,	xHandlePtr);
-	gYellowPages.gLED_ThreadTaskHandle = *xHandlePtr;
+	DeviceBoard::gYellowPages.gLED_ThreadTaskHandle = *xHandlePtr;
 	return res;
 
 }

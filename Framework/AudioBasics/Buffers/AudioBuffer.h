@@ -8,6 +8,22 @@
   ==============================================================================
 */
 
+namespace CasualNoises
+{
+/**
+ * @class AudioBuffer
+ * @brief blabla
+ *
+ * This class is the abstract parent for all page classes.
+ *
+ * Additional paragraphs can follow after blank lines.
+ *
+ * @author Dirk Tjantele
+ * @version 0.1
+ * @date 04/06/2026
+ */
+} // namespace CasualNoises
+
 #ifdef CASUALNOISES_AUDIO_BUFFER
 
 #pragma once
@@ -32,6 +48,20 @@ public:
 	  AudioBuffer ( uint32_t numSamples, uint32_t numChannels );
 	 ~AudioBuffer ();
 
+	 /**
+	 	 * @brief getNumSamples
+	 	 *
+	 	 * No behavior, constraints,
+	 	 * algorithms, side effects, and usage notes.
+	 	 *
+	 	 * @param param1 A random float.
+	 	 * @return Just a copy of the random float.
+	 	 * @throws Nothing
+	 	 * @retval No meaning...
+	 	 * @warning Use at home.
+	 	 * @note Only fools do this.
+	 	 * @see No relations, sad class...
+	 	 */
 	  inline uint32_t		getNumSamples()		const noexcept  	{ return mNumSamples; }
 	  inline uint32_t		getNumChannels()	const noexcept		{ return mNumChannels; }
 	  inline uint32_t		getFullBufferSize() const noexcept		{ return FULL_AUDIO_BUFFER_SIZE; }

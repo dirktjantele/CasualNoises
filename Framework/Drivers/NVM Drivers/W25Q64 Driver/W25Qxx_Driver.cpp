@@ -435,7 +435,7 @@ HAL_StatusTypeDef W25Qxx_Driver::flushSectorCache()
 
 			// Perform the page write
 			uint8_t* srcAddress = (uint8_t*)((uint32_t)mSectorCache) + (pageNo * cFlashPageSizeBytes);
-			res = HAL_SPI_TransmitReceive (mInitDataPtr->hspix_ptr, srcAddress, srcAddress, cFlashPageSizeBytes, HAL_MAX_DELAY);
+			res = HAL_SPI_Transmit (mInitDataPtr->hspix_ptr, srcAddress, cFlashPageSizeBytes, HAL_MAX_DELAY);
 
 			// Chip select goes high to end the transaction
 			HAL_GPIO_WritePin (mInitDataPtr->deviceSelectPorts[deviceNo], deviceSelectPin, GPIO_PIN_SET);

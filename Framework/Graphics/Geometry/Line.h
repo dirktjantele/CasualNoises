@@ -60,8 +60,13 @@ class Line final
 {
 public:
     //==============================================================================
-    /** Creates a line, using (0, 0) as its start and end points. */
-    Line() = default;
+	/**
+		 * @brief Line()
+		 *
+		 * Creates a line, using (0, 0) as its start and end points.
+		 *
+		 */
+   Line() = default;
 
     /** Creates a copy of another line. */
     Line (const Line&) = default;

@@ -8,6 +8,16 @@
   ==============================================================================
 */
 
+/**
+ * @class AudioBuffer
+ * @brief A multi-channel buffer containing floating point audio samples.
+ *
+ * AudioBuffer is used to pass audio data inside the framework.
+ *
+ * @note This class is based upon the juce AudioBuffer class and is used in the same way as juce does.
+ * @see juce::AudioBuffer
+ */
+
 #ifdef CASUALNOISES_AUDIO_BUFFER
 
 #include "AudioBuffer.h"
