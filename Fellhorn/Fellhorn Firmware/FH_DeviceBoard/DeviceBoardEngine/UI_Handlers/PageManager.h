@@ -35,6 +35,7 @@ enum class ePageId
 	mainPage				= 0x6e69616d,			// 'main' main page
 	setupPage				= 0x75707473,			// 'stpu' setup pag
 	loadPage				= 0x64616f6c,			// 'load' load page
+	peformanceInfoPage		= 0x69667270,			// 'prfi'
 	calibrationPage			= 0x62696c63,			// 'clib' calibration page
 	potCalibrationPage		= 0x626c6370,			// 'pclb' calibration page
 	CV_CalibrationPage		= 0x62637663,			// 'cvcb' calibration page
@@ -54,7 +55,7 @@ public:
 	void handleUI_event ( sIncommingUI_Event* uiEvent, sSystemSettings* settingsPtr, bool altSwitchState );
 	void saveContext ();
 
-	void createNewPage (ePageId pageId);
+	void createNewPage ( ePageId pageId, void* paramsPtr = nullptr );
 
 protected:
 	SSD1309_Driver* m_oledDriverPtr			{ nullptr };
@@ -67,7 +68,7 @@ private:
 	RootPage*				  mPageObjectStack[cPageIdStackSize];				  // Stack holding pointers to page object instances
 	Graphics*				  mGraphics								{ nullptr };  // Graphics object used during painting of components
 
-	void createPage ( ePageId pageId, bool updateIdStack, uint32_t stackPtr );
+	void createPage ( ePageId pageId, bool updateIdStack, uint32_t stackPtr, void* paramsPtr = nullptr );
 	void setExitSwitchLedIntensity ();
 	void handleExitSwitch ( bool altState, bool doPaint = true );
 

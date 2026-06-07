@@ -1,10 +1,10 @@
 /*
   ==============================================================================
 
-    LoadPerformancePage.h
-    Created: 05/06/2026
+    PerformanceInfoPage.h
+    Created: 07/06/2026
 
-    Handles the load performance page
+    Handles the load performance info page
 
     Author:  Dirk Tjantele
 
@@ -13,14 +13,12 @@
 
 #pragma once
 
-#include <vector>
-
 #include "../RootPage.h"
 
 namespace CasualNoises
 {
 class Box;
-class ComboBox;
+class Label;
 }
 
 namespace DeviceBoard
@@ -28,27 +26,20 @@ namespace DeviceBoard
 
 using namespace CasualNoises;
 
-// Struct used to save/load LoadPerformancePage state
-typedef struct
-{
-	uint32_t	performanceId;
-	String		performanceName;
-} sLoadPerformancePageState;
-
 //==============================================================================
-//          LoadPerformancePage
+//          PerformanceInfoPage
 //==============================================================================
 
-class LoadPerformancePage : public RootPage
+class PerformanceInfoPage : public RootPage
 {
 public:
 
-	 LoadPerformancePage() = delete;
-	 LoadPerformancePage( SSD1309_Driver* m_oledDriverPtr,
+	 PerformanceInfoPage() = delete;
+	 PerformanceInfoPage( SSD1309_Driver* m_oledDriverPtr,
 			 	 	 	  QueueHandle_t driverQueueHandle,
 						  PageManager* pageManagerPtr,
 						  void* paramsPtr );
-	~LoadPerformancePage() override;
+	~PerformanceInfoPage() override;
 
 	virtual bool handleLocalUI_event ( sIncommingUI_Event* uiEvent,
 									   bool altState, Graphics& g,
@@ -65,15 +56,17 @@ public:
 
 private:
 
-	Box*			mOuterBoxPtr		{ nullptr };
-	ComboBox*		mComboBoxPtr		{ nullptr };
+	Box*			mOuterBoxPtr			{ nullptr };
 
-	std::vector<String>	mPresetNameList;
+	Label*			mNameLabelPtr			{ nullptr };
+	Label*			mTypeLabelPtr			{ nullptr };
+	Label*			mDescriptionLabel1_Ptr	{ nullptr };
+	Label*			mDescriptionLabel2_Ptr	{ nullptr };
 
-	sLoadPerformancePageState	mPreviousSavedContext;
+	uint32_t		mPerformanceId			{ 0 };
+	String			mPerformanceName		{ "" };
 
-	void 			buildPresetNameList ();
-	void 			onComboBoxChange () noexcept;
+	void updateLabelsFromXML ();
 
 };
 

@@ -42,11 +42,11 @@ using namespace CasualNoises;
 //
 //  CasualNoises    24/12/2025  First implementation
 //==============================================================================
-MainPage::MainPage (
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr ) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr )
+MainPage::MainPage ( SSD1309_Driver* oledDriverPt,
+					 QueueHandle_t driverQueueHandle,
+					 PageManager* pageManagerPtr,
+					 void* paramsPtr ) :
+	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr, paramsPtr )
 {
 
 	// Create a border component
@@ -62,12 +62,12 @@ MainPage::MainPage (
 		String ( "System Info" ),
 	};
 	mComboBoxPtr = new ComboBox( String( (char*) "ComboBox" ) );
-	uint32_t itemNo = 0;
+	uint32_t itemNo = 1;
 	for (auto name : names)
 	{
-		mComboBoxPtr->addItem(&name, ++itemNo);
+		mComboBoxPtr->addItem ( &name, itemNo++ );
 	}
-	mComboBoxPtr->onChange = [this] { onComboBoxChange(); };
+	mComboBoxPtr->onChange = [this] { onComboBoxChange (); };
 	addAndMakeVisible ( mComboBoxPtr );
 
 }
@@ -200,11 +200,11 @@ void MainPage::saveContext()
 //
 //  CasualNoises    01/02/2026  First implementation
 //==============================================================================
-CalibrationPage::CalibrationPage(
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr )
+CalibrationPage::CalibrationPage ( SSD1309_Driver* oledDriverPt,
+								   QueueHandle_t driverQueueHandle,
+								   PageManager* pageManagerPtr,
+								   void* paramsPtr ) :
+	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr, paramsPtr )
 {
 
 	// Create a border component
@@ -372,11 +372,11 @@ void CalibrationPage::saveContext()
 //
 //  CasualNoises    04/01/2026  First implementation
 //==============================================================================
-PotentiometerCalibrationPage::PotentiometerCalibrationPage (
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr )
+PotentiometerCalibrationPage::PotentiometerCalibrationPage ( SSD1309_Driver* oledDriverPt,
+															 QueueHandle_t driverQueueHandle,
+															 PageManager* pageManagerPtr,
+															 void* paramsPtr ) :
+	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr, paramsPtr )
 {
 
 	// Create border components

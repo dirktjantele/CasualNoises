@@ -39,7 +39,8 @@ public:
 	 SystemInfoPage() = delete;
 	 SystemInfoPage( SSD1309_Driver* m_oledDriverPtr,
 			 	 	 QueueHandle_t driverQueueHandle,
-					 PageManager* pageManagerPtr);
+					 PageManager* pageManagerPtr,
+					 void* paramsPtr );
 	~SystemInfoPage() override;
 
 	virtual bool handleLocalUI_event ( sIncommingUI_Event* uiEvent,

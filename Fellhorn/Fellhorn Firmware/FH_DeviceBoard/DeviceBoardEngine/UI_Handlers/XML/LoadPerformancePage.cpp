@@ -24,7 +24,7 @@
 #include "GUI/GUI_Basics/Components/ComboBox.h"
 #include "GUI/GUI_Basics/Components/Label.h"
 
-#include "TinyXML/tinyxml2.h"
+#include "XML/TinyXML/tinyxml2.h"
 
 using namespace tinyxml2;
 
@@ -36,15 +36,13 @@ using namespace CasualNoises;
 //==============================================================================
 //          LoadPerformancePage() & ~LoadPerformancePage()
 //
-// Load performance page initializer
-//
 //  CasualNoises    05/06/2026  First implementation
 //==============================================================================
-LoadPerformancePage::LoadPerformancePage (
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr ) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr )
+LoadPerformancePage::LoadPerformancePage ( SSD1309_Driver* oledDriverPt,
+										   QueueHandle_t driverQueueHandle,
+										   PageManager* pageManagerPtr,
+										   void* paramsPtr ) :
+	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr, paramsPtr )
 {
 
 	// Create a border component
@@ -55,7 +53,7 @@ LoadPerformancePage::LoadPerformancePage (
 	buildPresetNameList ();
 
 	// Build a ComboBox
-	uint32_t id = 0;
+	uint32_t id = 1;
 	mComboBoxPtr = new ComboBox( String( (char*) "ComboBox" ) );
 	for ( auto name : mPresetNameList )
 		mComboBoxPtr->addItem( &name, id++ );
@@ -76,26 +74,10 @@ LoadPerformancePage::~LoadPerformancePage()
 //==============================================================================
 void LoadPerformancePage::onComboBoxChange () noexcept
 {
-	uint32_t id = mComboBoxPtr->getSelectedId ();
-
-/*	switch (id)
-	{
-	case 1:								// Load performance
-		mPageManagerPtr->createNewPage( ePageId::loadPage );
-		break;
-	case 2:								// New performance
-		break;
-	case 3:								// Calibration
-		mPageManagerPtr->createNewPage ( ePageId::calibrationPage );
-		break;
-	case 4:								// Sytem Info
-		mPageManagerPtr->createNewPage ( ePageId::systemInfoPage );
-		break;
-
-	default:
-		CN_ReportFault ( eErrorCodes::runtimeError );
-	}
-*/
+	static sLoadPerformancePageState params;
+	params.performanceId = mComboBoxPtr->getSelectedId ();
+	params.performanceName = String ( mPresetNameList.at( params.performanceId - 1 ) );
+	mPageManagerPtr->createNewPage( ePageId::peformanceInfoPage, (void*) &params );
 }
 
 //==============================================================================
@@ -106,9 +88,9 @@ void LoadPerformancePage::onComboBoxChange () noexcept
 //  CasualNoises    05/06/2026  First implementation
 //==============================================================================
 bool LoadPerformancePage::handleLocalUI_event ( sIncommingUI_Event* uiEvent,
-									   	   bool altState, Graphics& g,
-										   sSystemSettings* settingsPtr,
-										   bool altSwitchState)
+									   	   	    bool altState, Graphics& g,
+												sSystemSettings* settingsPtr,
+												bool altSwitchState )
 {
 	return false;
 }
@@ -145,6 +127,44 @@ void LoadPerformancePage::resized()
 }
 
 //==============================================================================
+//          loadContext ()
+//
+//  CasualNoises    06/06/2026  First implementation
+//==============================================================================
+void LoadPerformancePage::loadContext ()
+{
+	sLoadPerformancePageState state;
+	state.performanceId = 0;
+	uint32_t size = readTLV_TagBytes (
+			mTLV_DriverQueueHandle,
+			(uint32_t)eTLV_Tag::UI_LoadPerformancePageState,
+			sizeof ( sLoadPerformancePageState ),
+			(uint32_t*) &state );
+	if ( size > 0 )
+	{
+		mComboBoxPtr->setFocus ( state.performanceId );
+	}
+}
+
+//==============================================================================
+//          saveContext ()
+//
+//  CasualNoises    06/06/2026  First implementation
+//==============================================================================
+void LoadPerformancePage::saveContext ()
+{
+	sLoadPerformancePageState state;
+	state.performanceId = mComboBoxPtr->getSelectedId ();
+	uint32_t diffCnt = memcmp( &mPreviousSavedContext, &state, sizeof ( sLoadPerformancePageState ) );
+	if ( diffCnt != 0 )
+	{
+		updateTLV_Bytes (mTLV_DriverQueueHandle,
+				(uint32_t)eTLV_Tag::UI_LoadPerformancePageState, sizeof ( sLoadPerformancePageState ), (uint32_t*) &state );
+		memcpy( (void*) &mPreviousSavedContext, (void*) &state, sizeof ( sLoadPerformancePageState ) );
+	}
+}
+
+//==============================================================================
 //          updateLEDs()
 //
 //  CasualNoises    05/06/2026  First implementation
@@ -152,6 +172,7 @@ void LoadPerformancePage::resized()
 void LoadPerformancePage::updateLEDs ()
 {
 	dimSwitchLeds ();
+
 }
 
 //==============================================================================

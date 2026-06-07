@@ -41,11 +41,11 @@ using namespace CasualNoises;
 //
 //  CasualNoises    17/03/2026  First implementation
 //==============================================================================
-SystemInfoPage::SystemInfoPage (
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr ) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr )
+SystemInfoPage::SystemInfoPage ( SSD1309_Driver* oledDriverPt,
+								 QueueHandle_t driverQueueHandle,
+								 PageManager* pageManagerPtr,
+								 void* paramsPtr) :
+	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr, paramsPtr )
 {
 
 	// Create a border component

@@ -19,3 +19,4 @@ namespace DeviceBoard
 tMCU_BoardInfo	gMCU_BoardInfo;
 
 } // namespace DeviceBoard
+

@@ -15,7 +15,7 @@
 
 #include "queue.h"
 
-#include "TinyXML/tinyxml2.h"
+#include "XML/TinyXML/tinyxml2.h"
 
 #include "XML_FactoryPresets.h"
 
@@ -48,7 +48,7 @@ bool inStallXML_FactoryDefaults ( QueueHandle_t TLV_DriverQueue )
 						  newSize,
 						  ( uint32_t* ) xmlData );
 	}
-
+/*
 	// ToDo remove test code
 	XMLDocument doc;
 	doc.Parse ( xmlData );
@@ -89,7 +89,7 @@ bool inStallXML_FactoryDefaults ( QueueHandle_t TLV_DriverQueue )
         }
 
     }
-
+*/
 	return true;
 }
 

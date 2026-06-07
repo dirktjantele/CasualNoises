@@ -24,6 +24,7 @@ enum class eEventSourceID
 	encoderThreadSourceID,
 	multiplexerADC_ThreadSourceID,
 	nerveNetSourceID,
+	UI_ThreadSourceId,
 };
 
 // Multiplexer signature, one structure used for each multiplexer
@@ -115,12 +116,22 @@ typedef struct
 	uint8_t*					eventdataPtr;
 } sNerveNetEvent;
 
+// Structure used to let the UI thread start a new preset performance
+constexpr uint32_t cPerformanceNameLength = 24;
+typedef struct
+{
+	eEventSourceID				eventSourceID;
+	uint32_t					performanceId;
+	char						performanceName [ cPerformanceNameLength + 1 ];
+} sLaunchPerformanceEvent;
+
 // Structure of incoming UI messages
 typedef union
 {
 	sEncoderEvent				encoderEvent;
 	sMultiplexed_ADC_Event		multiplexed_ADC_Event;
 	sNerveNetEvent				nerveNetEvent;
+	sLaunchPerformanceEvent		launchPerformanceEvent;
 } sIncommingUI_Event;
 
 // Potentiometer/slider calibration values

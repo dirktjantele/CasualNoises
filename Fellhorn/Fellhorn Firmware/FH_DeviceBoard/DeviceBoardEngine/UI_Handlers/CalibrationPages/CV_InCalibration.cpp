@@ -32,11 +32,11 @@ using namespace CasualNoises;
 //
 //  CasualNoises    09/04/2026  First implementation
 //==============================================================================
-CV_CalibrationPage::CV_CalibrationPage (
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr ) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr ),
+CV_CalibrationPage::CV_CalibrationPage ( SSD1309_Driver* oledDriverPt,
+										 QueueHandle_t driverQueueHandle,
+										 PageManager* pageManagerPtr,
+										 void* paramsPtr ) :
+	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr, paramsPtr ),
 	TimerBase ( "Timer", 100 )
 {
 

@@ -33,11 +33,11 @@ using namespace CasualNoises;
 //
 //  CasualNoises    13/04/2026  First implementation
 //==============================================================================
-_1V_OctCalibrationPage::_1V_OctCalibrationPage (
-		SSD1309_Driver* oledDriverPt,
-		QueueHandle_t driverQueueHandle,
-		PageManager* pageManagerPtr ) :
-	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr ),
+_1V_OctCalibrationPage::_1V_OctCalibrationPage ( SSD1309_Driver* oledDriverPt,
+												 QueueHandle_t driverQueueHandle,
+												 PageManager* pageManagerPtr,
+												 void* paramsPtr ) :
+	RootPage ( oledDriverPt, driverQueueHandle, pageManagerPtr, paramsPtr ),
 	TimerBase ( "Timer", 100 )
 {
 
@@ -182,12 +182,11 @@ void _1V_OctCalibrationPage::updateLEDs ()
 //
 //  CasualNoises    13/04/2026  First implementation
 //==============================================================================
-bool _1V_OctCalibrationPage::handleLocalUI_event (
-		sIncommingUI_Event* uiEvent,
-		bool altState,
-		Graphics& g,
-		sSystemSettings* settingsPtr,
-		bool altSwitchState )
+bool _1V_OctCalibrationPage::handleLocalUI_event ( sIncommingUI_Event* uiEvent,
+												   bool altState,
+												   Graphics& g,
+												   sSystemSettings* settingsPtr,
+												   bool altSwitchState )
 {
 
 	// Handle ADC reply data

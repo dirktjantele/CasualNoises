@@ -22,35 +22,18 @@ namespace DeviceBoard
 
 using namespace CasualNoises;
 
-float MyDeviceBoard::doSomething ( float in )
-{
-	return in;
-}
-
-void MyDeviceBoard::doNotEnter ( bool privacy )
-{
-
-}
-
-}
-
-namespace DeviceBoard
-{
-
-using namespace CasualNoises;
-
 //==============================================================================
 //          RootPage
 //
 //  CasualNoises    28/12/2025  First implementation
 //==============================================================================
-RootPage::RootPage(SSD1309_Driver* m_oledDriverPtr,
-			QueueHandle_t driverQueueHandle,
-			PageManager* pageManagerPtr) :
+RootPage::RootPage ( SSD1309_Driver* m_oledDriverPtr,
+					 QueueHandle_t driverQueueHandle,
+					 PageManager* pageManagerPtr,
+					 void* paramsPtr) :
 		m_oledDriverPtr ( m_oledDriverPtr ),
 		mTLV_DriverQueueHandle ( driverQueueHandle ),
 		mPageManagerPtr ( pageManagerPtr )
-	//	: TimerBase("Blinker", 500) {}
 {
 	mGlobalBounds.setPosition(0, 0);
 	mGlobalBounds.setWidth(DISPLY_WIDTH);
@@ -141,7 +124,7 @@ bool RootPage::handleUI_event ( sIncommingUI_Event* uiEvent,
 }
 
 //==============================================================================
-//          dimSwitchLeds()
+//          dimSwitchLeds ()
 //
 // 	Set all led's except for EXIT & ALT to there dimmed state
 //
@@ -165,7 +148,7 @@ void RootPage::dimSwitchLeds ()
 }
 
 //==============================================================================
-//          setSwitchLed()
+//          setSwitchLed ()
 //
 // 	Set intensity of the given led to 100%
 //

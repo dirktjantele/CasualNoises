@@ -50,9 +50,10 @@ class MainPage : public RootPage
 public:
 
 	 MainPage() = delete;
-	 MainPage(SSD1309_Driver* m_oledDriverPtr,
-			  QueueHandle_t driverQueueHandle,
-			  PageManager* pageManagerPtr);
+	 MainPage( SSD1309_Driver* m_oledDriverPtr,
+			   QueueHandle_t driverQueueHandle,
+			   PageManager* pageManagerPtr,
+			   void* paramsPtr );
 	~MainPage() override;
 
 	void paint(Graphics& g) override;
@@ -85,7 +86,8 @@ public:
 	 CalibrationPage() = delete;
 	 CalibrationPage( SSD1309_Driver* m_oledDriverPtr,
 			 	 	  QueueHandle_t driverQueueHandle,
-					  PageManager* pageManagerPtr );
+					  PageManager* pageManagerPtr,
+					  void* paramsPtr );
 	~CalibrationPage () override;
 
 	void onComboBoxChange();
@@ -134,7 +136,8 @@ public:
 	 PotentiometerCalibrationPage () = delete;
 	 PotentiometerCalibrationPage ( SSD1309_Driver* m_oledDriverPtr,
 			 	 	 QueueHandle_t driverQueueHandle,
-					 PageManager* pageManagerPtr );
+					 PageManager* pageManagerPtr,
+					 void* paramsPtr );
 	~PotentiometerCalibrationPage () override;
 
 	void paint ( Graphics& g ) override;

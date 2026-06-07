@@ -64,7 +64,8 @@ public:
 	 CV_CalibrationPage() = delete;
 	 CV_CalibrationPage( SSD1309_Driver* m_oledDriverPtr,
 			 	 	  	 QueueHandle_t driverQueueHandle,
-						 PageManager* pageManagerPtr );
+						 PageManager* pageManagerPtr,
+						 void* paramsPtr );
 	~CV_CalibrationPage () override;
 
 	void paint(Graphics& g) override;

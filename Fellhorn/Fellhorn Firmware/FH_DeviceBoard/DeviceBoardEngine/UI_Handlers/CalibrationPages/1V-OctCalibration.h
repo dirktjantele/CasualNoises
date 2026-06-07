@@ -39,7 +39,8 @@ public:
 	 _1V_OctCalibrationPage() = delete;
 	 _1V_OctCalibrationPage( SSD1309_Driver* m_oledDriverPtr,
 			 	 	  	 	 QueueHandle_t driverQueueHandle,
-							 PageManager* pageManagerPtr );
+							 PageManager* pageManagerPtr,
+							 void* paramsPtr );
 	~_1V_OctCalibrationPage () override;
 
 	void paint(Graphics& g) override;

@@ -14,6 +14,7 @@
 #include "UI_Handlers/CalibrationPages/CV_InCalibration.h"
 #include "UI_Handlers/CalibrationPages/1V-OctCalibration.h"
 #include "UI_Handlers/XML/LoadPerformancePage.h"
+#include "UI_Handlers/XML/PerformanceInfoPage.h"
 #include "PageManager.h"
 
 #include "MainPage.h"
@@ -51,12 +52,12 @@ PageManager::PageManager ( SSD1309_Driver* oledDriverPtr, QueueHandle_t driverQu
 {
 
 	// Create a graphics object for display access
-	mGraphics = new Graphics(m_oledDriverPtr);
+	mGraphics = new Graphics( m_oledDriverPtr );
 
 	// Clear page id & object pointer stack
-	for (uint32_t i = 0; i < cPageIdStackSize; ++i)
+	for ( uint32_t i = 0; i < cPageIdStackSize; ++i )
 	{
-		mPageIdStack[i] = (ePageId) 0;
+		mPageIdStack[i] = ( ePageId ) 0;
 		mPageObjectStack[i] = nullptr;
 	}
 
@@ -126,11 +127,11 @@ PageManager::~PageManager()
 // 	Create a page with a given target page id and add it to the stack if appropriate
 //		pageId:			id for the new page
 //		updateIdStack:	false when reopening pages from a saved page stack
-//		stackPtr:		stack pointer used when avove is true
+//		stackPtr:		stack pointer used when above is true
 //
 //  CasualNoises    24/12/2025  First implementation
 //==============================================================================
-void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackPtr)
+void PageManager::createPage ( ePageId pageId, bool updateIdStack, uint32_t stackPtr, void* paramsPtr )
 {
 
 	// Create an object to handle this page
@@ -138,25 +139,28 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 	switch ( pageId )
 	{
 	case ePageId::mainPage:
-		pagePtr = new MainPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		pagePtr = new MainPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
 		break;
 	case ePageId::loadPage:
-		pagePtr = new LoadPerformancePage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		pagePtr = new LoadPerformancePage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
+		break;
+	case ePageId::peformanceInfoPage:
+		pagePtr = new PerformanceInfoPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
 		break;
 	case ePageId::calibrationPage:
-		pagePtr = new CalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		pagePtr = new CalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
 		break;
 	case ePageId::potCalibrationPage:
-		pagePtr = new PotentiometerCalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		pagePtr = new PotentiometerCalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
 		break;
 	case ePageId::CV_CalibrationPage:
-		pagePtr = new CV_CalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		pagePtr = new CV_CalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
 		break;
 	case ePageId::_1V_OctCalibrationPage:
-		pagePtr = new _1V_OctCalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		pagePtr = new _1V_OctCalibrationPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
 		break;
 	case ePageId::systemInfoPage:
-		pagePtr = new SystemInfoPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this );
+		pagePtr = new SystemInfoPage ( m_oledDriverPtr, mTLV_DriverQueueHandle, this, paramsPtr );
 		break;
 	default:
 		CN_ReportFault ( eErrorCodes::PageManagerError );
@@ -219,9 +223,9 @@ void PageManager::createPage(ePageId pageId, bool updateIdStack, uint32_t stackP
 //
 //  CasualNoises    03/02/2026  First implementation
 //==============================================================================
-void PageManager::createNewPage ( ePageId pageId )
+void PageManager::createNewPage ( ePageId pageId, void* paramsPtr  )
 {
-	createPage ( pageId, true, mPageIdStackPtr );
+	createPage ( pageId, true, mPageIdStackPtr, paramsPtr );
 }
 
 //==============================================================================
@@ -232,6 +236,8 @@ void PageManager::createNewPage ( ePageId pageId )
 //
 //  CasualNoises    24/12/2025  First implementation
 //  CasualNoises    08/04/2026  altSwitchState added
+//  CasualNoises    06/06/2026  ADC events are no longer forwarded to the other
+//									boards, but are handled by the UI_Helper objects
 //==============================================================================
 void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 								   sSystemSettings* settingsPtr,
@@ -271,11 +277,11 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 		}
 		else
 
-		// Otherwise process the event here...
+		// Otherwise forward the event using NerveNet			// ToDo use UI_Helper objects called from within the UI_Thread
 		{
 
 			// Send ADC data over NerveNet
-			forwardADC_Event ( uiEvent, settingsPtr, altSwitchState );
+//			forwardADC_Event ( uiEvent, settingsPtr, altSwitchState );
 
 		}
 
@@ -311,6 +317,11 @@ void PageManager::handleUI_event ( sIncommingUI_Event* uiEvent,
 			headerPtr = (tNerveNetMessageHeader*)((uint8_t*)headerPtr + size);
 
 		}
+
+	// Handle UI_Thread events like launch performance
+	} else if ( uiEvent->launchPerformanceEvent.eventSourceID == eEventSourceID::UI_ThreadSourceId )
+	{
+		// Nothing to do here so far...
 
 	// Unknown event source?
 	} else

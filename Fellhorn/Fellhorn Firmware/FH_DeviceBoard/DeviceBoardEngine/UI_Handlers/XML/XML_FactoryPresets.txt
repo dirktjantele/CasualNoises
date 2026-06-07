@@ -1,10 +1,12 @@
 <PERFORMANCES>
+
 	<PERFORMANCE>
 		<INFO>
-			<NAME>PulsarHeaven</NAME>
-			<TYPE>PULSAR</TYPE>
+			<NAME>Moogish</NAME>
+			<TYPE>AnalogModeling</TYPE>
 			<DESCRIPTION>
-				Based on Pulsar Synthesis
+				<LINE1 text="Just a taste" />
+				<LINE2 text="of virtual..." />
 			</DESCRIPTION>
 		</INFO>
 		<POT_CONFIGURATION>
@@ -21,10 +23,11 @@
 	
 	<PERFORMANCE>
 		<INFO>
-			<NAME>Moogish</NAME>
-			<TYPE>ANALOG MODELING</TYPE>
+			<NAME>PulsarHeaven</NAME>
+			<TYPE>Pulsar Synthesis</TYPE>
 			<DESCRIPTION>
-				Based on Analog Modeling
+				<LINE1 text="Pulses come &amp;" />
+				<LINE2 text="go do they..." />
 			</DESCRIPTION>
 		</INFO>
 		<POT_CONFIGURATION>
@@ -44,7 +47,8 @@
 			<NAME>SnowFlakes</NAME>
 			<TYPE>FM</TYPE>
 			<DESCRIPTION>
-				Based on FM
+				<LINE1 text="Good old DX7" />
+				<LINE2 text="Where is he?" />
 			</DESCRIPTION>
 		</INFO>
 		<POT_CONFIGURATION>

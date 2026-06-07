@@ -30,6 +30,7 @@
 #include "SynthEngineMessage.h"
 
 #include "UI_Handlers/XML/XML_FactoryDefaults.h"
+#include "UI_Helpers/AbstractUI_Helper.h"
 
 namespace DeviceBoard
 {
@@ -407,6 +408,7 @@ void UI_Thread(void* pvParameters)
 	PageManager* pageManagerPtr = new PageManager ( oledDriverPtr, driverQueueHandle );
 
 	// ToDo: move this code to a better place
+/*
 	size_t xFreeHeapSize = xPortGetFreeHeapSize();
 	uint32_t used = getInitFreeHeapSize() - xFreeHeapSize;
 	UNUSED ( used );
@@ -426,13 +428,18 @@ void UI_Thread(void* pvParameters)
 		vTaskDelay ( pdMS_TO_TICKS ( 1 ) );
 	}
 	vPortFree(taskArray);
-
+*/
 	// Wait for NerveNet master thread to become idle
 	while ( ( gNerveNetMasterThreadPtr[0] == nullptr ) ||
 			( ! gNerveNetMasterThreadPtr[0]->isThreadRunning () ) )
 	{
 		vTaskDelay ( pdMS_TO_TICKS ( 10 ) );
 	}
+
+	// UI_Helper.....																**************************
+	sUI_HelperInfo UI_HelperInfo;
+	UI_HelperInfo.oledDriverPtr = oledDriverPtr;
+	// ToDo create a UI_Helper manager and initialize the helper objects
 
 	// Main thread loop
 	uint32_t cycleCnt = 0;
@@ -464,9 +471,16 @@ void UI_Thread(void* pvParameters)
 				// Hand event to the PageManger
 				pageManagerPtr->handleUI_event ( &event, &gSystemSettings, altSwitchState );
 
+				// ToDo Hand event to the UI_Helper manager
+				if ( event.launchPerformanceEvent.eventSourceID == eEventSourceID::UI_ThreadSourceId )
+				{
+
+				}
+
 				// Free memory if the event was a NerveNet event
 				if ( event.nerveNetEvent.eventSourceID == eEventSourceID::nerveNetSourceID )
 					vPortFree ( event.nerveNetEvent.eventdataPtr );
+
 			}
 
 		} else
@@ -476,7 +490,7 @@ void UI_Thread(void* pvParameters)
 
 		// Time to save the contents of the current UI page?
 		cycleCnt += 1;
-		if (cycleCnt >= 1000)
+		if (cycleCnt >= 10000)
 		{
 			pageManagerPtr->saveContext ();
 			cycleCnt = 0;
